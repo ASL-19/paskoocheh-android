@@ -1,0 +1,84 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="drawerArrowStyle">@style/DrawerIcon</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="autoCompleteTextViewStyle">@style/cursorColor</item>
+    </style>
+
+    <style name="cursorColor" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:textCursorDrawable">@drawable/cursor_color</item>
+    </style>
+
+    <style name="DrawerIcon" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/white</item>
+    </style>
+
+    <style name="NavTheme">
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="ButtonMatchParent">
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="fontPath">fonts/IRANSans_Bold.ttf</item>
+    </style>
+
+    <style name="ButtonWrapContent">
+        <item name="android:layout_width">110dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:minHeight">25dp</item>
+        <item name="android:minWidth">75dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="fontPath">fonts/IRANSans_Bold.ttf</item>
+    </style>
+
+    <style name="EditTextHint" parent="AppTheme">
+        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="android:textColorHint">@color/colorPrimaryDark</item>
+        <item name="colorControlNormal">@color/colorPrimaryDark</item>
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+        <item name="colorControlHighlight">@color/colorPrimaryDark</item>
+        <item name="textColorError">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="FontStyle">
+    </style>
+
+    <style name="FontStyle.Small">
+        <item name="font_xsmall">12sp</item>
+        <item name="font_small">14sp</item>
+        <item name="font_medium">16sp</item>
+        <item name="font_large">18sp</item>
+        <item name="font_xlarge">20sp</item>
+    </style>
+
+    <style name="FontStyle.Medium">
+        <item name="font_xsmall">14sp</item>
+        <item name="font_small">16sp</item>
+        <item name="font_medium">18sp</item>
+        <item name="font_large">20sp</item>
+        <item name="font_xlarge">22sp</item>
+    </style>
+
+    <style name="FontStyle.Large">
+        <item name="font_xsmall">16sp</item>
+        <item name="font_small">18sp</item>
+        <item name="font_medium">20sp</item>
+        <item name="font_large">22sp</item>
+        <item name="font_xlarge">24sp</item>
+    </style>
+</resources>

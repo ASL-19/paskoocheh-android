@@ -1,0 +1,42 @@
+######################
+# Intellij
+######################
+.idea/**
+*.iml
+*.iws
+*.ipr
+*.ids
+*.orig
+
+######################
+# Gradle
+######################
+.gradle/**
+
+######################
+# Mac OSX
+######################
+.DS_Store
+
+######################
+# Directories
+######################
+/build/**
+/deploy/**
+
+######################
+# Others
+######################
+*.class
+*.*~
+*~
+*.hprof
+*.apk
+.merge_file*
+/local.properties
+/captures
+app/google-services.json
+app/src/main/java/org/asl19/paskoocheh/Constants.java
+app/src/main/assets/config.properties
+.externalNativeBuild≈
+app/src/main/assets/fonts/**

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="15dp" >
+
+    <TextView
+        android:id="@+id/share_title_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/share_your_experience"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="?font_large"
+        fontPath="fonts/IRANSans_Bold.ttf"/>
+
+    <android.widget.RatingBar
+        android:id="@+id/rating_bar_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:theme="@style/EditTextHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/review_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="?font_medium"
+            android:hint="@string/topic"
+            android:maxLength="25"
+            android:inputType="textEmailAddress"
+            android:imeOptions = "flagNoFullscreen"
+            fontPath="fonts/IRANSans_Edit.ttf"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:theme="@style/EditTextHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/review_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="?font_medium"
+            android:hint="@string/description_optional"
+            android:maxLength="150"
+            android:inputType="textEmailAddress"
+            android:imeOptions = "flagNoFullscreen"
+            fontPath="fonts/IRANSans_Edit.ttf"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:gravity="left">
+
+    <Button
+        android:id="@+id/submit_review"
+        android:background="@drawable/button_regular"
+        style="@style/ButtonWrapContent"
+        android:text="@string/submit"
+        android:textSize="?font_small"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:visibility="gone"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="15dp"
+        android:indeterminate="true"
+        style="?android:attr/progressBarStyle"/>
+</LinearLayout>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/tools"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_apps"
+            android:icon="@drawable/nav_apps"
+            android:title="@string/applications" />
+        <item
+            android:id="@+id/nav_installed_apps"
+            app:showAsAction="always|withText"
+            app:actionLayout="@layout/navigation_action_view_updates"
+            android:icon="@drawable/nav_myapps"
+            android:title="@string/my_applications" />
+        <item
+            android:id="@+id/nav_send"
+            android:icon="@drawable/nav_send"
+            android:title="@string/tell_a_friend" />
+        <item
+            android:id="@+id/nav_self_update"
+            android:icon="@drawable/nav_update"
+            android:title="@string/update" />
+    </group>
+
+    <group
+        android:id="@+id/paskoocheh_info"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_wifi"
+            app:showAsAction="always|withText"
+            app:actionLayout="@layout/navigation_action_view_switch"
+            android:title="@string/download_only_on_wifi" />
+        <item
+            android:id="@+id/nav_feedback"
+            app:showAsAction="always|withText"
+            android:title="@string/feedback" />
+        <item
+            android:id="@+id/nav_about"
+            app:showAsAction="always|withText"
+            android:title="@string/about_paskoocheh" />
+        <item
+            android:id="@+id/nav_privacy"
+            app:showAsAction="always|withText"
+            android:title="@string/privacy_terms_title" />
+        <item
+            android:id="@+id/nav_version"
+            app:showAsAction="always|withText"
+            android:title="" />
+    </group>
+</menu>

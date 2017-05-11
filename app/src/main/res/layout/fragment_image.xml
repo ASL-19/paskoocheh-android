@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:filterTouchesWhenObscured="true">
+
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/gallery_image"
+        android:layout_gravity="left|top"
+        android:background="#e8000000" />
+</FrameLayout>

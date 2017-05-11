@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:padding="15dp"
+    android:filterTouchesWhenObscured="true">
+
+    <TextView
+        android:id="@+id/create_tag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:text="@string/update"
+        android:textColor="@color/black"
+        android:textSize="?font_large"
+        fontPath="fonts/IRANSans_Bold.ttf"/>
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_below="@+id/create_tag"
+        android:text="@string/update_dialog"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="?font_medium"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end|center_vertical"
+        android:layout_below="@+id/description">
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="@string/no"
+            android:textColor="@color/black"
+            android:textSize="?font_medium"/>
+
+        <TextView
+            android:id="@+id/ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="@string/yes"
+            android:textColor="@color/black"
+            android:textSize="?font_medium"
+            fontPath="fonts/IRANSans_Bold.ttf"/>
+    </LinearLayout>
+</RelativeLayout>

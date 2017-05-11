@@ -1,0 +1,112 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "org.asl19.paskoocheh"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 211
+        versionName "2.1.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "com.android.support:design:$rootProject.supportLibraryVersion"
+        force "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    //App's dependencies
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:design:$rootProject.supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+
+    // Utility Library
+    compile 'com.fernandocejas:arrow:1.0.0'
+
+    // Android Testing Support runner and rules
+    androidTestCompile "com.android.support.test:runner:$rootProject.testSupportLibraryVersion"
+    androidTestCompile "com.android.support.test:rules:$rootProject.testSupportLibraryVersion"
+
+    // Dependencies for local unit tests
+    testCompile "junit:junit:$rootProject.ext.junitVersion"
+    testCompile "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
+    testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
+
+    // Espresso UI Testing
+    androidTestCompile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
+
+    //Annotations
+    provided "javax.annotation:jsr250-api:$rootProject.javaxAnnotationVersion"
+
+    //Event Bus
+    compile "org.greenrobot:eventbus:$rootProject.eventbusVersion"
+
+    //Butterknife
+    compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
+
+    //Retrofit
+    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+    compile "com.squareup.retrofit2:converter-scalars:$rootProject.retrofitVersion"
+    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.okHttp3Version"
+    androidTestCompile "com.squareup.okhttp3:mockwebserver:$rootProject.okHttp3Version"
+
+    //Amazon
+    compile "com.amazonaws:aws-android-sdk-core:$rootProject.amazonVersion"
+    compile "com.amazonaws:aws-android-sdk-s3:$rootProject.amazonVersion"
+    compile "com.amazonaws:aws-android-sdk-cognito:$rootProject.amazonVersion"
+    compile "com.amazonaws:aws-android-sdk-ddb:$rootProject.amazonVersion"
+    compile "com.amazonaws:aws-android-sdk-ddb-mapper:$rootProject.amazonVersion"
+
+    //Push
+    compile "com.google.firebase:firebase-messaging:$rootProject.firebaseVersion"
+
+    //Crash
+    compile "com.google.firebase:firebase-crash:$rootProject.firebaseVersion"
+
+    //Analytics
+    compile "com.google.firebase:firebase-core:$rootProject.firebaseVersion"
+
+    //Parcelar
+    compile "org.parceler:parceler-api:$rootProject.parcelarVersion"
+    annotationProcessor "org.parceler:parceler:$rootProject.parcelarVersion"
+
+    //Calligraphy Custom Fonts
+    compile "uk.co.chrisjenx:calligraphy:$rootProject.calligraphyVersion"
+
+    //Lombok
+    provided "org.projectlombok:lombok:$rootProject.lombokVersion"
+
+    //Dagger
+    compile "com.google.dagger:dagger:$rootProject.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+
+    //Wire Protocol Buffer
+    compile "com.squareup.wire:wire-runtime:$rootProject.wireVersion"
+
+    //Image Cache
+    compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+}
+
+apply plugin: 'com.google.gms.google-services'

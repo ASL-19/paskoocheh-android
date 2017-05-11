@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8dp"
+    android:padding="7.5dp"
+    android:background="@drawable/card_border"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="100dp"
+            android:layout_height="100dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="7.5dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="?font_medium"
+                fontPath="fonts/IRANSans_Bold.ttf"/>
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="wrap_content"
+                android:layout_height="20sp"
+                android:maxLines="1"
+                android:textSize="?font_xsmall"
+                android:textColor="#AAAAAA"
+                fontPath="fonts/IRANSans_Bold.ttf"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/download_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/ic_download" />
+
+                <TextView
+                    android:id="@+id/download"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#0B233C"
+                    android:textSize="?font_xsmall"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/star"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/ic_star"/>
+
+                <TextView
+                    android:id="@+id/rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="?font_xsmall"
+                    android:textColor="#0B233C"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/play_store"
+            android:visibility="visible"
+            android:background="@drawable/button_regular"
+            style="@style/ButtonWrapContent"
+            android:text="@string/play_store" />
+
+        <TextView
+            android:id="@+id/install"
+            android:background="@drawable/button_regular"
+            style="@style/ButtonWrapContent"
+            android:text="@string/install" />
+
+        <TextView
+            android:id="@+id/update"
+            android:background="@drawable/button_update"
+            style="@style/ButtonWrapContent"
+            android:text="@string/update" />
+
+        <TextView
+            android:id="@+id/uninstall"
+            android:background="@drawable/button_regular"
+            style="@style/ButtonWrapContent"
+            android:text="@string/uninstall" />
+    </LinearLayout>
+</LinearLayout>
