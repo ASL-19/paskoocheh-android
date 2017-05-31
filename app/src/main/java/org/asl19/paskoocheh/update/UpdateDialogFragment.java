@@ -17,8 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
-
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.pojo.AndroidTool;
 import org.asl19.paskoocheh.service.ToolDownloadService;
@@ -26,8 +24,6 @@ import org.asl19.paskoocheh.utils.ApkManager;
 import org.parceler.Parcels;
 
 import java.io.File;
-
-import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,9 +45,6 @@ public class UpdateDialogFragment extends DialogFragment implements UpdateDialog
     private AndroidTool paskoocheh;
 
     private UpdateDialogContract.Presenter presenter;
-
-    @Inject
-    DynamoDBMapper dynamoDBMapper;
 
     public static UpdateDialogFragment newInstance() {
         return new UpdateDialogFragment();
@@ -96,6 +89,7 @@ public class UpdateDialogFragment extends DialogFragment implements UpdateDialog
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, paskoocheh.getToolId().intValue());
         } else if (toolFile.exists()) {
+            presenter.registerInstall(uuid, paskoocheh.getEnglishName());
             ApkManager.installPackage(getContext(), paskoocheh.getChecksum(), toolFile);
             getDialog().dismiss();
         } else {
@@ -103,7 +97,7 @@ public class UpdateDialogFragment extends DialogFragment implements UpdateDialog
                     = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
             if (!getActivity().getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                presenter.registerDownload(uuid, paskoocheh.getEnglishName(), dynamoDBMapper);
+                presenter.registerInstall(uuid, paskoocheh.getEnglishName());
                 Intent intent = new Intent(getActivity(), ToolDownloadService.class);
                 intent.putExtra("TOOL", Parcels.wrap(paskoocheh));
                 getActivity().startService(intent);
@@ -123,7 +117,7 @@ public class UpdateDialogFragment extends DialogFragment implements UpdateDialog
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        boolean requestGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        boolean requestGranted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         if (requestGranted) {
             Toast.makeText(getContext(), getString(R.string.permission_granted), Toast.LENGTH_SHORT).show();
             update();
@@ -143,12 +137,12 @@ public class UpdateDialogFragment extends DialogFragment implements UpdateDialog
     }
 
     @Override
-    public void onRegisterDownloadSuccessful() {
+    public void onRegisterInstallSuccessful() {
 
     }
 
     @Override
-    public void onRegisterDownloadFailed() {
+    public void onRegisterInstallFailed() {
 
     }
 }

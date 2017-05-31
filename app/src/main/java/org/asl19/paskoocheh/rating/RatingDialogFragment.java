@@ -26,6 +26,7 @@ import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.data.SendReviewRequest;
+import org.asl19.paskoocheh.data.source.ReviewRepository;
 import org.asl19.paskoocheh.pojo.AndroidTool;
 import org.parceler.Parcels;
 
@@ -75,6 +76,10 @@ public class RatingDialogFragment extends DialogFragment implements RatingDialog
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_tool_info_review, container, false);
         unbinder = ButterKnife.bind(this, view);
+
+        if (presenter == null) {
+            new RatingDialogPresenter(this, new ReviewRepository());
+        }
 
         Bundle bundle = new Bundle();
         bundle.putString(Constants.SCREEN, TAG);

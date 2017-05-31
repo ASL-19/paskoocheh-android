@@ -13,11 +13,11 @@ import org.asl19.paskoocheh.ActivityUtils;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.event.Event;
 import org.asl19.paskoocheh.receiver.AmazonS3StartReceiver;
+import org.asl19.paskoocheh.service.PaskoochehConfigService;
 import org.asl19.paskoocheh.toollist.ToolListActivity;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.Calendar;
 import java.util.UUID;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -42,8 +42,8 @@ public class LoadingActivity extends AppCompatActivity {
 
         generateUserId();
 
+        startService(new Intent(this, PaskoochehConfigService.class));
         // Periodic PaskoochehConfigDownload service
-        sendBroadcast(new Intent(this, AmazonS3StartReceiver.class));
         startAmazonS3Service();
     }
 
@@ -75,14 +75,13 @@ public class LoadingActivity extends AppCompatActivity {
     }
 
     private void startAmazonS3Service() {
-        Calendar calendar = Calendar.getInstance();
         AlarmManager alarmMgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AmazonS3StartReceiver.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         alarmMgr.setRepeating(
                 AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(),
+                System.currentTimeMillis() + AlarmManager.INTERVAL_DAY,
                 AlarmManager.INTERVAL_DAY,
                 alarmIntent
         );

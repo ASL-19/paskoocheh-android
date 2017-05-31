@@ -14,11 +14,13 @@ import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.crashlytics.android.Crashlytics;
 
 import org.asl19.paskoocheh.BuildConfig;
 import org.asl19.paskoocheh.PaskoochehApplication;
@@ -71,6 +73,7 @@ public class ToolDownloadService extends IntentService {
         final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
 
         notificationBuilder.setSmallIcon(R.drawable.ic_notification);
+        notificationBuilder.setOngoing(true);
         if (tool.getPackageName().equals(this.getPackageName())) {
             notificationBuilder.setContentTitle(getString(R.string.update));
         } else {
@@ -93,12 +96,17 @@ public class ToolDownloadService extends IntentService {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 if (state == TransferState.COMPLETED) {
-                    ((DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE))
-                            .addCompletedDownload(
-                                    tool.getName(), tool.getDescription(),
-                                    true, "application/vnd.android.package-archive",
-                                    internalFile.getPath(),
-                                    internalFile.length(), false);
+                    
+                    try {
+                        ((DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE))
+                                .addCompletedDownload(
+                                        tool.getName(), tool.getDescription(),
+                                        true, "application/vnd.android.package-archive",
+                                        internalFile.getPath(),
+                                        internalFile.length(), false);
+                    } catch (IllegalArgumentException ex) {
+                        Crashlytics.logException(ex);
+                    }
 
                     notificationBuilder.setProgress(0, 0, false);
                     notificationManager.notify(tool.getToolId().intValue(), notificationBuilder.build());
@@ -124,7 +132,7 @@ public class ToolDownloadService extends IntentService {
                                 getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-
+                        notificationBuilder.setOngoing(false);
                         notificationBuilder.setContentIntent(pendingIntent);
                         notificationBuilder.setProgress(0, 0, false);
                         notificationManager.notify(tool.getToolId().intValue(), notificationBuilder.build());
@@ -143,6 +151,26 @@ public class ToolDownloadService extends IntentService {
 
             @Override
             public void onError(int id, Exception ex) {
+                internalFile.delete();
+
+                Intent notificationIntent = new Intent(getApplicationContext(), ToolDownloadService.class);
+                notificationIntent.putExtra("TOOL", Parcels.wrap(tool));
+                PendingIntent pendingIntent = PendingIntent.getService(
+                        getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                notificationBuilder.setContentIntent(pendingIntent);
+                notificationBuilder.setOngoing(false);
+                notificationBuilder.setContentText(getString(R.string.download_failed_retry));
+                notificationBuilder.setProgress(0, 0, false);
+                notificationManager.notify(tool.getToolId().intValue(), notificationBuilder.build());
+
+                Toast.makeText(
+                        ToolDownloadService.this,
+                        String.format(getString(R.string.retry_tool_download), tool.getName()),
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                Crashlytics.logException(ex);
                 Log.e("ToolDownloadService", ex.toString());
             }
         });

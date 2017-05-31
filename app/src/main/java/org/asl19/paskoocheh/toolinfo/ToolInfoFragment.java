@@ -30,7 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.picasso.Picasso;
 
@@ -125,9 +124,6 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
 
     @Inject
     CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider;
-
-    @Inject
-    DynamoDBMapper dynamoDBMapper;
 
     public static final String RATING = "RATING";
     public static final String DOWNLOAD_COUNT = "DOWNLOAD_COUNT";
@@ -235,7 +231,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
         setUpRatingFeedback();
 
         Picasso.with(getContext())
-                .load(tool.getIconUrl())
+                .load(tool.getIconUrl().isEmpty() ? null : tool.getIconUrl())
                 .resize(400, 400)
                 .centerInside()
                 .into(icon);
@@ -343,12 +339,12 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
     }
 
     @Override
-    public void onRegisterDownloadSuccessful() {
+    public void onRegisterInstallSuccessful() {
 
     }
 
     @Override
-    public void onRegisterDownloadFailed() {
+    public void onRegisterInstallFailed() {
 
     }
 
@@ -431,13 +427,14 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, tool.getToolId().intValue());
         } else if (toolFile.exists()) {
+            presenter.registerInstall(uuid, tool.getEnglishName());
             ApkManager.installPackage(getContext(), tool.getChecksum(), toolFile);
         } else {
             ConnectivityManager connManager
                     = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
             if (!getActivity().getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                presenter.registerDownload(uuid, tool.getEnglishName(), dynamoDBMapper);
+                presenter.registerInstall(uuid, tool.getEnglishName());
                 Intent intent = new Intent(getActivity(), ToolDownloadService.class);
                 intent.putExtra("TOOL", Parcels.wrap(tool));
                 getActivity().startService(intent);
@@ -461,7 +458,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
         bundle.putString(TOOL_ID, tool.getEnglishName());
         FirebaseAnalytics.getInstance(getContext()).logEvent(Constants.PLAY_STORE, bundle);
 
-        presenter.registerDownload(uuid, tool.getEnglishName(), dynamoDBMapper);
+        presenter.registerInstall(uuid, tool.getEnglishName());
 
         Intent browserIntent = new Intent(
                 Intent.ACTION_VIEW,
@@ -519,7 +516,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        boolean requestGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        boolean requestGranted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         if (requestGranted) {
             Toast.makeText(getContext(), getString(R.string.permission_granted), Toast.LENGTH_SHORT).show();
             installApplication();
@@ -537,7 +534,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
             int padding = (int) (5 * getResources().getDisplayMetrics().density);
             imageView.setPadding(padding, padding, padding, padding);
             Picasso.with(getContext())
-                    .load(Uri.parse(tool.getScreenshots().get(i)))
+                    .load(tool.getScreenshots().get(i).isEmpty() ? null : tool.getScreenshots().get(i))
                     .resize(500, 500)
                     .centerInside()
                     .into(imageView);

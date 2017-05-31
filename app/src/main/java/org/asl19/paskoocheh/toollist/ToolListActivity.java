@@ -40,7 +40,7 @@ public class ToolListActivity extends BaseNavigationActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), toolListFragment, R.id.contentFrame);
         }
 
-        new ToolListPresenter(toolListFragment, new ToolRepository(getBaseContext(), getPackageManager()), new DownloadCountRepository(), new RatingRepository());
+        new ToolListPresenter(toolListFragment, new ToolRepository(getBaseContext(), getPackageManager()), new DownloadCountRepository(getApplicationContext()), new RatingRepository());
     }
 
     @Override

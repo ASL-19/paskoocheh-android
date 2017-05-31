@@ -33,7 +33,7 @@
 *.hprof
 *.apk
 .merge_file*
-/local.properties
+*.properties
 /captures
 app/google-services.json
 app/src/main/java/org/asl19/paskoocheh/Constants.java

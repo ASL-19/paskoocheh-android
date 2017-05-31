@@ -1,8 +1,6 @@
 package org.asl19.paskoocheh.installedtoollist;
 
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
-
 import org.asl19.paskoocheh.data.source.DownloadCountDataSource;
 import org.asl19.paskoocheh.data.source.RatingDataSource;
 import org.asl19.paskoocheh.data.source.ToolDataSource;
@@ -88,19 +86,19 @@ public class InstalledToolListPresenter implements InstalledToolListContract.Pre
     }
 
     @Override
-    public void registerDownload(String tool, String uuid, DynamoDBMapper dynamoDBMapper) {
-        downloadCountRepository.registerDownload(tool, uuid, dynamoDBMapper, new DownloadCountDataSource.RegisterDownloadCallback() {
+    public void registerInstall(String tool, String uuid) {
+        downloadCountRepository.registerInstall(tool, uuid, new DownloadCountDataSource.RegisterInstallCallback() {
             @Override
-            public void onRegisterDownloadSuccessful() {
+            public void onRegisterInstallSuccessful() {
                 if (toolListView.isActive()) {
-                    toolListView.onRegisterDownloadSuccessful();
+                    toolListView.onRegisterInstallSuccessful();
                 }
             }
 
             @Override
-            public void onRegisterDownloadFailed() {
+            public void onRegisterInstallFailed() {
                 if (toolListView.isActive()) {
-                    toolListView.onRegisterDownloadFailed();
+                    toolListView.onRegisterInstallFailed();
                 }
             }
         });

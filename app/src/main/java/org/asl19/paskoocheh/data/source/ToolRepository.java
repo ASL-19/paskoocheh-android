@@ -2,11 +2,16 @@ package org.asl19.paskoocheh.data.source;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.fernandocejas.arrow.optional.Optional;
 
+import org.asl19.paskoocheh.R;
+import org.asl19.paskoocheh.loading.LoadingActivity;
 import org.asl19.paskoocheh.pojo.AndroidTool;
 import org.asl19.paskoocheh.proto.Config;
 import org.asl19.paskoocheh.proto.Platform;
@@ -15,7 +20,6 @@ import org.asl19.paskoocheh.proto.Tool;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,7 +118,12 @@ public class ToolRepository implements ToolDataSource {
                 }
             }
             return Optional.absent();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+            Toast.makeText(context, R.string.reloading_content, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(context, LoadingActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            context.startActivity(intent);
             Log.e("Exception", e.toString());
             return Optional.absent();
         }

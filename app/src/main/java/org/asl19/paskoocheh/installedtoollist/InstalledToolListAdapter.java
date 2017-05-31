@@ -78,7 +78,7 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
     public void onBindViewHolder(ViewHolder holder, int position) {
         AndroidTool tool = tools.get(position);
 
-        Picasso.with(context).load(tool.getIconUrl()).into(holder.imageView);
+        Picasso.with(context).load(tool.getIconUrl().isEmpty() ? null : tool.getIconUrl()).into(holder.imageView);
 
         holder.name.setText(tool.getName());
         holder.description.setText(tool.getAppType());
@@ -206,13 +206,14 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 fragment.onPermissionRequested(tool.getToolId().intValue());
             } else if (toolFile.exists()) {
+                fragment.registerInstall(tool.getEnglishName());
                 ApkManager.installPackage(context, tool.getChecksum(), toolFile);
             } else {
                 ConnectivityManager connManager
                         = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
                 if (!context.getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                    fragment.registerDownload(tool.getEnglishName());
+                    fragment.registerInstall(tool.getEnglishName());
                     Intent intent = new Intent(context, ToolDownloadService.class);
                     intent.putExtra("TOOL", Parcels.wrap(tool));
                     context.startService(intent);
@@ -232,7 +233,7 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
             bundle.putString(TOOL_ID, tool.getEnglishName());
             FirebaseAnalytics.getInstance(context).logEvent(Constants.PLAY_STORE, bundle);
 
-            fragment.registerDownload(tool.getEnglishName());
+            fragment.registerInstall(tool.getEnglishName());
 
             Intent browserIntent = new Intent(
                     Intent.ACTION_VIEW,

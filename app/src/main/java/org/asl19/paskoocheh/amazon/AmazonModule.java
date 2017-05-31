@@ -2,6 +2,7 @@ package org.asl19.paskoocheh.amazon;
 
 import android.content.Context;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
@@ -27,6 +28,15 @@ public final class AmazonModule {
     private AmazonModule() {
     }
 
+    @Provides
+    @Singleton
+    public static ClientConfiguration clientConfig() {
+        ClientConfiguration clientConfiguration = new ClientConfiguration();
+        clientConfiguration.setConnectionTimeout(150000);
+        clientConfiguration.setSocketTimeout(150000);
+        return clientConfiguration;
+    }
+
     /**
      * Gets an instance of a Cognito Credentials provider using the given
      * Context.
@@ -40,7 +50,8 @@ public final class AmazonModule {
         return new CognitoCachingCredentialsProvider(
                 context,
                 COGNITO_POOL_ID,
-                Regions.US_EAST_1);
+                Regions.US_EAST_1,
+                clientConfig());
     }
 
     /**
@@ -53,7 +64,7 @@ public final class AmazonModule {
     @Provides
     @Singleton
     public static AmazonS3Client getS3Client(CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider) {
-        AmazonS3Client sS3Client = new AmazonS3Client(cognitoCachingCredentialsProvider);
+        AmazonS3Client sS3Client = new AmazonS3Client(cognitoCachingCredentialsProvider, clientConfig());
         sS3Client.setRegion(Region.getRegion(Regions.US_EAST_1));
         return sS3Client;
     }

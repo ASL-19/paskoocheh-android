@@ -6,4 +6,6 @@ public class Event {
     public static class PaskoochehConfigComplete {
     }
 
+    public static class Timeout {
+    }
 }

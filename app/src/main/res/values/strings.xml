@@ -8,8 +8,8 @@
     <string name="my_applications">اپ‌های من</string>
     <string name="tell_a_friend">به دوست و دشمن بگو</string>
     <string name="update">به‌روزرسانی</string>
-    <string name="download_only_on_wifi">دانلود فقط از طریق وای‌فای </string>
-    <string name="about_paskoocheh">درباره پس‌کوچه</string>
+    <string name="download_only_on_wifi">دانلود فقط از طریق وای‌فای</string>
+    <string name="about_paskoocheh">درباره‌ی پس‌کوچه</string>
     <string name="number_downloads">تعداد دانلودها</string>
     <string name="rate_this_app">امتیاز بدهید</string>
     <string name="description">توضیحات</string>
@@ -19,23 +19,24 @@
     <string name="share">هم‌رسانی</string>
     <string name="version">نسخه:</string>
     <string name="updates">به‌روزرسانی</string>
-    <string name="up_to_date">بروز</string>
+    <string name="up_to_date">به‌روز</string>
     <string name="permission_granted">اجازه داده شد</string>
-    <string name="required_write">درخواست اجازه برای دانلود اپلیکیشن‌ها </string>
-    <string name="update_dialog">نسخه جدید پس‌کوچه آماده بروزرسانی است. بروزرسانی کنم؟</string>
+    <string name="required_write">درخواست اجازه برای دانلود اپلیکیشن‌ها</string>
+    <string name="update_dialog">نسخه‌ی جدید پس‌کوچه آماده به‌روزرسانی است. به‌روزرسانی کنم؟</string>
     <string name="yes">بله</string>
     <string name="no">نه دیرتر</string>
     <string name="no_email">ایمیلی وجود ندارد.</string>
     <string name="feedback">تماس با پس‌کوچه</string>
+    <string name="telegram_menu">کانال تلگرام پس‌کوچه</string>
 
     <!--TOOL LIST FRAGMENT & TOOL INFO FRAGMENT & ADAPTERS-->
     <string name="search_title">جستجو</string>
     <string name="featured">اپلیکیشن‌های برگزیده</string>
-    <string name="all_apps">همه‌ اپلیکیشن‌ها</string>
+    <string name="all_apps">همه‌ی اپلیکیشن‌ها</string>
     <string name="email">ایمیل</string>
     <string name="install">دانلود</string>
     <string name="uninstall">حذف</string>
-    <string name="play_store">گوگل پلی استور</string>
+    <string name="play_store">گوگل‌پلی</string>
     <string name="share_your_experience">نظر بدهید</string>
     <string name="topic">موضوع (اختیاری)</string>
     <string name="description_optional">شرح (اختیاری)</string>
@@ -44,14 +45,14 @@
     <string name="unable_to_submit_review">دریافت بازخورد امکان‌پذیر نیست</string>
     <string name="download_in_progress">در حال دانلود کردن</string>
     <string name="queued">منتظر باشید</string>
-    <string name="connect_wifi">لطفاً به وای‌فای وصل شوید</string>
+    <string name="connect_wifi">لطفا به وای‌فای وصل شوید</string>
     <string name="via_email">درخواست دانلود از طریق ایمیل</string>
     <string name="via_email_subject">شما پس از ارسال این ایمیل، به صورت خودکار ایمیلی از طرف ما با لینک یا فایل نصب اپلیکیشن دریافت خواهید کرد</string>
     <string name="send_email">ارسال ایمیل از طریق</string>
     <string name="no_email_clients">شما ایمیلی برای ارسال تنظیم نکردید</string>
 
     <!--ABOUT FRAGMENT-->
-    <string name="title_about">درباره‌ی خوندی</string>
+    <string name="title_about">درباره‌ی پس‌کوچه</string>
     <string name="what_paskoocheh">پس‌کوچه چیست؟</string>
     <string name="what_paskoocheh_body">پس‌کوچه بازارچه فیلترشکن است! مکان امنی برای دسترسی آسان به هر آنچه که برای عبور از #فیلترنت می‌خواهید. در سایت و اپلیکیشن پس‌کوچه علاوه بر انواع فیلترشکن‌ها، ابزارهای حفظ امنیت آنلاین را نیز می‌توانید بیابید، به دوستانتان معرفی کنید، درباره آنها بحث کنید و به آنها امتیاز بدهید.</string>
     <string name="why_paskoocheh">چرا پس‌کوچه؟</string>
@@ -93,4 +94,11 @@
 
     <!-- APK MANAGER -->
     <string name="checksum_invalid">چک‌سام نادرست است</string>
+
+    <!-- NOTIFICATIONS -->
+    <string name="retry_tool_download">%s تایم اوت شد. لطفا دوباره امتحان کنید</string>
+    <string name="time_out_retry_check_connection">تایم اوت</string>
+    <string name="tap_to_retry">درخواستِ دوباره</string>
+    <string name="download_failed_retry">دانلود ناموفق! دوباره امتحان کنید</string>
+    <string name="reloading_content">در حال بارگذاری</string>
 </resources>

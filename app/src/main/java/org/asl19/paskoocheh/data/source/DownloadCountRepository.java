@@ -1,21 +1,22 @@
 package org.asl19.paskoocheh.data.source;
 
 
+import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.crashlytics.android.Crashlytics;
 
 import org.asl19.paskoocheh.Constants;
+import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.pojo.ActionLog;
 import org.asl19.paskoocheh.pojo.DownloadCount;
 import org.asl19.paskoocheh.pojo.DownloadCountList;
 import org.asl19.paskoocheh.service.PaskoochehApiService;
 import org.asl19.paskoocheh.service.ServiceGenerator;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javax.inject.Inject;
 
@@ -32,8 +33,8 @@ public class DownloadCountRepository implements DownloadCountDataSource {
     @Inject
     DynamoDBMapper dynamoDBMapper;
 
-    public DownloadCountRepository() {
-
+    public DownloadCountRepository(Context context) {
+        ((PaskoochehApplication) context.getApplicationContext()).getAmazonComponenet().inject(this);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class DownloadCountRepository implements DownloadCountDataSource {
     }
 
     @Override
-    public void registerDownload(final String uuid, final String tool, final DynamoDBMapper dynamoDBMapper, final RegisterDownloadCallback callback) {
+    public void registerInstall(final String uuid, final String tool, final RegisterInstallCallback callback) {
         new Thread(new Runnable() {
             public void run() {
                 MessageDigest md;
@@ -111,10 +112,11 @@ public class DownloadCountRepository implements DownloadCountDataSource {
                     actionLog.setUsername(Base64.encodeToString(digest, Base64.NO_WRAP));
 
                     dynamoDBMapper.save(actionLog);
-                    callback.onRegisterDownloadSuccessful();
-                } catch (NoSuchAlgorithmException | UnsupportedEncodingException exception) {
+                    callback.onRegisterInstallSuccessful();
+                } catch (Exception exception) {
+                    Crashlytics.logException(exception);
                     Log.e(getClass().getName(), exception.toString());
-                    callback.onRegisterDownloadFailed();
+                    callback.onRegisterInstallFailed();
                 }
             }
         }).start();

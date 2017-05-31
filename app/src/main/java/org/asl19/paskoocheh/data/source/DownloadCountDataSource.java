@@ -1,8 +1,6 @@
 package org.asl19.paskoocheh.data.source;
 
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
-
 import org.asl19.paskoocheh.pojo.DownloadCountList;
 
 public interface DownloadCountDataSource {
@@ -25,12 +23,12 @@ public interface DownloadCountDataSource {
 
     void getDownloadCount(String toolName, GetDownloadCountCallback callback);
 
-    interface RegisterDownloadCallback {
+    interface RegisterInstallCallback {
 
-        void onRegisterDownloadSuccessful();
+        void onRegisterInstallSuccessful();
 
-        void onRegisterDownloadFailed();
+        void onRegisterInstallFailed();
     }
 
-    void registerDownload(String uuid, String tool, DynamoDBMapper dynamoDBMapper, RegisterDownloadCallback callback);
+    void registerInstall(String uuid, String tool, RegisterInstallCallback callback);
 }

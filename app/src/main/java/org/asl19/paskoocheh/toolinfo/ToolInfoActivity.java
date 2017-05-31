@@ -58,7 +58,7 @@ public class ToolInfoActivity extends BaseUpActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), toolInfoFragment, R.id.contentFrame);
         }
 
-        new ToolInfoPresenter(toolInfoFragment, new ToolRepository(getBaseContext(), getPackageManager()), new RatingRepository(), new DownloadCountRepository(), new ReviewRepository());
+        new ToolInfoPresenter(toolInfoFragment, new ToolRepository(getBaseContext(), getPackageManager()), new RatingRepository(), new DownloadCountRepository(getApplicationContext()), new ReviewRepository());
     }
 
     @Override

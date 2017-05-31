@@ -1,8 +1,6 @@
 package org.asl19.paskoocheh.baseactivities;
 
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
-
 import org.asl19.paskoocheh.data.source.DownloadCountDataSource;
 import org.asl19.paskoocheh.data.source.ToolDataSource;
 import org.asl19.paskoocheh.pojo.AndroidTool;
@@ -64,19 +62,19 @@ public class BaseNavigationPresenter implements BaseNavigationContract.Presenter
     }
 
     @Override
-    public void registerDownload(final String tool, String uuid, DynamoDBMapper dynamoDBMapper) {
-        downloadCountDataRepository.registerDownload(tool, uuid, dynamoDBMapper, new DownloadCountDataSource.RegisterDownloadCallback() {
+    public void registerInstall(final String tool, String uuid) {
+        downloadCountDataRepository.registerInstall(tool, uuid, new DownloadCountDataSource.RegisterInstallCallback() {
             @Override
-            public void onRegisterDownloadSuccessful() {
+            public void onRegisterInstallSuccessful() {
                 if (navigationView.isActive()) {
-                    navigationView.onRegisterDownloadSuccessful();
+                    navigationView.onRegisterInstallSuccessful();
                 }
             }
 
             @Override
-            public void onRegisterDownloadFailed() {
+            public void onRegisterInstallFailed() {
                 if (navigationView.isActive()) {
-                    navigationView.onRegisterDownloadFailed();
+                    navigationView.onRegisterInstallFailed();
                 }
             }
         });

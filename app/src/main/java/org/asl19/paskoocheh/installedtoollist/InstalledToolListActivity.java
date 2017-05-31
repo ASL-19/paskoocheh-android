@@ -41,7 +41,7 @@ public class InstalledToolListActivity extends BaseNavigationActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), installedToolListFragment, R.id.contentFrame);
         }
 
-        new InstalledToolListPresenter(installedToolListFragment, new ToolRepository(getBaseContext(), getPackageManager()), new DownloadCountRepository(), new RatingRepository());
+        new InstalledToolListPresenter(installedToolListFragment, new ToolRepository(getBaseContext(), getPackageManager()), new DownloadCountRepository(getApplicationContext()), new RatingRepository());
     }
 
     @Override

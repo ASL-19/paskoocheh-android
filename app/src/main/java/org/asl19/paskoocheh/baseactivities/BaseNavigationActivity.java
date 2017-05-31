@@ -28,12 +28,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.BuildConfig;
 import org.asl19.paskoocheh.Constants;
-import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.about.AboutActivity;
 import org.asl19.paskoocheh.data.source.DownloadCountRepository;
@@ -50,9 +48,8 @@ import org.asl19.paskoocheh.utils.FontStyle;
 import org.parceler.Parcels;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,6 +60,7 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
 import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
 import static org.asl19.paskoocheh.Constants.PASKOOCHEH_UUID;
+import static org.asl19.paskoocheh.Constants.SCREEN;
 import static org.asl19.paskoocheh.Constants.UPDATE_NOTIFICATION;
 
 public class BaseNavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BaseNavigationContract.NavigationView{
@@ -76,16 +74,13 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
     @BindView(R.id.nav_view)
     NavigationView navigationView;
 
-    @Inject
-    DynamoDBMapper dynamoDBMapper;
-
     private BaseNavigationContract.Presenter presenter;
 
     private FirebaseAnalytics firebaseAnalytics;
 
     AndroidTool paskoocheh;
 
-    List<AndroidTool> tools;
+    List<AndroidTool> tools = new ArrayList<>();
 
     TextView updatesAvailable;
 
@@ -100,9 +95,7 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        ((PaskoochehApplication) getApplication()).getAmazonComponenet().inject(this);
-
-        new BaseNavigationPresenter(this, new ToolRepository(getBaseContext(), getPackageManager()), new DownloadCountRepository());
+        new BaseNavigationPresenter(this, new ToolRepository(getBaseContext(), getPackageManager()), new DownloadCountRepository(getApplicationContext()));
 
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -191,9 +184,16 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                             wifiSwitch.isChecked()
                     ).commit();
 
-                    bundle.putString(Constants.SCREEN, BaseNavigationActivity.class.getName());
+                    bundle.putString(SCREEN, BaseNavigationActivity.class.getName());
                     bundle.putBoolean(DOWNLOAD_WIFI, wifiSwitch.isChecked());
                     FirebaseAnalytics.getInstance(this).logEvent(Constants.DOWNLOAD_WIFI, bundle);
+                    break;
+                case R.id.nav_telegram:
+                    bundle.putString(Constants.SHARE, "telegram");
+                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, bundle);
+                    bundle.putString(SCREEN, BaseNavigationActivity.class.getName());
+                    Intent telegram = new Intent(Intent.ACTION_VIEW , Uri.parse("https://telegram.me/paskoocheh"));
+                    startActivity(telegram);
                     break;
                 case R.id.nav_version:
                     break;
@@ -204,7 +204,7 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                     startActivity(new Intent(this, TermsActivity.class));
                     break;
                 case R.id.nav_feedback:
-                    bundle.putString(Constants.SCREEN, BaseNavigationActivity.class.getName());
+                    bundle.putString(SCREEN, BaseNavigationActivity.class.getName());
                     FirebaseAnalytics.getInstance(this).logEvent(Constants.FEEDBACK, bundle);
                     firebaseAnalytics.logEvent("feedback", bundle);
                     Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -239,7 +239,7 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        boolean requestGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        boolean requestGranted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         if (requestGranted) {
             Toast.makeText(getApplicationContext(), getString(R.string.permission_granted), Toast.LENGTH_SHORT).show();
 
@@ -262,13 +262,14 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             onPermissionsRequested(tool.getToolId().intValue());
         } else if (toolFile.exists()) {
+            presenter.registerInstall(uuid, tool.getEnglishName());
             ApkManager.installPackage(this, tool.getChecksum(), toolFile);
         } else {
             ConnectivityManager connManager
                     = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
             if (!getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                presenter.registerDownload(uuid, tool.getEnglishName(), dynamoDBMapper);
+                presenter.registerInstall(uuid, tool.getEnglishName());
                 Intent intent = new Intent(this, ToolDownloadService.class);
                 intent.putExtra("TOOL", Parcels.wrap(tool));
                 startService(intent);
@@ -314,7 +315,7 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     updateDialogFragment.show(fragmentManager, updateDialogFragment.getClass().getName());
 
-                    new UpdateDialogPresenter(updateDialogFragment, new DownloadCountRepository());
+                    new UpdateDialogPresenter(updateDialogFragment, new DownloadCountRepository(getApplicationContext()));
                 }
             }
         }
@@ -347,12 +348,12 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
     }
 
     @Override
-    public void onRegisterDownloadSuccessful() {
+    public void onRegisterInstallSuccessful() {
 
     }
 
     @Override
-    public void onRegisterDownloadFailed() {
+    public void onRegisterInstallFailed() {
 
     }
 }

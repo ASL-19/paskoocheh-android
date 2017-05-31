@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="start|bottom"
+    android:layout_gravity="right|bottom"
     android:filterTouchesWhenObscured="true">
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,23 +23,23 @@
                 android:layout_height="150dp"
                 android:layout_margin="10dp"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentRight="true"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="right"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
 
                 android:layout_alignTop="@id/icon_view"
-                android:layout_toRightOf="@id/icon_view"
-                android:layout_toEndOf="@id/icon_view">
+                android:layout_toLeftOf="@id/icon_view">
 
                 <TextView
                     android:id="@+id/title_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="right"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="?font_xlarge"
                     fontPath="fonts/IRANSans_Bold.ttf"/>
@@ -48,6 +48,7 @@
                     android:id="@+id/description_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="right"
                     android:maxLines="1"
                     android:textSize="?font_small"/>
 
@@ -55,6 +56,7 @@
                     android:id="@+id/version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="right"
                     android:maxLines="1"
                     android:textSize="?font_small"/>
             </LinearLayout>
@@ -112,8 +114,7 @@
                 style="@style/ButtonWrapContent"
                 android:text="@string/update"
                 android:background="@drawable/button_update"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
                 android:layout_marginBottom="10dp"
                 android:layout_above="@id/install_tools"/>
         </RelativeLayout>

@@ -14,11 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.Constants;
-import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.pojo.AndroidTool;
 import org.asl19.paskoocheh.pojo.DownloadCount;
@@ -29,8 +27,6 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,9 +48,6 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @Inject
-    DynamoDBMapper dynamoDBMapper;
-
     private List<AndroidTool> androidTools = new ArrayList<>();
     private List<DownloadCount> downloadCountList = new ArrayList<>();
     private List<Rating> ratingList = new ArrayList<>();
@@ -72,8 +65,6 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ((PaskoochehApplication) getContext().getApplicationContext()).getAmazonComponenet().inject(this);
 
         Bundle bundle = new Bundle();
         bundle.putString(Constants.SCREEN, TAG);
@@ -177,22 +168,22 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
     }
 
     @Override
-    public void registerDownload(String tool) {
+    public void registerInstall(String tool) {
         String uuid = getContext().getSharedPreferences(
                 PASKOOCHEH_PREFS,
                 Context.MODE_PRIVATE
         ).getString(PASKOOCHEH_UUID, "");
 
-        presenter.registerDownload(uuid, tool, dynamoDBMapper);
+        presenter.registerInstall(uuid, tool);
     }
 
     @Override
-    public void onRegisterDownloadSuccessful() {
+    public void onRegisterInstallSuccessful() {
 
     }
 
     @Override
-    public void onRegisterDownloadFailed() {
+    public void onRegisterInstallFailed() {
 
     }
 

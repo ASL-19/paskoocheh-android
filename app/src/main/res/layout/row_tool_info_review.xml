@@ -14,6 +14,9 @@
             android:id="@+id/review_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/star"
             android:textColor="@color/colorPrimaryDark"
             fontPath="fonts/IRANSans_Bold.ttf"/>
 
@@ -23,8 +26,7 @@
             android:layout_height="15dp"
             android:layout_gravity="end"
             android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/rating"
-            android:layout_toStartOf="@+id/rating"
+            android:layout_toRightOf="@+id/rating"
             android:src="@drawable/ic_star"/>
 
         <TextView
@@ -32,8 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
             android:textColor="@color/textGrey"
             fontPath="fonts/IRANSans_Bold.ttf"/>
 
@@ -41,6 +42,7 @@
             android:id="@+id/review"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
             android:layout_below="@+id/review_title"
             android:textColor="@color/colorPrimaryDark" />
@@ -50,8 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/review"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
             android:textColor="@color/textGrey"/>
 

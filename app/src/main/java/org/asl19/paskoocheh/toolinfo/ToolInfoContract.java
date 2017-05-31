@@ -1,8 +1,6 @@
 package org.asl19.paskoocheh.toolinfo;
 
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
-
 import org.asl19.paskoocheh.baseactivities.BasePresenter;
 import org.asl19.paskoocheh.baseactivities.BaseView;
 import org.asl19.paskoocheh.data.GetReviewRequest;
@@ -29,9 +27,9 @@ public interface ToolInfoContract {
 
         void onGetReviewListFailed();
 
-        void onRegisterDownloadSuccessful();
+        void onRegisterInstallSuccessful();
 
-        void onRegisterDownloadFailed();
+        void onRegisterInstallFailed();
     }
 
     interface Presenter extends BasePresenter {
@@ -44,7 +42,7 @@ public interface ToolInfoContract {
 
         void getToolReviews(GetReviewRequest getReviewRequest);
 
-        void registerDownload(String uuid, String tool, DynamoDBMapper dynamoDBMapper);
+        void registerInstall(String uuid, String tool);
     }
 }
 

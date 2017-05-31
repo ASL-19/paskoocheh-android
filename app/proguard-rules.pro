@@ -17,6 +17,11 @@
 #}
 -keepattributes *Annotation*
 
+## CRASHLYTICS
+-keepattributes SourceFile,LineNumberTable
+-keep class com.crashlytics.** { *; }
+-dontwarn com.crashlytics.**
+
 ## RETROFIT
 -dontnote retrofit2.Platform
 -dontwarn retrofit2.Platform$Java8

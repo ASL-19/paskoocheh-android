@@ -1,8 +1,6 @@
 package org.asl19.paskoocheh.update;
 
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
-
 import org.asl19.paskoocheh.data.source.DownloadCountDataSource;
 
 import lombok.NonNull;
@@ -20,19 +18,19 @@ public class UpdateDialogPresenter implements UpdateDialogContract.Presenter {
     }
 
     @Override
-    public void registerDownload(String tool, String uuid, DynamoDBMapper dynamoDBMapper) {
-        downloadCountRepository.registerDownload(tool, uuid, dynamoDBMapper, new DownloadCountDataSource.RegisterDownloadCallback() {
+    public void registerInstall(String tool, String uuid) {
+        downloadCountRepository.registerInstall(tool, uuid, new DownloadCountDataSource.RegisterInstallCallback() {
             @Override
-            public void onRegisterDownloadSuccessful() {
+            public void onRegisterInstallSuccessful() {
                 if (dialogView.isActive()) {
-                    dialogView.onRegisterDownloadSuccessful();
+                    dialogView.onRegisterInstallSuccessful();
                 }
             }
 
             @Override
-            public void onRegisterDownloadFailed() {
+            public void onRegisterInstallFailed() {
                 if (dialogView.isActive()) {
-                    dialogView.onRegisterDownloadFailed();
+                    dialogView.onRegisterInstallFailed();
                 }
             }
         });

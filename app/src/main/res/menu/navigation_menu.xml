@@ -32,6 +32,12 @@
             app:showAsAction="always|withText"
             app:actionLayout="@layout/navigation_action_view_switch"
             android:title="@string/download_only_on_wifi" />
+
+        <item
+            android:id="@+id/nav_telegram"
+            app:showAsAction="always|withText"
+            android:title="@string/telegram_menu" />
+
         <item
             android:id="@+id/nav_feedback"
             app:showAsAction="always|withText"

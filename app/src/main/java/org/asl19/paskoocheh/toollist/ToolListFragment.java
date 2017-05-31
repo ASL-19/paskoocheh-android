@@ -25,11 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.Constants;
-import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.pojo.AndroidTool;
 import org.asl19.paskoocheh.pojo.DownloadCount;
@@ -40,8 +38,6 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,9 +70,6 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
     @BindView(R.id.content)
     CoordinatorLayout coordinatorLayout;
 
-    @Inject
-    DynamoDBMapper dynamoDBMapper;
-
     private ToolListAdapter adapterFeatured;
     private ToolListAdapter adapterAllApps;
 
@@ -100,8 +93,6 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
         Bundle bundle = new Bundle();
         bundle.putString(Constants.SCREEN, TAG);
         FirebaseAnalytics.getInstance(getContext()).logEvent(Constants.OPEN_PAGE, bundle);
-
-        ((PaskoochehApplication) getContext().getApplicationContext()).getAmazonComponenet().inject(this);
 
         if (savedInstanceState != null) {
             ratingList = Parcels.unwrap(savedInstanceState.getParcelable(RATING));
@@ -273,13 +264,13 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
     }
 
     @Override
-    public void registerDownload(String tool) {
+    public void registerInstall(String tool) {
         String uuid = getContext().getSharedPreferences(
                 PASKOOCHEH_PREFS,
                 Context.MODE_PRIVATE
         ).getString(PASKOOCHEH_UUID, "");
 
-        presenter.registerDownload(uuid, tool, dynamoDBMapper);
+        presenter.registerInstall(uuid, tool);
     }
 
     @Override
@@ -288,12 +279,12 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
     }
 
     @Override
-    public void onRegisterDownloadSuccessful() {
+    public void onRegisterInstallSuccessful() {
 
     }
 
     @Override
-    public void onRegisterDownloadFailed() {
+    public void onRegisterInstallFailed() {
 
     }
 

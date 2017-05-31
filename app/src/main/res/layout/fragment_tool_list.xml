@@ -38,6 +38,7 @@
                     <LinearLayout
                         android:id="@+id/featured"
                         android:background="@color/colorPrimary"
+                        android:gravity="right"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:elevation="4dp">
@@ -73,6 +74,7 @@
                 android:id="@+id/all_apps"
                 android:background="#F4F4F4"
                 android:elevation="4dp"
+                android:gravity="right"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView

@@ -3,8 +3,6 @@ package org.asl19.paskoocheh.toollist;
 
 import android.content.Context;
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
-
 import org.asl19.paskoocheh.baseactivities.BasePresenter;
 import org.asl19.paskoocheh.baseactivities.BaseView;
 import org.asl19.paskoocheh.pojo.AndroidTool;
@@ -32,15 +30,15 @@ public interface ToolListContract {
 
         void getRatingListFailed();
 
-        void onRegisterDownloadSuccessful();
+        void onRegisterInstallSuccessful();
 
-        void onRegisterDownloadFailed();
+        void onRegisterInstallFailed();
     }
 
     interface ToolListAdapter {
         Context getContext();
 
-        void registerDownload(String tool);
+        void registerInstall(String tool);
 
         void onPermissionRequested(Integer code);
     }
@@ -54,6 +52,6 @@ public interface ToolListContract {
 
         void getRatingList();
 
-        void registerDownload(String uuid, String tool, DynamoDBMapper dynamoDBMapper);
+        void registerInstall(String uuid, String tool);
     }
 }

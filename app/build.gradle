@@ -1,4 +1,21 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.22.1'
+    }
+}
+
+repositories {
+    maven {
+        url 'https://maven.fabric.io/public'
+    }
+}
 
 android {
     compileSdkVersion 25
@@ -7,8 +24,8 @@ android {
         applicationId "org.asl19.paskoocheh"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 211
-        versionName "2.1.1"
+        versionCode 216
+        versionName "2.1.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -82,9 +99,6 @@ dependencies {
     //Push
     compile "com.google.firebase:firebase-messaging:$rootProject.firebaseVersion"
 
-    //Crash
-    compile "com.google.firebase:firebase-crash:$rootProject.firebaseVersion"
-
     //Analytics
     compile "com.google.firebase:firebase-core:$rootProject.firebaseVersion"
 
@@ -107,6 +121,11 @@ dependencies {
 
     //Image Cache
     compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+
+    //Crashlytics
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+        transitive = true;
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -1,8 +1,6 @@
 package org.asl19.paskoocheh.baseactivities;
 
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
-
 import org.asl19.paskoocheh.pojo.AndroidTool;
 
 import java.util.List;
@@ -18,9 +16,9 @@ public interface BaseNavigationContract {
 
         void getToolsFailed();
 
-        void onRegisterDownloadSuccessful();
+        void onRegisterInstallSuccessful();
 
-        void onRegisterDownloadFailed();
+        void onRegisterInstallFailed();
     }
 
     interface Presenter extends BasePresenter {
@@ -28,6 +26,6 @@ public interface BaseNavigationContract {
 
         void getAndroidTools();
 
-        void registerDownload(String uuid, String tool, DynamoDBMapper dynamoDBMapper);
+        void registerInstall(String uuid, String tool);
     }
 }

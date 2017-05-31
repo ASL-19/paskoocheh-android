@@ -3,13 +3,16 @@ package org.asl19.paskoocheh.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.crashlytics.android.Crashlytics;
 
 import org.asl19.paskoocheh.PaskoochehApplication;
+import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.event.Event;
 import org.asl19.paskoocheh.receiver.AmazonS3StartReceiver;
 import org.greenrobot.eventbus.EventBus;
@@ -65,6 +68,16 @@ public class PaskoochehConfigService extends IntentService {
 
             @Override
             public void onError(int id, Exception ex) {
+                EventBus.getDefault().post(new Event.Timeout());
+
+                Toast.makeText(
+                        PaskoochehConfigService.this,
+                        getString(R.string.download_failed_retry),
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                Crashlytics.logException(ex);
+
                 Log.e("PaskoochehConfigService", ex.toString());
             }
         });

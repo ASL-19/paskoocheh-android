@@ -31,7 +31,11 @@ public class ImageFragment extends Fragment {
         // Inflate the layout for this fragment
         View imageLayout = inflater.inflate(R.layout.fragment_image, container, false);
         ImageView imageView = (ImageView) imageLayout.findViewById(R.id.gallery_image);
-        Picasso.with(getContext()).load(getArguments().getString(IMAGE_URL, "")).into(imageView);
+        String image = getArguments().getString(IMAGE_URL, "");
+        if (image.isEmpty()) {
+            image = null;
+        }
+        Picasso.with(getContext()).load(image).into(imageView);
 
         return imageLayout;
     }
