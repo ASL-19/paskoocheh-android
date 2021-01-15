@@ -2,16 +2,20 @@ package org.asl19.paskoocheh.installedtoollist;
 
 
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
+import com.google.android.material.navigation.NavigationView;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.asl19.paskoocheh.ActivityUtils;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.baseactivities.BaseNavigationActivity;
-import org.asl19.paskoocheh.data.source.DownloadCountRepository;
-import org.asl19.paskoocheh.data.source.RatingRepository;
-import org.asl19.paskoocheh.data.source.ToolRepository;
+import org.asl19.paskoocheh.data.source.ImagesDataSource;
+import org.asl19.paskoocheh.data.source.Local.ImagesLocalDataSource;
+import org.asl19.paskoocheh.data.source.Local.LocalizedInfoLocalDataSource;
+import org.asl19.paskoocheh.data.source.Local.PaskoochehDatabase;
+import org.asl19.paskoocheh.data.source.Local.VersionLocalDataSource;
+import org.asl19.paskoocheh.data.source.LocalizedInfoDataSource;
+import org.asl19.paskoocheh.utils.AppExecutors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +35,7 @@ public class InstalledToolListActivity extends BaseNavigationActivity {
 
         ButterKnife.bind(this);
 
-        toolbarTitle.setText(R.string.app_name);
+        toolbarTitle.setText(R.string.my_applications);
 
         InstalledToolListFragment installedToolListFragment =
                 (InstalledToolListFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
@@ -41,7 +45,13 @@ public class InstalledToolListActivity extends BaseNavigationActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), installedToolListFragment, R.id.contentFrame);
         }
 
-        new InstalledToolListPresenter(installedToolListFragment, new ToolRepository(getBaseContext(), getPackageManager()), new DownloadCountRepository(getApplicationContext()), new RatingRepository());
+
+        AppExecutors appExecutors = new AppExecutors();
+        PaskoochehDatabase database = PaskoochehDatabase.getInstance(getApplicationContext());
+        VersionLocalDataSource versionLocalDataSource = VersionLocalDataSource.getInstance(appExecutors, database.versionDao(), getApplicationContext());
+        LocalizedInfoDataSource localizedInfoDataSource = LocalizedInfoLocalDataSource.getInstance(appExecutors, database.localizedInfoDao());
+        ImagesDataSource imagesDataSource = ImagesLocalDataSource.getInstance(appExecutors, database.imagesDao());
+        new InstalledToolListPresenter(installedToolListFragment, versionLocalDataSource, localizedInfoDataSource, imagesDataSource);
     }
 
     @Override

@@ -1,13 +1,18 @@
 package org.asl19.paskoocheh.gallery;
 
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.asl19.paskoocheh.R;
+import org.asl19.paskoocheh.pojo.Image;
+import org.parceler.Parcels;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +31,8 @@ public class GalleryFragment extends Fragment {
     public static final String POSITION = "POSITION";
     public static final String IMAGES = "IMAGES";
 
-    private static int position;
-    private static List<String> toolImages;
+    private int position;
+    private List<Image> toolImages;
 
 
     /**
@@ -36,26 +41,49 @@ public class GalleryFragment extends Fragment {
     public GalleryFragment() {
     }
 
+    public static GalleryFragment newInstance() {
+        return new GalleryFragment();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        position = getArguments().getInt(POSITION);
-        toolImages = getArguments().getStringArrayList(IMAGES);
+        position = 0;
+        if (getArguments() != null) {
+            position = getArguments().getInt(POSITION, 0);
+        }
+
+        toolImages = Parcels.unwrap(getArguments().getParcelable(IMAGES));
+        Collections.reverse(toolImages);
 
         position = toolImages.size() - 1 - position;
-        Collections.reverse(toolImages);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
+
         View galleryView = inflater.inflate(R.layout.fragment_gallery, container, false);
-        ViewPager pager = (ViewPager) galleryView.findViewById(R.id.pager);
+        ViewPager pager = galleryView.findViewById(R.id.pager);
         pager.setAdapter(new GalleryAdapter(getChildFragmentManager(), toolImages));
         pager.setCurrentItem(position);
 
+        TabLayout tabLayout = galleryView.findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(pager);
+
         return galleryView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.navigation_arrow);
+        } else {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.navigation_arrow_ltr);
+        }
     }
 }

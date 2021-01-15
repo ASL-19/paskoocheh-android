@@ -18,5 +18,6 @@
         android:paddingEnd="10dp"
         android:textSize="?font_small"
         android:background="@drawable/nav_updates_button"
+        android:visibility="invisible"
         fontPath="fonts/IRANSans_Bold.ttf"/>
 </LinearLayout>

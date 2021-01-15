@@ -1,7 +1,7 @@
 # Paskoocheh Android
 [![Paskoocheh](https://paskoocheh.com/static/img/logo.svg)](https://paskoocheh.com)
 
-## Paskoocheh is an application which provides a safe place to obtain privacy tools online.
+## Paskoocheh is an application which provides a safe place to obtain privacy versions online.
 
 
 ### Building with Gradle

@@ -4,11 +4,9 @@ import android.content.Context;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.s3.AmazonS3Client;
 
 import javax.inject.Singleton;
@@ -32,8 +30,8 @@ public final class AmazonModule {
     @Singleton
     public static ClientConfiguration clientConfig() {
         ClientConfiguration clientConfiguration = new ClientConfiguration();
-        clientConfiguration.setConnectionTimeout(150000);
-        clientConfiguration.setSocketTimeout(150000);
+        clientConfiguration.setConnectionTimeout(300000);
+        clientConfiguration.setSocketTimeout(300000);
         return clientConfiguration;
     }
 
@@ -82,20 +80,6 @@ public final class AmazonModule {
         return new TransferUtility(amazonS3Client, context);
     }
 
-
-    /**
-     * Gets an instance of the TransferUtility which is constructed using the
-     * given client.
-     *
-     * @param amazonDynamoDBClient An AmazonDynamoDBClient instance.
-     * @return A TransferUtility instance.
-     */
-    @Provides
-    @Singleton
-    public static DynamoDBMapper getDynamoMapper(AmazonDynamoDBClient amazonDynamoDBClient) {
-        return new DynamoDBMapper(amazonDynamoDBClient);
-    }
-
     /**
      * Gets the Cognito Id which the user is registered under
      *
@@ -106,20 +90,5 @@ public final class AmazonModule {
     @Singleton
     public static String getCognitoId(CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider) {
         return cognitoCachingCredentialsProvider.getIdentityId();
-    }
-
-    /**
-     * Gets an instance of the AmazonDynamoDBClient which is constructed using the
-     * given Context
-     *
-     * @param cognitoCachingCredentialsProvider A CredentialsProvider instance.
-     * @return A DynamoDB client.
-     */
-    @Provides
-    @Singleton
-    public static AmazonDynamoDBClient getDynamoDbClient(CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider) {
-        AmazonDynamoDBClient dynamoClient = new AmazonDynamoDBClient(cognitoCachingCredentialsProvider);
-        dynamoClient.setRegion(Region.getRegion(Regions.US_EAST_1));
-        return dynamoClient;
     }
 }

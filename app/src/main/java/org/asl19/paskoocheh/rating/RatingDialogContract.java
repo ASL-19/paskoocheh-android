@@ -3,7 +3,7 @@ package org.asl19.paskoocheh.rating;
 
 import org.asl19.paskoocheh.baseactivities.BasePresenter;
 import org.asl19.paskoocheh.baseactivities.BaseView;
-import org.asl19.paskoocheh.data.SendReviewRequest;
+import org.asl19.paskoocheh.data.source.AmazonReviewRequest;
 
 public interface RatingDialogContract {
 
@@ -16,6 +16,6 @@ public interface RatingDialogContract {
 
     interface Presenter extends BasePresenter {
 
-        void submitReview(SendReviewRequest sendReviewRequest);
+        void submitReview(AmazonReviewRequest amazonReviewRequest);
     }
 }

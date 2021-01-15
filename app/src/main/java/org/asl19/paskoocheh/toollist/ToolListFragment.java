@@ -1,82 +1,73 @@
 package org.asl19.paskoocheh.toollist;
 
 
-import android.Manifest;
-import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
-import org.asl19.paskoocheh.pojo.AndroidTool;
-import org.asl19.paskoocheh.pojo.DownloadCount;
-import org.asl19.paskoocheh.pojo.DownloadCountList;
-import org.asl19.paskoocheh.pojo.Rating;
-import org.asl19.paskoocheh.pojo.RatingList;
+import org.asl19.paskoocheh.categorylist.CategoryListActivity;
+import org.asl19.paskoocheh.categorylist.CategoryListFragment;
+import org.asl19.paskoocheh.pojo.DownloadAndRating;
+import org.asl19.paskoocheh.pojo.Images;
+import org.asl19.paskoocheh.pojo.LocalizedInfo;
+import org.asl19.paskoocheh.pojo.Name;
+import org.asl19.paskoocheh.pojo.Version;
+import org.asl19.paskoocheh.search.SearchActivity;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
-import static org.asl19.paskoocheh.Constants.PASKOOCHEH_UUID;
+import static android.view.View.inflate;
+import static org.asl19.paskoocheh.categorylist.CategoryListActivity.CATEGORY;
+import static org.asl19.paskoocheh.categorylist.CategoryListActivity.FEATURED;
+import static org.asl19.paskoocheh.categorylist.CategoryListActivity.TOP_DOWNLOADS;
+import static org.asl19.paskoocheh.categorylist.CategoryListActivity.TYPE;
 
 public class ToolListFragment extends Fragment implements ToolListContract.ToolListView, ToolListContract.ToolListAdapter {
 
     public static final String TAG = ToolListFragment.class.getCanonicalName();
-    private static final String RATING = "RATING";
-    private static final String DOWNLOAD = "DOWNLOAD";
-
-    @BindView(R.id.my_recycler_featured)
-    RecyclerView recyclerFeatured;
-
-    @BindView(R.id.my_recycler_all_apps)
-    RecyclerView recyclerAllApps;
-
-    @BindView(R.id.all_apps)
-    LinearLayout allAppsLinearLayout;
-
-    @BindView(R.id.featured_relative)
-    RelativeLayout featureRelativeLayout;
 
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @BindView(R.id.content)
-    CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.tools_layout)
+    LinearLayout toolsLayout;
 
-    private ToolListAdapter adapterFeatured;
-    private ToolListAdapter adapterAllApps;
+    @BindView(R.id.tool_list_layout)
+    LinearLayout toolListLayout;
 
-    private List<AndroidTool> androidTools = new ArrayList<>();
-    private List<AndroidTool> featuredTools = new ArrayList<>();
-    private List<DownloadCount> downloadCountList = new ArrayList<>();
-    private List<Rating> ratingList = new ArrayList<>();
+    @BindView(R.id.category_recycler)
+    RecyclerView categoryRecycler;
+
+    private List<DownloadAndRating> downloadAndRatings = new ArrayList<>();
+    private List<Images> images = new ArrayList<>();
+    private List<LocalizedInfo> localizedInfos = new ArrayList<>();
+    private List<ToolListAdapter> adapterList = new ArrayList<>();
 
     private Unbinder unbinder;
 
@@ -93,11 +84,6 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
         Bundle bundle = new Bundle();
         bundle.putString(Constants.SCREEN, TAG);
         FirebaseAnalytics.getInstance(getContext()).logEvent(Constants.OPEN_PAGE, bundle);
-
-        if (savedInstanceState != null) {
-            ratingList = Parcels.unwrap(savedInstanceState.getParcelable(RATING));
-            downloadCountList = Parcels.unwrap(savedInstanceState.getParcelable(DOWNLOAD));
-        }
     }
 
     @Nullable
@@ -106,38 +92,17 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
         View view = inflater.inflate(R.layout.fragment_tool_list, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        coordinatorLayout.setVisibility(View.GONE);
+        toolListLayout.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setEnabled(true);
 
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        presenter.getFeatured();
 
-        RecyclerView.LayoutManager linearLayoutManagerFeatured
-                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(getContext(), (int) dpWidth / 175);
-
-        recyclerFeatured.setLayoutManager(linearLayoutManagerFeatured);
-        recyclerAllApps.setLayoutManager(gridLayoutManager);
-
-        allAppsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                recyclerAllApps.smoothScrollToPosition(0);
-            }
-        });
-
-        recyclerFeatured.setHasFixedSize(true);
-        recyclerAllApps.setHasFixedSize(true);
-
+        presenter.getDownloadAndRatingList();
+        presenter.getImages();
+        presenter.getLocalizedInfo();
+        presenter.getCategoryNames();
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        presenter.getFeaturedTools();
-        presenter.getAndroidTools();
     }
 
     @Override
@@ -145,52 +110,26 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
         inflater.inflate(R.menu.tool_list_search, menu);
 
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setMaxWidth(Integer.MAX_VALUE);
-
-        int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        EditText searchPlate = (EditText) searchView.findViewById(searchPlateId);
-        searchPlate.setHint("");
-        searchPlate.setTextColor(Color.WHITE);
 
         int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button",null, null);
-        ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
+        ImageView searchIcon = searchView.findViewById(searchIconId);
         searchIcon.setImageResource(R.drawable.ic_search);
-
-        int closeButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
-        ImageView closeButton = (ImageView) searchView.findViewById(closeButtonId);
-        closeButton.setImageResource(R.drawable.ic_close);
-
-        SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
-
+        searchIcon.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onQueryTextChange(String newText) {
-                if (newText.equals("")) {
-                    featureRelativeLayout.setVisibility(View.VISIBLE);
-                    adapterAllApps.getFilter().filter(newText);
-                } else {
-                    featureRelativeLayout.setVisibility(View.GONE);
-                    adapterAllApps.getFilter().filter(newText);
-                }
-
-                return true;
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), SearchActivity.class);
+                startActivity(intent);
             }
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                searchView.clearFocus();
-                return true;
-            }
-        };
-
-        searchView.setOnQueryTextListener(queryTextListener);
+        });
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(RATING, Parcels.wrap(ratingList));
-        outState.putParcelable(DOWNLOAD, Parcels.wrap(downloadCountList));
+    public void onResume() {
+        super.onResume();
+        for (ToolListAdapter adapter: adapterList) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -204,87 +143,169 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
     }
 
     @Override
-    public void getToolsSuccessful(List<AndroidTool> tools) {
-        androidTools.clear();
-        androidTools.addAll(tools);
-        adapterAllApps = new ToolListAdapter(this, androidTools, downloadCountList, ratingList, R.layout.card_tool_all);
-        recyclerAllApps.setAdapter(adapterAllApps);
+    public void getCategoryVersionsSuccessful(List<Version> versions, final Name categoryName) {
+        RecyclerView.LayoutManager layoutManager
+                = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL);
+        RelativeLayout relativeLayout = (RelativeLayout) inflate(getContext(), R.layout.row_tool_list_recyclerview, null);
+        RecyclerView recyclerView = relativeLayout.findViewById(R.id.my_recycler_featured);
 
-        setHasOptionsMenu(true);
+        LinearLayout allAppsLayout = relativeLayout.findViewById(R.id.all_apps);
+        allAppsLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), CategoryListActivity.class);
+                intent.putExtra(CategoryListFragment.CATEGORY, Parcels.wrap(categoryName));
+                intent.putExtra(TYPE, CATEGORY);
+                getContext().startActivity(intent);
+            }
+        });
 
-        if (ratingList.isEmpty()) {
-            presenter.getRatingList();
+        TextView textView = relativeLayout.findViewById(R.id.category);
+        if (!categoryName.getFa().isEmpty()) {
+            textView.setText(categoryName.getFa());
+        } else {
+            textView.setText(categoryName.getEn());
         }
 
-        if (downloadCountList.isEmpty()) {
-            presenter.getDownloadCountList();
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        ToolListAdapter adapterAllApps = new ToolListAdapter(this, versions, downloadAndRatings, images, localizedInfos, R.layout.card_tool_featured);
+        adapterList.add(adapterAllApps);
+        recyclerView.setAdapter(adapterAllApps);
+        toolsLayout.addView(relativeLayout);
+    }
+
+    @Override
+    public void getCategoryVersionsFailed() {
+    }
+
+    @Override
+    public void getSetVersionsSuccessful(List<Version> versions, final String type) {
+        switch (type) {
+            case FEATURED:
+                presenter.getTopDownloads();
+                break;
+            case TOP_DOWNLOADS:
+                presenter.getUpdated();
+                break;
+            default:
+                break;
+        }
+
+        if (versions.size() > 0) {
+
+            RecyclerView.LayoutManager layoutManager
+                    = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL);
+            RelativeLayout relativeLayout = (RelativeLayout) inflate(getContext(), R.layout.row_tool_list_recyclerview, null);
+            RecyclerView recyclerView = relativeLayout.findViewById(R.id.my_recycler_featured);
+
+            LinearLayout allAppsLayout = relativeLayout.findViewById(R.id.all_apps);
+            allAppsLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), CategoryListActivity.class);
+                    intent.putExtra(TYPE, type);
+                    getContext().startActivity(intent);
+                }
+            });
+
+            TextView textView = relativeLayout.findViewById(R.id.category);
+            int position = 0;
+            switch (type) {
+                case CategoryListActivity.FEATURED:
+                    textView.setText(getString(R.string.featured));
+                    position = 0;
+                    break;
+                case CategoryListActivity.TOP_DOWNLOADS:
+                    textView.setText(getString(R.string.most_downloads));
+                    position = 1;
+                    break;
+                case CategoryListActivity.UPDATED:
+                    textView.setText(getString(R.string.updated));
+                    position = 2;
+                    break;
+
+                default:
+                    textView.setText("");
+                    break;
+            }
+
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setHasFixedSize(true);
+            ToolListAdapter adapterAllApps = new ToolListAdapter(this, versions, downloadAndRatings, images, localizedInfos, R.layout.card_tool_featured);
+            adapterList.add(adapterAllApps);
+            recyclerView.setAdapter(adapterAllApps);
+            toolsLayout.addView(relativeLayout, position);
         }
     }
 
     @Override
-    public void getToolsFailed() {
+    public void getSetVersionsFailed() {
     }
 
     @Override
-    public void getFeaturedSuccessful(List<AndroidTool> tools) {
-        featuredTools.clear();
-        featuredTools.addAll(tools);
-        adapterFeatured = new ToolListAdapter(this, featuredTools, downloadCountList, ratingList, R.layout.card_tool_featured);
-        recyclerFeatured.setAdapter(adapterFeatured);
+    public void getDownloadAndRatingListSuccessful(List<DownloadAndRating> downloadAndRatingList) {
+        this.downloadAndRatings.addAll(downloadAndRatingList);
+        for (ToolListAdapter adapter: adapterList) {
+            adapter.notifyDataSetChanged();
+        }
+    }
 
-        coordinatorLayout.setVisibility(View.VISIBLE);
+    @Override
+    public void getDownloadAndRatingListFailed() {
+    }
+
+    @Override
+    public void getImagesSuccessful(List<Images> images) {
+        this.images.addAll(images);
+        for (ToolListAdapter adapter: adapterList) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void getImagesFailed() {
+
+    }
+
+    @Override
+    public void getLocalizedInfoSuccessful(List<LocalizedInfo> localizedInfo) {
+        this.localizedInfos.addAll(localizedInfo);
+        for (ToolListAdapter adapter: adapterList) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void getLocalizedInfoFailed() {
+
+    }
+
+    @Override
+    public void onGetCategoryNamesSuccessful(List<Name> names) {
+        Collections.reverse(names);
+
+        for (Name name: names) {
+            presenter.getCategoryAndroidTools(name);
+        }
+
+        RecyclerView.LayoutManager linearLayoutManager
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+
+        categoryRecycler.setLayoutManager(linearLayoutManager);
+        categoryRecycler.setHasFixedSize(true);
+        ToolListCategoryAdapter categoryAdapter = new ToolListCategoryAdapter(names, getContext(), R.layout.card_categories);
+        categoryRecycler.setAdapter(categoryAdapter);
+
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setEnabled(false);
+        toolListLayout.setVisibility(View.VISIBLE);
+
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public void getFeaturedFailed() {
-    }
-
-    @Override
-    public void getDownloadCountListSuccessful(DownloadCountList downloadCountList) {
-        this.downloadCountList.addAll(downloadCountList.getApps());
-        adapterFeatured.notifyDataSetChanged();
-        adapterAllApps.notifyDataSetChanged();
-    }
-
-    @Override
-    public void getDownloadCountListFailed() {
-    }
-
-    @Override
-    public void getRatingListSuccessful(RatingList ratingList) {
-        this.ratingList.addAll(ratingList.getItems());
-        adapterFeatured.notifyDataSetChanged();
-        adapterAllApps.notifyDataSetChanged();
-    }
-
-    @Override
-    public void getRatingListFailed() {
-    }
-
-    @Override
-    public void registerInstall(String tool) {
-        String uuid = getContext().getSharedPreferences(
-                PASKOOCHEH_PREFS,
-                Context.MODE_PRIVATE
-        ).getString(PASKOOCHEH_UUID, "");
-
-        presenter.registerInstall(uuid, tool);
-    }
-
-    @Override
-    public void onPermissionRequested(Integer code) {
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, code);
-    }
-
-    @Override
-    public void onRegisterInstallSuccessful() {
-
-    }
-
-    @Override
-    public void onRegisterInstallFailed() {
+    public void onGetCategoryNamesFailed() {
 
     }
 

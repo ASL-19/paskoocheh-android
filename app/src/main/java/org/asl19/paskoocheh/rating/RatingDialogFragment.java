@@ -3,14 +3,13 @@ package org.asl19.paskoocheh.rating;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.Nullable;
+import com.google.android.material.textfield.TextInputEditText;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +24,10 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
-import org.asl19.paskoocheh.data.SendReviewRequest;
-import org.asl19.paskoocheh.data.source.ReviewRepository;
-import org.asl19.paskoocheh.pojo.AndroidTool;
+import org.asl19.paskoocheh.data.AmazonContentBodyRequest;
+import org.asl19.paskoocheh.data.source.AmazonRepository;
+import org.asl19.paskoocheh.data.source.AmazonReviewRequest;
+import org.asl19.paskoocheh.pojo.Version;
 import org.parceler.Parcels;
 
 import javax.inject.Inject;
@@ -36,8 +36,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
-import static org.asl19.paskoocheh.Constants.PASKOOCHEH_UUID;
 import static org.asl19.paskoocheh.Constants.TOOL_ID;
 
 public class RatingDialogFragment extends DialogFragment implements RatingDialogContract.RatingDialogView {
@@ -47,13 +45,10 @@ public class RatingDialogFragment extends DialogFragment implements RatingDialog
 
     private static final String INACTIVE_STAR = "#CCCCCC";
     private static final String STAR_COLOUR = "#FFA131";
-    private static final String REVIEW_TEXT_COLOUR = "#0B233C";
+    private static final String REVIEW_TEXT_COLOUR = "#1C3C6D";
 
     @Inject
     CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider;
-
-    @BindView(R.id.review_title)
-    TextInputEditText reviewTitle;
 
     @BindView(R.id.review_body)
     TextInputEditText reviewBody;
@@ -69,7 +64,7 @@ public class RatingDialogFragment extends DialogFragment implements RatingDialog
 
     private Unbinder unbinder;
     private RatingDialogContract.Presenter presenter;
-    private AndroidTool tool;
+    private Version version;
 
     @Nullable
     @Override
@@ -78,7 +73,7 @@ public class RatingDialogFragment extends DialogFragment implements RatingDialog
         unbinder = ButterKnife.bind(this, view);
 
         if (presenter == null) {
-            new RatingDialogPresenter(this, new ReviewRepository());
+            new RatingDialogPresenter(this, new AmazonRepository(getActivity().getApplicationContext()));
         }
 
         Bundle bundle = new Bundle();
@@ -89,7 +84,7 @@ public class RatingDialogFragment extends DialogFragment implements RatingDialog
 
         if (getArguments() != null) {
             ratingBarDialog.setRating(getArguments().getFloat("RATING"));
-            tool = Parcels.unwrap(getArguments().getParcelable("TOOL"));
+            version = Parcels.unwrap(getArguments().getParcelable("VERSION"));
         }
 
         LayerDrawable stars = (LayerDrawable) ratingBarDialog.getProgressDrawable();
@@ -97,9 +92,6 @@ public class RatingDialogFragment extends DialogFragment implements RatingDialog
         stars.getDrawable(1).setColorFilter(Color.parseColor(STAR_COLOUR), PorterDuff.Mode.SRC_ATOP);
         stars.getDrawable(0).setColorFilter(Color.parseColor(INACTIVE_STAR), PorterDuff.Mode.SRC_ATOP);
 
-        reviewTitle.getBackground().setColorFilter(
-                Color.parseColor(REVIEW_TEXT_COLOUR), PorterDuff.Mode.SRC_IN
-        );
         reviewBody.getBackground().setColorFilter(
                 Color.parseColor(REVIEW_TEXT_COLOUR), PorterDuff.Mode.SRC_IN
         );
@@ -111,27 +103,22 @@ public class RatingDialogFragment extends DialogFragment implements RatingDialog
                     submitReview.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
                     progressBar.getIndeterminateDrawable().setColorFilter(
-                            ContextCompat.getColor(view.getContext(), R.color.colorPrimaryDark),
+                            ContextCompat.getColor(view.getContext(), R.color.colorPrimary),
                             android.graphics.PorterDuff.Mode.SRC_IN);
 
-                    String uuid = getActivity().getSharedPreferences(
-                            PASKOOCHEH_PREFS,
-                            Context.MODE_PRIVATE).getString(PASKOOCHEH_UUID, ""
-                    );
+                    AmazonReviewRequest amazonReviewRequest = new AmazonReviewRequest(getActivity().getApplicationContext());
 
-                    SendReviewRequest sendReviewRequest = new SendReviewRequest();
-                    sendReviewRequest.setId(uuid);
-                    sendReviewRequest.setAppName(tool.getEnglishName());
-                    sendReviewRequest.setVersion(tool.getBuildVersion());
-                    sendReviewRequest.setTitle(reviewTitle.getText().toString());
-                    sendReviewRequest.setText(reviewBody.getText().toString());
-                    sendReviewRequest.setRating(ratingBarDialog.getRating());
-                    sendReviewRequest.setCognito(cognitoCachingCredentialsProvider.getIdentityId());
-                    presenter.submitReview(sendReviewRequest);
+                    amazonReviewRequest.setType(AmazonContentBodyRequest.RATING);
+                    amazonReviewRequest.setTool(version.getAppName());
+                    amazonReviewRequest.setToolVersion(version.getVersionNumber());
+                    amazonReviewRequest.setText(reviewBody.getText().toString());
+                    amazonReviewRequest.setRating(String.valueOf(ratingBarDialog.getRating()));
+
+                    presenter.submitReview(amazonReviewRequest);
 
                     Bundle bundle = new Bundle();
                     bundle.putString(Constants.SCREEN, TAG);
-                    bundle.putString(TOOL_ID, tool.getEnglishName());
+                    bundle.putString(TOOL_ID, version.getAppName());
                     FirebaseAnalytics.getInstance(view.getContext()).logEvent(Constants.REVIEW, bundle);
                 }
             }

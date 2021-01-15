@@ -3,8 +3,8 @@ package org.asl19.paskoocheh.loading;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +20,9 @@ import org.greenrobot.eventbus.Subscribe;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.asl19.paskoocheh.Constants.APPS;
+import static org.asl19.paskoocheh.service.PaskoochehConfigService.CONFIG;
 
 public class LoadingFragment extends Fragment {
 
@@ -60,6 +63,9 @@ public class LoadingFragment extends Fragment {
     public void retryConnection() {
         retry.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        getActivity().startService(new Intent(getActivity(), PaskoochehConfigService.class));
+
+        Intent configIntent = new Intent(getContext(), PaskoochehConfigService.class);
+        configIntent.putExtra(CONFIG, APPS);
+        getActivity().startService(configIntent);
     }
 }

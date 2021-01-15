@@ -1,27 +1,24 @@
 package org.asl19.paskoocheh.data.source;
 
 
-import org.asl19.paskoocheh.data.GetReviewRequest;
-import org.asl19.paskoocheh.data.SendReviewRequest;
-import org.asl19.paskoocheh.pojo.ReviewList;
+import androidx.annotation.NonNull;
+
+import org.asl19.paskoocheh.pojo.Review;
+
+import java.util.List;
 
 public interface ReviewDataSource {
 
     interface GetReviewListCallback {
 
-        void onGetReviewsSuccessful(ReviewList reviewList);
+        void onGetReviewsSuccessful(List<Review> reviewList);
 
         void onGetReviewsFailed();
     }
 
-    void getReviewList(GetReviewRequest getReviewRequest, ReviewDataSource.GetReviewListCallback callback);
+    void getReviewList(int toolId, ReviewDataSource.GetReviewListCallback callback);
 
-    interface SendReviewCallback {
+    void saveReview(@NonNull final Review... reviews);
 
-        void onSendReviewSuccessful();
-
-        void onSendReviewFailed();
-    }
-
-    void submitReview(SendReviewRequest sendReviewRequest, ReviewDataSource.SendReviewCallback callback);
+    void clearTable();
 }

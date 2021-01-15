@@ -3,117 +3,133 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginLeft="8dp"
-    android:padding="7.5dp"
-    android:background="@drawable/card_border"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/img"
             android:layout_width="100dp"
-            android:layout_height="100dp"/>
+            android:layout_height="100dp"
+            android:padding="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="7.5dp"
-            android:orientation="vertical">
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/img"
+            android:layout_toRightOf="@+id/buttons"
+            android:orientation="vertical"
+            android:padding="7.5dp">
+
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/colorPrimary"
                 android:textSize="?font_medium"
                 fontPath="fonts/IRANSans_Bold.ttf"/>
 
             <TextView
-                android:id="@+id/description"
+                android:id="@+id/version"
                 android:layout_width="wrap_content"
-                android:layout_height="20sp"
+                android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:textSize="?font_xsmall"
                 android:textColor="#AAAAAA"
-                fontPath="fonts/IRANSans_Bold.ttf"/>
+                android:textSize="?font_xsmall"/>
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:maxLines="1"
+                android:textColor="#AAAAAA"
+                android:textSize="?font_xsmall"/>
 
-                <ImageView
-                    android:id="@+id/download_icon"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:src="@drawable/ic_download" />
-
-                <TextView
-                    android:id="@+id/download"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#0B233C"
-                    android:textSize="?font_xsmall"
-                    fontPath="fonts/IRANSans_Bold.ttf"/>
-            </LinearLayout>
-
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/more_details"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:gravity="center_vertical">
 
                 <ImageView
-                    android:id="@+id/star"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:src="@drawable/ic_star"/>
-
-                <TextView
-                    android:id="@+id/rating"
+                    android:id="@+id/detail_arrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="?font_xsmall"
-                    android:textColor="#0B233C"
-                    fontPath="fonts/IRANSans_Bold.ttf"/>
+                    android:layout_toLeftOf="@+id/details_of_version"
+                    android:src="@drawable/ic_keyboard_arrow_left_blue"/>
+
+                <TextView
+                    android:id="@+id/details_of_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:text="@string/details_of_version"
+                    android:textColor="@color/blue"
+                    android:textSize="?font_xsmall"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true">
+
+            <LinearLayout
+                android:id="@+id/button_layout"
+                style="@style/ButtonInstalledContent"
+                android:background="@drawable/button_blue"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/up_to_date"
+                    android:layout_height="20dp"
+                    android:layout_width="20dp"
+                    android:src="@drawable/ic_check"/>
+
+                <TextView
+                    android:id="@+id/update"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/update"
+                    android:textColor="@color/blue"/>
+
+                <ProgressBar
+                    android:id="@+id/updating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
+
     <LinearLayout
+        android:id="@+id/details_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/play_store"
-            android:visibility="visible"
-            android:background="@drawable/button_regular"
-            style="@style/ButtonWrapContent"
-            android:text="@string/play_store" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
-            android:id="@+id/install"
-            android:background="@drawable/button_regular"
-            style="@style/ButtonWrapContent"
-            android:text="@string/install" />
+            android:id="@+id/details_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"/>
 
         <TextView
-            android:id="@+id/update"
-            android:background="@drawable/button_update"
-            style="@style/ButtonWrapContent"
-            android:text="@string/update" />
+            android:id="@+id/details_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textGrey"/>
 
-        <TextView
-            android:id="@+id/uninstall"
-            android:background="@drawable/button_regular"
-            style="@style/ButtonWrapContent"
-            android:text="@string/uninstall" />
     </LinearLayout>
 </LinearLayout>

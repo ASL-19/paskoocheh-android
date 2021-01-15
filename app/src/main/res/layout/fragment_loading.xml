@@ -2,7 +2,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:filterTouchesWhenObscured="true"
-             android:background="@color/colorPrimaryDark">
+             android:background="@color/colorPrimary">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
                 android:id="@+id/logo"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/paskoocheh" />
 
             <TextView
                 android:layout_width="wrap_content"

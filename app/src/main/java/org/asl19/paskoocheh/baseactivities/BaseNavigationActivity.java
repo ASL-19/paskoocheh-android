@@ -1,25 +1,21 @@
 package org.asl19.paskoocheh.baseactivities;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,23 +27,28 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.BuildConfig;
-import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.about.AboutActivity;
-import org.asl19.paskoocheh.data.source.DownloadCountRepository;
-import org.asl19.paskoocheh.data.source.ToolRepository;
+import org.asl19.paskoocheh.data.source.Local.PaskoochehDatabase;
+import org.asl19.paskoocheh.data.source.Local.VersionLocalDataSource;
+import org.asl19.paskoocheh.feedback.FeedbackActivity;
 import org.asl19.paskoocheh.installedtoollist.InstalledToolListActivity;
-import org.asl19.paskoocheh.pojo.AndroidTool;
+import org.asl19.paskoocheh.pojo.Version;
 import org.asl19.paskoocheh.service.ToolDownloadService;
 import org.asl19.paskoocheh.terms.TermsActivity;
 import org.asl19.paskoocheh.toollist.ToolListActivity;
 import org.asl19.paskoocheh.update.UpdateDialogFragment;
 import org.asl19.paskoocheh.update.UpdateDialogPresenter;
 import org.asl19.paskoocheh.utils.ApkManager;
+import org.asl19.paskoocheh.utils.AppExecutors;
 import org.asl19.paskoocheh.utils.FontStyle;
+import org.asl19.paskoocheh.utils.PaskoochehContextWrapper;
 import org.parceler.Parcels;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 
 import java.io.File;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,12 +56,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static android.os.Environment.DIRECTORY_DOWNLOADS;
-import static android.os.Environment.getExternalStoragePublicDirectory;
 import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
 import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
-import static org.asl19.paskoocheh.Constants.PASKOOCHEH_UUID;
 import static org.asl19.paskoocheh.Constants.SCREEN;
+import static org.asl19.paskoocheh.Constants.SHARE;
 import static org.asl19.paskoocheh.Constants.UPDATE_NOTIFICATION;
 
 public class BaseNavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BaseNavigationContract.NavigationView{
@@ -78,13 +77,15 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
 
     private FirebaseAnalytics firebaseAnalytics;
 
-    AndroidTool paskoocheh;
+    Version paskoocheh;
 
-    List<AndroidTool> tools = new ArrayList<>();
+    List<Version> versions = new ArrayList<>();
 
     TextView updatesAvailable;
 
     CheckBox wifiSwitch;
+
+    private ApkManager apkManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +94,13 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
         setContentView(R.layout.activity_base_navigation);
         ButterKnife.bind(this);
 
+        apkManager = new ApkManager(getApplicationContext());
+
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        new BaseNavigationPresenter(this, new ToolRepository(getBaseContext(), getPackageManager()), new DownloadCountRepository(getApplicationContext()));
+        PaskoochehDatabase database = PaskoochehDatabase.getInstance(getApplicationContext());
+        VersionLocalDataSource versionLocalDataSource = VersionLocalDataSource.getInstance(new AppExecutors(), database.versionDao(), getApplicationContext());
+        new BaseNavigationPresenter(this, versionLocalDataSource);
 
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -105,7 +110,8 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(PaskoochehContextWrapper.wrap(newBase)));
+
     }
 
     private void initializeNavigationDrawer() {
@@ -116,8 +122,8 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                     = (LinearLayout) MenuItemCompat.getActionView(navigationView.getMenu().findItem(R.id.nav_installed_apps));
             updatesAvailable = (TextView) myApps.findViewById(R.id.updates_available);
 
-            presenter.getInstalledTools();
-            presenter.getAndroidTools();
+            presenter.getInstalledVersions();
+            presenter.getAndroidVersions();
 
             navigationView.setNavigationItemSelectedListener(this);
 
@@ -154,7 +160,6 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (!item.isChecked()) {
-            drawerLayout.closeDrawer(navigationView, false);
             Bundle bundle = new Bundle();
             switch (item.getItemId()) {
                 case R.id.nav_apps:
@@ -171,11 +176,17 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                     startActivity(Intent.createChooser(share, getString(R.string.app_name)));
                     break;
                 case R.id.nav_self_update:
-                    if (paskoocheh != null) {
-                        installTool(paskoocheh);
-                    } else {
-                        Toast.makeText(getBaseContext(), getString(R.string.up_to_date), Toast.LENGTH_SHORT).show();
-                    }
+                    try {
+                        if (paskoocheh != null) {
+                            int installedVersionCode = getPackageManager().getPackageInfo(paskoocheh.getPackageName(), 0).versionCode;
+                            if (paskoocheh.getVersionCode() > installedVersionCode) {
+                                paskoocheh.setUpdateAvailable(true);
+                                installTool(paskoocheh);
+                                return false;
+                            }
+                        }
+                    } catch (PackageManager.NameNotFoundException ignored) {}
+                    Toast.makeText(getBaseContext(), getString(R.string.up_to_date), Toast.LENGTH_SHORT).show();
                     return false;
                 case R.id.nav_wifi:
                     wifiSwitch.setChecked(!wifiSwitch.isChecked());
@@ -186,17 +197,17 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
 
                     bundle.putString(SCREEN, BaseNavigationActivity.class.getName());
                     bundle.putBoolean(DOWNLOAD_WIFI, wifiSwitch.isChecked());
-                    FirebaseAnalytics.getInstance(this).logEvent(Constants.DOWNLOAD_WIFI, bundle);
-                    break;
+                    FirebaseAnalytics.getInstance(this).logEvent(DOWNLOAD_WIFI, bundle);
+                    return false;
                 case R.id.nav_telegram:
-                    bundle.putString(Constants.SHARE, "telegram");
+                    bundle.putString(SHARE, "telegram");
                     firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, bundle);
                     bundle.putString(SCREEN, BaseNavigationActivity.class.getName());
-                    Intent telegram = new Intent(Intent.ACTION_VIEW , Uri.parse("https://telegram.me/paskoocheh"));
+                    Intent telegram = new Intent(Intent.ACTION_VIEW , Uri.parse(getString(R.string.support_telegram)));
                     startActivity(telegram);
                     break;
                 case R.id.nav_version:
-                    break;
+                    return false;
                 case R.id.nav_about:
                     startActivity(new Intent(this, AboutActivity.class));
                     break;
@@ -204,21 +215,10 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                     startActivity(new Intent(this, TermsActivity.class));
                     break;
                 case R.id.nav_feedback:
-                    bundle.putString(SCREEN, BaseNavigationActivity.class.getName());
-                    FirebaseAnalytics.getInstance(this).logEvent(Constants.FEEDBACK, bundle);
-                    firebaseAnalytics.logEvent("feedback", bundle);
-                    Intent intent = new Intent(Intent.ACTION_SENDTO);
-                    intent.setData(Uri.parse("mailto:")); // only email apps should handle this
-                    intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"bepors@asl19.org"});
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "Paskoocheh Feedback");
-                    intent.putExtra(Intent.EXTRA_TEXT, "Paskoocheh Version " + BuildConfig.VERSION_NAME);
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(this, R.string.no_email, Toast.LENGTH_SHORT).show();
-                    }
+                    startActivity(new Intent(this, FeedbackActivity.class));
             }
         }
+        drawerLayout.closeDrawer(navigationView, false);
         return true;
     }
 
@@ -231,47 +231,17 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
-    public void onPermissionsRequested(Integer code) {
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, code);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        boolean requestGranted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-        if (requestGranted) {
-            Toast.makeText(getApplicationContext(), getString(R.string.permission_granted), Toast.LENGTH_SHORT).show();
-
-            for (AndroidTool androidTool: tools) {
-                if (androidTool.getToolId().intValue() == requestCode) {
-                    installTool(androidTool);
-                    return;
-                }
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), getString(R.string.required_write), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void installTool(AndroidTool tool) {
-        File toolFile = new File(getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS) + "/" + tool.getName() + ".apk");
-        String uuid = getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getString(PASKOOCHEH_UUID, "");
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            onPermissionsRequested(tool.getToolId().intValue());
-        } else if (toolFile.exists()) {
-            presenter.registerInstall(uuid, tool.getEnglishName());
-            ApkManager.installPackage(this, tool.getChecksum(), toolFile);
+    private void installTool(Version version) {
+        File toolFile = new File(getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));
+        if (toolFile.exists()) {
+            apkManager.installPackage(version, toolFile);
         } else {
             ConnectivityManager connManager
                     = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
             if (!getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                presenter.registerInstall(uuid, tool.getEnglishName());
                 Intent intent = new Intent(this, ToolDownloadService.class);
-                intent.putExtra("TOOL", Parcels.wrap(tool));
+                intent.putExtra("VERSION", Parcels.wrap(version));
                 startService(intent);
                 Toast.makeText(this, getString(R.string.queued), Toast.LENGTH_SHORT).show();
             } else if ((activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI)) {
@@ -291,69 +261,59 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
     }
 
     @Override
-    public void getInstalledToolsSuccessful(List<AndroidTool> tools) {
+    public void getInstalledVersionsSuccessful(List<Version> versions) {
         int updatesAvailableTotal = 0;
-        for (AndroidTool availableTool : tools) {
-            if (availableTool.isUpdateAvailable()) {
+        for (Version availableVersion : versions) {
+            if (availableVersion.isUpdateAvailable()) {
                 updatesAvailableTotal++;
 
                 long notificationTime = getSharedPreferences(PASKOOCHEH_PREFS,
                         Context.MODE_PRIVATE).getLong(UPDATE_NOTIFICATION, -1);
 
-                if (availableTool.getPackageName().equals(getPackageName())
-                        && (notificationTime == -1 || DateUtils.DAY_IN_MILLIS < (System.currentTimeMillis() - notificationTime)))
-                {
-                    paskoocheh = availableTool;
+                if (availableVersion.getPackageName() != null &&
+                        availableVersion.getPackageName().equals(getPackageName())) {
+                    paskoocheh = availableVersion;
+                    if (notificationTime == -1 || DateUtils.DAY_IN_MILLIS < (System.currentTimeMillis() - notificationTime)) {
+                        getSharedPreferences(PASKOOCHEH_PREFS,
+                                Context.MODE_PRIVATE).edit().putLong(UPDATE_NOTIFICATION, System.currentTimeMillis()).apply();
 
-                    getSharedPreferences(PASKOOCHEH_PREFS,
-                            Context.MODE_PRIVATE).edit().putLong(UPDATE_NOTIFICATION, System.currentTimeMillis()).apply();
+                        UpdateDialogFragment updateDialogFragment = UpdateDialogFragment.newInstance();
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("PASKOOCHEH", Parcels.wrap(paskoocheh));
+                        updateDialogFragment.setArguments(bundle);
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        updateDialogFragment.show(fragmentManager, updateDialogFragment.getClass().getName());
 
-                    UpdateDialogFragment updateDialogFragment = UpdateDialogFragment.newInstance();
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("PASKOOCHEH", Parcels.wrap(paskoocheh));
-                    updateDialogFragment.setArguments(bundle);
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    updateDialogFragment.show(fragmentManager, updateDialogFragment.getClass().getName());
-
-                    new UpdateDialogPresenter(updateDialogFragment, new DownloadCountRepository(getApplicationContext()));
+                        new UpdateDialogPresenter(updateDialogFragment);
+                    }
                 }
             }
         }
 
-        updatesAvailable.setVisibility(View.VISIBLE);
         String updates = "";
         if (updatesAvailableTotal == 0) {
             updatesAvailable.setVisibility(View.INVISIBLE);
         } else if (updatesAvailableTotal == 1) {
+            updatesAvailable.setVisibility(View.VISIBLE);
             updates = "%s " + getString(R.string.update);
         } else {
+            updatesAvailable.setVisibility(View.VISIBLE);
             updates = "%s " + getString(R.string.updates);
         }
         updatesAvailable.setText(String.format(updates, Integer.toString(updatesAvailableTotal)));
     }
 
     @Override
-    public void getInstalledToolsFailed() {
+    public void getInstalledVersionsFailed() {
         updatesAvailable.setVisibility(View.INVISIBLE);
     }
 
     @Override
-    public void getToolsSuccessful(List<AndroidTool> tools) {
-        this.tools = tools;
+    public void getVersionsSuccessful(List<Version> versions) {
+        this.versions = versions;
     }
 
     @Override
-    public void getToolsFailed() {
-
-    }
-
-    @Override
-    public void onRegisterInstallSuccessful() {
-
-    }
-
-    @Override
-    public void onRegisterInstallFailed() {
-
+    public void getVersionsFailed() {
     }
 }

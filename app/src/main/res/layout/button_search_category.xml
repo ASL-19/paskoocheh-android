@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/update_button"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:minHeight="0dp"
+    android:minWidth="0dp"
+    android:padding="10dp"
+    android:text="@string/update"
+    android:textColor="@drawable/button_text_grey_to_white"
+    android:textSize="?font_medium"
+    android:background="@drawable/button_grey_outline_to_blue"/>

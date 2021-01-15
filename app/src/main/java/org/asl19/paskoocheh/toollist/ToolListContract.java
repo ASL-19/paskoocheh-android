@@ -5,53 +5,61 @@ import android.content.Context;
 
 import org.asl19.paskoocheh.baseactivities.BasePresenter;
 import org.asl19.paskoocheh.baseactivities.BaseView;
-import org.asl19.paskoocheh.pojo.AndroidTool;
-import org.asl19.paskoocheh.pojo.DownloadCountList;
-import org.asl19.paskoocheh.pojo.RatingList;
+import org.asl19.paskoocheh.pojo.DownloadAndRating;
+import org.asl19.paskoocheh.pojo.Images;
+import org.asl19.paskoocheh.pojo.LocalizedInfo;
+import org.asl19.paskoocheh.pojo.Name;
+import org.asl19.paskoocheh.pojo.Version;
 
 import java.util.List;
 
 public interface ToolListContract {
 
     interface ToolListView extends BaseView<Presenter> {
-        void getToolsSuccessful(List<AndroidTool> tools);
+        void getCategoryVersionsSuccessful(List<Version> versions, Name categoryName);
 
-        void getToolsFailed();
+        void getCategoryVersionsFailed();
 
-        void getFeaturedSuccessful(List<AndroidTool> tools);
+        void getSetVersionsSuccessful(List<Version> versions, String type);
 
-        void getFeaturedFailed();
+        void getSetVersionsFailed();
 
-        void getDownloadCountListSuccessful(DownloadCountList downloadCountList);
+        void getDownloadAndRatingListSuccessful(List<DownloadAndRating> downloadAndRatingList);
 
-        void getDownloadCountListFailed();
+        void getDownloadAndRatingListFailed();
 
-        void getRatingListSuccessful(RatingList ratingList);
+        void getImagesSuccessful(List<Images> images);
 
-        void getRatingListFailed();
+        void getImagesFailed();
 
-        void onRegisterInstallSuccessful();
+        void getLocalizedInfoSuccessful(List<LocalizedInfo> localizedInfo);
 
-        void onRegisterInstallFailed();
+        void getLocalizedInfoFailed();
+
+        void onGetCategoryNamesSuccessful(List<Name> names);
+
+        void onGetCategoryNamesFailed();
     }
 
     interface ToolListAdapter {
         Context getContext();
-
-        void registerInstall(String tool);
-
-        void onPermissionRequested(Integer code);
     }
 
     interface Presenter extends BasePresenter {
-        void getAndroidTools();
+        void getCategoryAndroidTools(Name category);
 
-        void getFeaturedTools();
+        void getDownloadAndRatingList();
 
-        void getDownloadCountList();
+        void getImages();
 
-        void getRatingList();
+        void getLocalizedInfo();
 
-        void registerInstall(String uuid, String tool);
+        void getCategoryNames();
+
+        void getFeatured();
+
+        void getTopDownloads();
+
+        void getUpdated();
     }
 }

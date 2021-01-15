@@ -1,61 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical" android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="15dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/review_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp">
+        android:gravity="right"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/star"
+        android:textColor="@color/colorPrimary"
+        fontPath="fonts/IRANSans_Bold.ttf"/>
 
+    <TextView
+        android:id="@+id/total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/star"
+        android:textColor="@color/colorPrimary"
+        fontPath="fonts/IRANSans_Bold.ttf"/>
 
-        <TextView
-            android:id="@+id/review_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:layout_alignParentRight="true"
-            android:layout_toRightOf="@+id/star"
-            android:textColor="@color/colorPrimaryDark"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
+    <ImageView
+        android:id="@+id/star"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_gravity="end"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/rating"
+        android:src="@drawable/ic_star"/>
 
-        <ImageView
-            android:id="@+id/star"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_gravity="end"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/rating"
-            android:src="@drawable/ic_star"/>
+    <TextView
+        android:id="@+id/rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textColor="@color/colorPrimary"
+        fontPath="fonts/IRANSans_Bold.ttf"/>
 
-        <TextView
-            android:id="@+id/rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:textColor="@color/textGrey"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
+    <TextView
+        android:id="@+id/review"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/review_title"
+        android:textColor="@color/black"/>
 
-        <TextView
-            android:id="@+id/review"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/review_title"
-            android:textColor="@color/colorPrimaryDark" />
+    <TextView
+        android:id="@+id/read_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/review"
+        android:text="@string/continuation"
+        android:textColor="@color/blue"/>
 
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/review"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:textColor="@color/textGrey"/>
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/review"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/textGrey"/>
+</RelativeLayout>
 
-    </RelativeLayout>
-
-</LinearLayout>

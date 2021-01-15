@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:filterTouchesWhenObscured="true">
+    <LinearLayout
+        android:id="@+id/success"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blue"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_check"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/support_email_sent"
+            android:textColor="@color/white"
+            android:textSize="?font_large"
+            fontPath="fonts/IRANSans_Edit.ttf"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/wait_for_answer"
+            android:textColor="@color/white"
+            android:textSize="?font_medium"/>
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/form_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/submit_feedback">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/your_email"
+                android:textColor="@color/colorPrimary"/>
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:background="@drawable/button_light_grey_outline"
+                android:gravity="right"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="?font_medium"
+                android:maxLength="255"
+                android:inputType="textEmailAddress"
+                android:imeOptions = "flagNoFullscreen"
+                android:theme="@style/EditTextHint"
+                fontPath="fonts/IRANSans_Edit.ttf"/>
+
+            <TextView
+                android:id="@+id/email_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/improper_email"
+                android:textColor="@color/errorRed"
+                android:textSize="?font_xsmall"
+                android:visibility="gone"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/email_subject"
+                android:textColor="@color/colorPrimary"/>
+
+            <EditText
+                android:id="@+id/email_subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:background="@drawable/button_light_grey_outline"
+                android:gravity="right"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="?font_medium"
+                android:maxLength="64"
+                android:inputType="textEmailAddress"
+                android:imeOptions = "flagNoFullscreen"
+                android:theme="@style/EditTextHint"
+                fontPath="fonts/IRANSans_Edit.ttf"/>
+
+            <TextView
+                android:id="@+id/email_subject_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/field_is_required"
+                android:textColor="@color/errorRed"
+                android:textSize="?font_xsmall"
+                android:visibility="gone"/>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/explanation"
+                android:textColor="@color/colorPrimary"/>
+
+            <EditText
+                android:id="@+id/explanation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:background="@drawable/button_light_grey_outline"
+                android:gravity="right"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="?font_medium"
+                android:maxLength="512"
+                android:inputType="textEmailAddress|textMultiLine"
+                android:imeOptions="flagNoFullscreen"
+                android:scrollHorizontally="false"
+                android:theme="@style/EditTextHint"
+                fontPath="fonts/IRANSans_Edit.ttf"/>
+
+            <TextView
+                android:id="@+id/explanation_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/field_is_required"
+                android:textColor="@color/errorRed"
+                android:textSize="?font_xsmall"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:id="@+id/submit_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/blue"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="@string/send_feedback_email"
+        android:textColor="@color/white"
+        android:textSize="?font_small"/>
+</RelativeLayout>

@@ -1,5 +1,9 @@
 package org.asl19.paskoocheh.pojo;
 
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -7,31 +11,38 @@ import org.parceler.Parcel;
 
 import lombok.Data;
 
-/**
- * Review Gson Pojo.
- */
+@Entity
 @Parcel
 @Data
 public class Review {
-
+    @PrimaryKey
+    @SerializedName("id")
+    @Expose
+    public Integer id;
+    @SerializedName("platform_name")
+    @Expose
+    public String platformName;
+    @SerializedName("tool_id")
+    @Expose
+    public Integer toolId;
+    @SerializedName("user_id")
+    @Expose
+    public String userId;
     @SerializedName("rating")
     @Expose
-    Double rating;
-    @SerializedName("date_other")
-    @Expose
-    DateOther dateOther;
+    public Double rating;
     @SerializedName("text")
     @Expose
-    String text;
-    @SerializedName("title")
+    public String text;
+    @SerializedName("tool_version")
     @Expose
-    String title;
-    @SerializedName("version")
+    public String toolVersion;
+    @SerializedName("tool_name")
     @Expose
-    String version;
-    @SerializedName("date")
+    public String toolName;
+    @SerializedName("subject")
     @Expose
-    Double date;
+    public String subject;
 
     public Review() {}
 }

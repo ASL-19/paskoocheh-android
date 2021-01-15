@@ -3,6 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="15dp" >
@@ -23,30 +25,12 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"/>
 
-    <android.support.design.widget.TextInputLayout
-        android:theme="@style/EditTextHint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/review_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="?font_medium"
-            android:hint="@string/topic"
-            android:maxLength="25"
-            android:inputType="textEmailAddress"
-            android:imeOptions = "flagNoFullscreen"
-            fontPath="fonts/IRANSans_Edit.ttf"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:theme="@style/EditTextHint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp">
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/review_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +42,7 @@
             android:inputType="textEmailAddress"
             android:imeOptions = "flagNoFullscreen"
             fontPath="fonts/IRANSans_Edit.ttf"/>
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

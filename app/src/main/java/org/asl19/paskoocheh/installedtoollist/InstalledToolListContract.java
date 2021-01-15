@@ -5,49 +5,39 @@ import android.content.Context;
 
 import org.asl19.paskoocheh.baseactivities.BasePresenter;
 import org.asl19.paskoocheh.baseactivities.BaseView;
-import org.asl19.paskoocheh.pojo.AndroidTool;
-import org.asl19.paskoocheh.pojo.DownloadCountList;
-import org.asl19.paskoocheh.pojo.RatingList;
+import org.asl19.paskoocheh.pojo.Images;
+import org.asl19.paskoocheh.pojo.LocalizedInfo;
+import org.asl19.paskoocheh.pojo.Version;
 
 import java.util.List;
 
 public interface InstalledToolListContract {
 
     interface ListView extends BaseView<Presenter> {
-        void onGetInstalledToolListSuccessful(List<AndroidTool> toolList);
+        void onGetInstalledVersionListSuccessful(List<Version> versionList);
 
-        void onGetInstalledToolListFailed();
+        void onGetInstalledVersionListFailed();
 
-        void getDownloadCountListSuccessful(DownloadCountList downloadCountList);
+        void onGetLocalizedInfoListSuccessful(List<LocalizedInfo> localizedInfoList);
 
-        void getDownloadCountListFailed();
+        void onGetLocalizedInfoListFailed();
 
-        void getRatingListSuccessful(RatingList ratingList);
+        void onGetImageListSuccessful(List<Images> imagesList);
 
-        void getRatingListFailed();
-
-        void onRegisterInstallSuccessful();
-
-        void onRegisterInstallFailed();
+        void onGetImageListFailed();
     }
 
     interface ToolListAdapter {
         Context getContext();
-
-        void registerInstall(String tool);
-
-        void onPermissionRequested(Integer code);
     }
 
     interface Presenter extends BasePresenter {
 
         void getInstalledTools();
 
-        void getDownloadCountList();
+        void getLocalizedInfoList();
 
-        void getRatingList();
-
-        void registerInstall(String uuid, String tool);
+        void getImages();
     }
 }
 

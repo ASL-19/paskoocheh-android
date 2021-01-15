@@ -1,131 +1,61 @@
-apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
+        google()
+        jcenter()
     }
-
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.22.1'
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.google.gms:google-services:4.2.0'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 
-repositories {
-    maven {
-        url 'https://maven.fabric.io/public'
-    }
-}
-
-android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-    defaultConfig {
-        applicationId "org.asl19.paskoocheh"
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 216
-        versionName "2.1.6"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven {
+            url "https://maven.google.com"
         }
     }
 }
 
-configurations.all {
-    resolutionStrategy {
-        force "com.android.support:design:$rootProject.supportLibraryVersion"
-        force "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
-    }
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+ext {
+    // Sdk and tools
+    minSdkVersion = 16
+    targetSdkVersion = 28
+    compileSdkVersion = 28
+    buildToolsVersion = '28.0.3'
 
-    //App's dependencies
-    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    compile "com.android.support:design:$rootProject.supportLibraryVersion"
-    compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
-    compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
-
-    // Utility Library
-    compile 'com.fernandocejas:arrow:1.0.0'
-
-    // Android Testing Support runner and rules
-    androidTestCompile "com.android.support.test:runner:$rootProject.testSupportLibraryVersion"
-    androidTestCompile "com.android.support.test:rules:$rootProject.testSupportLibraryVersion"
-
-    // Dependencies for local unit tests
-    testCompile "junit:junit:$rootProject.ext.junitVersion"
-    testCompile "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
-    testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
-
-    // Espresso UI Testing
-    androidTestCompile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
-    androidTestCompile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
-    androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
-
-    //Annotations
-    provided "javax.annotation:jsr250-api:$rootProject.javaxAnnotationVersion"
-
-    //Event Bus
-    compile "org.greenrobot:eventbus:$rootProject.eventbusVersion"
-
-    //Butterknife
-    compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
-    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
-
-    //Retrofit
-    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
-    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
-    compile "com.squareup.retrofit2:converter-scalars:$rootProject.retrofitVersion"
-    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.okHttp3Version"
-    androidTestCompile "com.squareup.okhttp3:mockwebserver:$rootProject.okHttp3Version"
-
-    //Amazon
-    compile "com.amazonaws:aws-android-sdk-core:$rootProject.amazonVersion"
-    compile "com.amazonaws:aws-android-sdk-s3:$rootProject.amazonVersion"
-    compile "com.amazonaws:aws-android-sdk-cognito:$rootProject.amazonVersion"
-    compile "com.amazonaws:aws-android-sdk-ddb:$rootProject.amazonVersion"
-    compile "com.amazonaws:aws-android-sdk-ddb-mapper:$rootProject.amazonVersion"
-
-    //Push
-    compile "com.google.firebase:firebase-messaging:$rootProject.firebaseVersion"
-
-    //Analytics
-    compile "com.google.firebase:firebase-core:$rootProject.firebaseVersion"
-
-    //Parcelar
-    compile "org.parceler:parceler-api:$rootProject.parcelarVersion"
-    annotationProcessor "org.parceler:parceler:$rootProject.parcelarVersion"
-
-    //Calligraphy Custom Fonts
-    compile "uk.co.chrisjenx:calligraphy:$rootProject.calligraphyVersion"
-
-    //Lombok
-    provided "org.projectlombok:lombok:$rootProject.lombokVersion"
-
-    //Dagger
-    compile "com.google.dagger:dagger:$rootProject.daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
-
-    //Wire Protocol Buffer
-    compile "com.squareup.wire:wire-runtime:$rootProject.wireVersion"
-
-    //Image Cache
-    compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
-
-    //Crashlytics
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
-        transitive = true;
-    }
+// App dependencies
+    amazonVersion = '2.6.30'
+    androidJobVersion = '1.2.2'
+    butterknifeVersion = '10.2.0'
+    calligraphyVersion = '2.3.0'
+    compatSupportLibraryVersion = '23.1.1'
+    daggerVersion = '2.13'
+    espressoVersion = '2.2.2'
+    eventbusVersion = '3.1.1'
+    flexboxVersion = '0.3.2'
+    firebaseVersion = "11.8.0"
+    hamcrestVersion = '1.3'
+    javaxAnnotationVersion = '1.0'
+    junitVersion = '4.12'
+    lombokVersion = '1.16.18'
+    mockitoVersion = '1.10.19'
+    okHttp3Version = '3.9.1'
+    parcelarVersion = '1.1.12'
+    picassoVersion = '2.5.2'
+    retrofitVersion = '2.3.0'
+    roomVersion = '1.0.0'
+    spongyVersion = '1.58.0.0'
+    supportLibraryVersion = '27.0.2'
+    testSupportLibraryVersion = '0.5'
 }
-
-apply plugin: 'com.google.gms.google-services'

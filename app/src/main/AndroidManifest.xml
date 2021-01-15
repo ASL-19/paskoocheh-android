@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
 
@@ -16,8 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <receiver android:name=".installreceiver.InstallListener">
+            <intent-filter android:priority="100">
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -35,14 +42,8 @@
         </activity>
 
         <service
-            android:name=".push.MyFirebaseInstanceIdService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
-
-        <service
-            android:name=".push.MyFirebaseMessagingService">
+            android:name=".push.MyFirebaseMessagingService"
+            android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
@@ -56,11 +57,24 @@
             android:name=".service.PaskoochehConfigService"
             android:enabled="true" />
 
-        <receiver android:name=".receiver.AmazonS3StartReceiver"
-                  android:enabled="true"/>
+        <service
+            android:name=".service.PaskoochehConfigSecurityService"
+            android:enabled="true" />
+
+        <service
+            android:name=".service.PaskoochehConfigVerificationService"
+            android:enabled="true" />
 
         <service
             android:name=".service.ToolDownloadService"
+            android:enabled="true" />
+
+        <service
+            android:name=".service.ToolDownloadSecurityService"
+            android:enabled="true" />
+
+        <service
+            android:name=".service.ToolDownloadVerificationService"
             android:enabled="true" />
 
         <activity android:name=".toollist.ToolListActivity"/>
@@ -74,11 +88,17 @@
                 <data android:scheme="http"/>
                 <data android:host="paskoocheh.com" />
                 <data android:host="www.paskoocheh.com" />
-                <data android:pathPrefix="/tools/"/>
+                <data android:pathPrefix="/versions/"/>
             </intent-filter>
         </activity>
         <activity android:name=".about.AboutActivity"/>
+        <activity android:name=".categorylist.CategoryListActivity"/>
         <activity android:name=".terms.TermsActivity"/>
+        <activity android:name=".feedback.FeedbackActivity"/>
+        <activity android:name=".search.SearchActivity"/>
+        <activity android:name=".guide.GuideActivity"/>
+        <activity android:name=".about.GalleryActivity"/>
+        <activity android:name=".gallery.GalleryActivity"/>
     </application>
 
 </manifest>

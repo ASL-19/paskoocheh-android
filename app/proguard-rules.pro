@@ -5,7 +5,7 @@
 # directive in build.gradle.
 #
 # For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+#   http://developer.android.com/guide/developing/versions/proguard.html
 
 # Add any project specific keep options here:
 
@@ -47,10 +47,15 @@
 -keep class **$$Parcelable { *; }
 -keep class org.parceler.Parceler$$Parcels
 
-## AMAZON
+## SPONGYCASTLE
+-keep class org.spongycastle.** { *; }
+-dontwarn org.spongycastle.jce.provider.X509LDAPCertStoreSpi
+-dontwarn org.spongycastle.x509.util.LDAPStoreHelper
 
+## AMAZON
 # Class names are needed in reflection
 -keepnames class com.amazonaws.**
+-keepnames class com.amazon.**
 # Request handlers defined in request.handlers
 -keep class com.amazonaws.services.**.*Handler
 # The following are referenced but aren't required to run
@@ -61,3 +66,7 @@
 # The SDK has several references of Apache HTTP client
 -dontwarn com.amazonaws.http.**
 -dontwarn com.amazonaws.metrics.**
+
+#TEST
+-dontwarn org.junit.**
+-dontwarn android.test.**

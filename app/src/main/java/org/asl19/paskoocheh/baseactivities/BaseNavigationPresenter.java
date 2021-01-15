@@ -1,9 +1,8 @@
 package org.asl19.paskoocheh.baseactivities;
 
 
-import org.asl19.paskoocheh.data.source.DownloadCountDataSource;
-import org.asl19.paskoocheh.data.source.ToolDataSource;
-import org.asl19.paskoocheh.pojo.AndroidTool;
+import org.asl19.paskoocheh.data.source.VersionDataSource;
+import org.asl19.paskoocheh.pojo.Version;
 
 import java.util.List;
 
@@ -12,69 +11,48 @@ import lombok.NonNull;
 public class BaseNavigationPresenter implements BaseNavigationContract.Presenter {
 
     private final BaseNavigationContract.NavigationView navigationView;
-    private final ToolDataSource toolRepository;
-    private final DownloadCountDataSource downloadCountDataRepository;
+    private final VersionDataSource versionRepository;
 
-    public BaseNavigationPresenter(@NonNull BaseNavigationContract.NavigationView navigationView, @NonNull ToolDataSource toolRepository, @NonNull DownloadCountDataSource downloadCountDataRepository) {
+    public BaseNavigationPresenter(@NonNull BaseNavigationContract.NavigationView navigationView, @NonNull VersionDataSource versionRepository) {
         this.navigationView = navigationView;
-        this.toolRepository = toolRepository;
-        this.downloadCountDataRepository = downloadCountDataRepository;
+        this.versionRepository = versionRepository;
 
         this.navigationView.setPresenter(this);
     }
 
     @Override
-    public void getInstalledTools() {
-        toolRepository.getInstalledTools(new ToolDataSource.GetToolsCallback() {
+    public void getInstalledVersions() {
+        versionRepository.getInstalledVersions(new VersionDataSource.GetVersionsCallback() {
             @Override
-            public void onGetToolsSuccessful(List<AndroidTool> tools) {
+            public void onGetVersionsSuccessful(List<Version> versions) {
                 if (navigationView.isActive()) {
-                    navigationView.getInstalledToolsSuccessful(tools);
+                    navigationView.getInstalledVersionsSuccessful(versions);
                 }
             }
 
             @Override
-            public void onGetToolsFailed() {
+            public void onGetVersionsFailed() {
                 if (navigationView.isActive()) {
-                    navigationView.getInstalledToolsFailed();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void getAndroidTools() {
-        toolRepository.getAndroidTools(new ToolDataSource.GetToolsCallback() {
-            @Override
-            public void onGetToolsSuccessful(List<AndroidTool> tools) {
-                if (navigationView.isActive()) {
-                    navigationView.getToolsSuccessful(tools);
-                }
-            }
-
-            @Override
-            public void onGetToolsFailed() {
-                if (navigationView.isActive()) {
-                    navigationView.getToolsFailed();
+                    navigationView.getInstalledVersionsFailed();
                 }
             }
         });
     }
 
     @Override
-    public void registerInstall(final String tool, String uuid) {
-        downloadCountDataRepository.registerInstall(tool, uuid, new DownloadCountDataSource.RegisterInstallCallback() {
+    public void getAndroidVersions() {
+        versionRepository.getAndroidVersions(new VersionDataSource.GetVersionsCallback() {
             @Override
-            public void onRegisterInstallSuccessful() {
+            public void onGetVersionsSuccessful(List<Version> versions) {
                 if (navigationView.isActive()) {
-                    navigationView.onRegisterInstallSuccessful();
+                    navigationView.getVersionsSuccessful(versions);
                 }
             }
 
             @Override
-            public void onRegisterInstallFailed() {
+            public void onGetVersionsFailed() {
                 if (navigationView.isActive()) {
-                    navigationView.onRegisterInstallFailed();
+                    navigationView.getVersionsFailed();
                 }
             }
         });

@@ -1,31 +1,25 @@
 package org.asl19.paskoocheh.baseactivities;
 
 
-import org.asl19.paskoocheh.pojo.AndroidTool;
+import org.asl19.paskoocheh.pojo.Version;
 
 import java.util.List;
 
 public interface BaseNavigationContract {
 
     interface NavigationView extends BaseView<Presenter> {
-        void getInstalledToolsSuccessful(List<AndroidTool> tools);
+        void getInstalledVersionsSuccessful(List<Version> versions);
 
-        void getInstalledToolsFailed();
+        void getInstalledVersionsFailed();
 
-        void getToolsSuccessful(List<AndroidTool> tools);
+        void getVersionsSuccessful(List<Version> versions);
 
-        void getToolsFailed();
-
-        void onRegisterInstallSuccessful();
-
-        void onRegisterInstallFailed();
+        void getVersionsFailed();
     }
 
     interface Presenter extends BasePresenter {
-        void getInstalledTools();
+        void getInstalledVersions();
 
-        void getAndroidTools();
-
-        void registerInstall(String uuid, String tool);
+        void getAndroidVersions();
     }
 }

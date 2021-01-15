@@ -1,46 +1,55 @@
 package org.asl19.paskoocheh.installedtoollist;
 
 
-import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
-import org.asl19.paskoocheh.pojo.AndroidTool;
-import org.asl19.paskoocheh.pojo.DownloadCount;
-import org.asl19.paskoocheh.pojo.DownloadCountList;
-import org.asl19.paskoocheh.pojo.Rating;
-import org.asl19.paskoocheh.pojo.RatingList;
+import org.asl19.paskoocheh.pojo.Images;
+import org.asl19.paskoocheh.pojo.LocalizedInfo;
+import org.asl19.paskoocheh.pojo.Version;
+import org.asl19.paskoocheh.service.ToolDownloadService;
+import org.asl19.paskoocheh.utils.ApkManager;
 import org.parceler.Parcels;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
+import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
 import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
-import static org.asl19.paskoocheh.Constants.PASKOOCHEH_UUID;
+import static org.asl19.paskoocheh.Constants.TOOL_ID;
 
 public class InstalledToolListFragment extends Fragment implements InstalledToolListContract.ListView,
         InstalledToolListContract.ToolListAdapter {
 
     public static final String TAG = InstalledToolListFragment.class.getCanonicalName();
-    private static final String RATING = "RATING";
-    private static final String DOWNLOAD = "DOWNLOAD";
+    private static final String DOWNLOAD_AND_RATING = "DOWNLOAD AND RATING";
 
     @BindView(R.id.installed_tools)
     RecyclerView recyclerView;
@@ -48,9 +57,13 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    private List<AndroidTool> androidTools = new ArrayList<>();
-    private List<DownloadCount> downloadCountList = new ArrayList<>();
-    private List<Rating> ratingList = new ArrayList<>();
+    @BindView(R.id.update_all)
+    TextView updateAllTextView;
+
+
+    private List<Version> versions = new ArrayList<>();
+    private List<LocalizedInfo> infoList = new ArrayList<>();
+    private List<Images> imagesList = new ArrayList<>();
 
     private InstalledToolListContract.Presenter presenter;
 
@@ -69,11 +82,6 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
         Bundle bundle = new Bundle();
         bundle.putString(Constants.SCREEN, TAG);
         FirebaseAnalytics.getInstance(getContext()).logEvent(Constants.OPEN_PAGE, bundle);
-
-        if (savedInstanceState != null) {
-            ratingList = Parcels.unwrap(savedInstanceState.getParcelable(RATING));
-            downloadCountList = Parcels.unwrap(savedInstanceState.getParcelable(DOWNLOAD));
-        }
     }
 
     @Nullable
@@ -92,6 +100,12 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
+        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+
+        adapter = new InstalledToolListAdapter(this, versions, infoList, imagesList);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setNestedScrollingEnabled(false);
+
         return view;
     }
 
@@ -99,13 +113,8 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
     public void onResume() {
         super.onResume();
         presenter.getInstalledTools();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(RATING, Parcels.wrap(ratingList));
-        outState.putParcelable(DOWNLOAD, Parcels.wrap(downloadCountList));
-        super.onSaveInstanceState(outState);
+        presenter.getLocalizedInfoList();
+        presenter.getImages();
     }
 
     @Override
@@ -119,72 +128,121 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
     }
 
     @Override
-    public void onPermissionRequested(Integer code) {
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, code);
-    }
+    public void onGetInstalledVersionListSuccessful(List<Version> versionList) {
+        versions.clear();
+        int appUpdates = 0;
 
-    @Override
-    public void onGetInstalledToolListSuccessful(List<AndroidTool> toolList) {
-        androidTools.clear();
-        androidTools.addAll(toolList);
-        adapter = new InstalledToolListAdapter(this, androidTools, downloadCountList, ratingList);
-        recyclerView.setAdapter(adapter);
+        for (Version version: versionList) {
+            version.setInstalled(false);
+            version.setUpdateAvailable(false);
+
+            try {
+                int installedVersionCode = getContext().getPackageManager().getPackageInfo(version.getPackageName(), 0).versionCode;
+                version.setInstalled(true);
+                if (version.getVersionCode() > installedVersionCode) {
+                    version.setUpdateAvailable(true);
+                    appUpdates++;
+                }
+            } catch (PackageManager.NameNotFoundException ignored) {
+            }
+        }
+
+        if (appUpdates > 0) {
+            updateAllTextView.setText(String.format("به\u200Cروزرسانی همه اپ\u200Cها (%s)", appUpdates));
+            updateAllTextView.setBackgroundResource(R.drawable.button_blue);
+            updateAllTextView.setTextColor(Color.WHITE);
+        }
+
+        versions.addAll(versionList);
+        adapter.notifyDataSetChanged();
 
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setEnabled(false);
-
-        if (ratingList.isEmpty()) {
-            presenter.getRatingList();
-        }
-
-        if (downloadCountList.isEmpty()) {
-            presenter.getDownloadCountList();
-        }
     }
 
     @Override
-    public void onGetInstalledToolListFailed() {
+    public void onGetInstalledVersionListFailed() {
 
     }
 
     @Override
-    public void getDownloadCountListSuccessful(DownloadCountList downloadCountList) {
-        this.downloadCountList.addAll(downloadCountList.getApps());
+    public void onGetLocalizedInfoListSuccessful(List<LocalizedInfo> localizedInfoList) {
+        this.infoList.addAll(localizedInfoList);
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void getDownloadCountListFailed() {
+    public void onGetLocalizedInfoListFailed() {
+
     }
 
     @Override
-    public void getRatingListSuccessful(RatingList ratingList) {
-        this.ratingList.addAll(ratingList.getItems());
+    public void onGetImageListSuccessful(List<Images> imagesList) {
+        this.imagesList.addAll(imagesList);
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void getRatingListFailed() {
-    }
-
-    @Override
-    public void registerInstall(String tool) {
-        String uuid = getContext().getSharedPreferences(
-                PASKOOCHEH_PREFS,
-                Context.MODE_PRIVATE
-        ).getString(PASKOOCHEH_UUID, "");
-
-        presenter.registerInstall(uuid, tool);
-    }
-
-    @Override
-    public void onRegisterInstallSuccessful() {
+    public void onGetImageListFailed() {
 
     }
 
-    @Override
-    public void onRegisterInstallFailed() {
+    @OnClick(R.id.update_all)
+    void updateAll() {
+        for (Version version : versions) {
+            if (version.isUpdateAvailable()) {
+                updateApplication(version);
+            }
+        }
+    }
 
+    void updateApplication(Version version) {
+        if (!version.getDownloadVia().getS3().equals("https://s3.amazonaws.com/paskoocheh-repo")) {
+            installApplication(version);
+        } else if (!version.getDownloadVia().getUrl().isEmpty()) {
+            Intent browserIntent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(version.getDownloadVia().getUrl())
+            );
+
+            startActivity(browserIntent);
+        } else {
+            playStoreRedirect(version);
+        }
+    }
+
+    void playStoreRedirect(Version version) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.SCREEN, InstalledToolListFragment.TAG);
+        bundle.putString(TOOL_ID, version.getAppName());
+        FirebaseAnalytics.getInstance(getContext()).logEvent(Constants.PLAY_STORE, bundle);
+
+        Intent browserIntent = new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id=" + version.getPackageName())
+        );
+
+        getContext().startActivity(browserIntent);
+    }
+
+    void installApplication(Version version) {
+        File toolFile = new File(getContext().getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));
+
+        if (toolFile.exists()) {
+            new ApkManager(getContext()).installPackage(version, toolFile);
+        } else {
+            ConnectivityManager connManager
+                    = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
+            if (!getContext().getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
+                Intent intent = new Intent(getContext(), ToolDownloadService.class);
+                intent.putExtra("VERSION", Parcels.wrap(version));
+                getContext().startService(intent);
+                Toast.makeText(getContext(), getString(R.string.queued), Toast.LENGTH_SHORT).show();
+            } else if ((activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI)) {
+                Toast.makeText(getContext(), getString(R.string.connect_wifi), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override

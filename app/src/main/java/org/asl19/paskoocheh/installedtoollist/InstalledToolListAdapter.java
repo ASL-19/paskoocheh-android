@@ -1,7 +1,6 @@
 package org.asl19.paskoocheh.installedtoollist;
 
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,12 +8,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
+import android.text.Html;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,14 +25,17 @@ import com.squareup.picasso.Picasso;
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
-import org.asl19.paskoocheh.pojo.AndroidTool;
-import org.asl19.paskoocheh.pojo.DownloadCount;
-import org.asl19.paskoocheh.pojo.Rating;
+import org.asl19.paskoocheh.pojo.Image;
+import org.asl19.paskoocheh.pojo.Images;
+import org.asl19.paskoocheh.pojo.LocalizedInfo;
+import org.asl19.paskoocheh.pojo.Version;
 import org.asl19.paskoocheh.service.ToolDownloadService;
 import org.asl19.paskoocheh.toolinfo.ToolInfoActivity;
 import org.asl19.paskoocheh.toolinfo.ToolInfoFragment;
 import org.asl19.paskoocheh.toollist.ToolListFragment;
 import org.asl19.paskoocheh.utils.ApkManager;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.parceler.Parcels;
 
 import java.io.File;
@@ -40,29 +45,29 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static android.os.Environment.DIRECTORY_DOWNLOADS;
-import static android.os.Environment.getExternalStoragePublicDirectory;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
-import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PACKAGE;
+import static org.asl19.paskoocheh.Constants.FA;
 import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
 import static org.asl19.paskoocheh.Constants.TOOL_ID;
 
 public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledToolListAdapter.ViewHolder> {
 
-    private List<AndroidTool> tools;
-    private List<DownloadCount> downloadCountList;
-    private List<Rating> ratingList;
+    private List<Version> versions;
+    private List<LocalizedInfo> localizedInfoList;
+    private List<Images> imagesList;
     private InstalledToolListContract.ToolListAdapter fragment;
     private Context context;
+    private ApkManager apkManager;
 
-    public InstalledToolListAdapter(InstalledToolListContract.ToolListAdapter fragment, List<AndroidTool> tools, List<DownloadCount> downloadCountList, List<Rating> ratingList) {
+    public InstalledToolListAdapter(InstalledToolListContract.ToolListAdapter fragment, List<Version> versions, List<LocalizedInfo> localizedInfoList, List<Images> imagesList) {
         this.fragment = fragment;
         this.context = fragment.getContext();
-        this.tools = tools;
-        this.downloadCountList = downloadCountList;
-        this.ratingList = ratingList;
+        this.versions = versions;
+        this.localizedInfoList = localizedInfoList;
+        this.imagesList = imagesList;
+        this.apkManager = new ApkManager(context.getApplicationContext());
     }
 
     @Override
@@ -76,77 +81,95 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        AndroidTool tool = tools.get(position);
+        Version version = versions.get(position);
 
-        Picasso.with(context).load(tool.getIconUrl().isEmpty() ? null : tool.getIconUrl()).into(holder.imageView);
+        Image loadImage = null;
+        for (Images image: imagesList) {
+            if (image.getVersionId() == version.getId() && !image.getLogo().isEmpty()) {
+                loadImage = image.getLogo().isEmpty() ? null : image.getLogo().get(0);
+                break;
+            } else if (image.getToolId() == version.getToolId() && !image.getLogo().isEmpty()) {
+                loadImage = image.getLogo().isEmpty() ? null : image.getLogo().get(0);
+            }
+        }
 
-        holder.name.setText(tool.getName());
-        holder.description.setText(tool.getAppType());
+        if (loadImage != null) {
+            Picasso.with(context)
+                    .load(loadImage.getUrl())
+                    .into(holder.imageView);
+        }
 
-        holder.downloadIcon.setVisibility(View.INVISIBLE);
-        holder.downloadTextView.setVisibility(View.INVISIBLE);
-        holder.ratingIcon.setVisibility(View.INVISIBLE);
-        holder.rating.setText("");
+        LocalizedInfo localizedInfoTemp = new LocalizedInfo();
+        for (LocalizedInfo localizedInfo: localizedInfoList) {
+            if (localizedInfo.getToolId() == version.getToolId()) {
+                if (localizedInfo.getLocale().equals(FA)) {
+                    if (!localizedInfo.getName().isEmpty()) {
+                        localizedInfoTemp.setName(localizedInfo.getName());
+                    }
 
-        if (downloadCountList != null) {
-            for (DownloadCount downloadCount : downloadCountList) {
-                if (downloadCount.getPlatform().equals(Constants.ANDROID) && downloadCount.getAppName().equals(tool.getEnglishName())) {
-                    holder.downloadIcon.setVisibility(VISIBLE);
-                    holder.downloadTextView.setVisibility(VISIBLE);
-                    holder.downloadTextView.setText(downloadCount.getDownloadCount().toString());
-                    break;
+                    if (!localizedInfo.getDescription().isEmpty()) {
+                        String text = HtmlRenderer.builder().build().render(Parser.builder().build().parse(localizedInfo.getDescription()));
+                        text = text.replace("</li>", System.getProperty("line.separator"));
+                        text = text.replace("<li>", " \u2022 ");
+                        localizedInfoTemp.setDescription(text);
+                    }
+                } else {
+                    if (localizedInfoTemp.getName().isEmpty()) {
+                        localizedInfoTemp.setName(localizedInfo.getName());
+                    }
+
+                    if (localizedInfo.getDescription().isEmpty()) {
+                        String text = HtmlRenderer.builder().build().render(Parser.builder().build().parse(localizedInfo.getDescription()));
+                        text = text.replace("</li>", System.getProperty("line.separator"));
+                        text = text.replace("<li>", " \u2022 ");
+                        localizedInfoTemp.setDescription(text);                    }
                 }
             }
         }
 
-        if (ratingList != null) {
-            for (Rating rating : ratingList) {
-                if (rating.getAppName().equals(tool.getEnglishName())) {
-                    holder.ratingIcon.setVisibility(VISIBLE);
-                    holder.rating.setText(rating.getRating());
-                    break;
-                }
-            }
+        if (!localizedInfoTemp.getName().isEmpty()) {
+            version.setAppName(localizedInfoTemp.getName());
         }
 
-        tool.setUpdateAvailable(false);
-        tool.setInstalled(false);
+        holder.name.setText(version.getAppName());
+
+        if (!localizedInfoTemp.getDescription().isEmpty()) {
+            holder.detailsText.setText(Html.fromHtml(HtmlRenderer.builder().build().render(Parser.builder().build().parse(localizedInfoTemp.getDescription()))));
+        }
+
+        holder.version.setText(String.format(context.getString(R.string.version_installed), version.getVersionNumber()));
+        holder.size.setText(Formatter.formatFileSize(context, version.getSize()));
+        holder.detailsDate.setText(version.getReleaseJDate());
+
+        holder.buttonLayout.setBackgroundResource(R.drawable.button_blue);
+        holder.updateTextView.setVisibility(GONE);
+        holder.updatingProgressBar.setVisibility(GONE);
+        holder.upToDateImageView.setVisibility(GONE);
+
+        version.setUpdateAvailable(false);
+        version.setInstalled(false);
+
         try {
-            int installedVersionCode = context.getPackageManager().getPackageInfo(tool.getPackageName(), 0).versionCode;
-            tool.setInstalled(true);
-            if (tool.getVersionCode() > installedVersionCode) {
-                tool.setUpdateAvailable(true);
+            int installedVersionCode = context.getPackageManager().getPackageInfo(version.getPackageName(), 0).versionCode;
+            version.setInstalled(true);
+            if (version.getVersionCode() > installedVersionCode) {
+                version.setUpdateAvailable(true);
             }
         } catch (PackageManager.NameNotFoundException ignored) {
         }
 
-        holder.updateTextView.setVisibility(GONE);
-        holder.installTextView.setVisibility(GONE);
-        holder.playStoreTextView.setVisibility(GONE);
-        holder.uninstallTextView.setVisibility(VISIBLE);
-
-
-        if (!tool.isInstalled()) {
-            holder.uninstallTextView.setVisibility(GONE);
-            if (!tool.getDownloadUrl().isEmpty()) {
-                holder.installTextView.setVisibility(VISIBLE);
-            } else {
-                holder.playStoreTextView.setVisibility(VISIBLE);
-            }
-        }
-
-        if (tool.isUpdateAvailable()) {
+        if (version.isUpdateAvailable()) {
             holder.updateTextView.setVisibility(VISIBLE);
-        }
-
-        if (tool.getPackageName().equals(PASKOOCHEH_PACKAGE)) {
-            holder.uninstallTextView.setVisibility(GONE);
+            holder.buttonLayout.setBackgroundResource(R.drawable.button_regular_blue);
+        } else {
+            holder.upToDateImageView.setVisibility(VISIBLE);
+            holder.buttonLayout.setBackgroundResource(R.drawable.button_blue);
         }
     }
 
     @Override
     public int getItemCount() {
-        return (null != tools ? tools.size() : 0);
+        return (null != versions ? versions.size() : 0);
     }
 
     /**
@@ -157,24 +180,27 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
         ImageView imageView;
         @BindView(R.id.title)
         TextView name;
-        @BindView(R.id.description)
-        TextView description;
-        @BindView(R.id.install)
-        TextView installTextView;
+        @BindView(R.id.version)
+        TextView version;
+        @BindView(R.id.size)
+        TextView size;
+        @BindView(R.id.button_layout)
+        LinearLayout buttonLayout;
+        @BindView(R.id.up_to_date)
+        ImageView upToDateImageView;
         @BindView(R.id.update)
         TextView updateTextView;
-        @BindView(R.id.rating)
-        TextView rating;
-        @BindView(R.id.star)
-        ImageView ratingIcon;
-        @BindView(R.id.uninstall)
-        TextView uninstallTextView;
-        @BindView(R.id.play_store)
-        TextView playStoreTextView;
-        @BindView(R.id.download_icon)
-        ImageView downloadIcon;
-        @BindView(R.id.download)
-        TextView downloadTextView;
+        @BindView(R.id.updating)
+        ProgressBar updatingProgressBar;
+        @BindView(R.id.detail_arrow)
+        ImageView detailArrow;
+        @BindView(R.id.details_layout)
+        LinearLayout detailLayout;
+        @BindView(R.id.details_date)
+        TextView detailsDate;
+        @BindView(R.id.details_text)
+        TextView detailsText;
+
 
         /**
          * ViewHolder for View with Android Tools
@@ -189,33 +215,45 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
 
         @OnClick(R.id.update)
         void updateApplication() {
-            AndroidTool tool = tools.get(getLayoutPosition());
-            if (tool.getDownloadUrl().isEmpty()) {
-                playStoreRedirect();
-            } else {
+            Version tool = versions.get(getLayoutPosition());
+            if (!tool.getDownloadVia().getS3().equals("https://s3.amazonaws.com/paskoocheh-repo")) {
                 installApplication();
+            } else if (!tool.getDownloadVia().getUrl().isEmpty()) {
+                Intent browserIntent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(tool.getDownloadVia().getUrl())
+                );
+                context.startActivity(browserIntent);
+            } else {
+                playStoreRedirect();
             }
         }
 
-        @OnClick(R.id.install)
-        void installApplication() {
-            AndroidTool tool = tools.get(getLayoutPosition());
-            File toolFile = new File(getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS) + "/" + tool.getName() + ".apk");
+        @OnClick(R.id.more_details)
+        void moreDetails() {
+            if (detailLayout.getVisibility() == VISIBLE) {
+                detailLayout.setVisibility(GONE);
+                detailArrow.setImageResource(R.drawable.ic_keyboard_arrow_left_blue);
 
-            if (ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                fragment.onPermissionRequested(tool.getToolId().intValue());
-            } else if (toolFile.exists()) {
-                fragment.registerInstall(tool.getEnglishName());
-                ApkManager.installPackage(context, tool.getChecksum(), toolFile);
+            } else {
+                detailLayout.setVisibility(VISIBLE);
+                detailArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_blue);
+            }
+        }
+
+        void installApplication() {
+            Version version = versions.get(getLayoutPosition());
+            File toolFile = new File(context.getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));
+
+            if (toolFile.exists()) {
+                apkManager.installPackage(version, toolFile);
             } else {
                 ConnectivityManager connManager
                         = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
                 if (!context.getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                    fragment.registerInstall(tool.getEnglishName());
                     Intent intent = new Intent(context, ToolDownloadService.class);
-                    intent.putExtra("TOOL", Parcels.wrap(tool));
+                    intent.putExtra("VERSION", Parcels.wrap(version));
                     context.startService(intent);
                     Toast.makeText(context, context.getString(R.string.queued), Toast.LENGTH_SHORT).show();
                 } else if ((activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI)) {
@@ -224,41 +262,34 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
             }
         }
 
-        @OnClick(R.id.play_store)
         void playStoreRedirect() {
-            AndroidTool tool = tools.get(getLayoutPosition());
+            Version version = versions.get(getLayoutPosition());
 
             Bundle bundle = new Bundle();
             bundle.putString(Constants.SCREEN, InstalledToolListFragment.TAG);
-            bundle.putString(TOOL_ID, tool.getEnglishName());
+            bundle.putString(TOOL_ID, version.getAppName());
             FirebaseAnalytics.getInstance(context).logEvent(Constants.PLAY_STORE, bundle);
-
-            fragment.registerInstall(tool.getEnglishName());
 
             Intent browserIntent = new Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=" + tool.getPackageName())
+                    Uri.parse("https://play.google.com/store/apps/details?id=" + version.getPackageName())
             );
 
             context.startActivity(browserIntent);
         }
 
-        @OnClick(R.id.uninstall)
-        void uninstallApplication() {
-            ApkManager.uninstallPackage(context, tools.get(getLayoutPosition()).getPackageName());
-        }
-
         @Override
         public void onClick(View view) {
+            Version version = versions.get(getLayoutPosition());
+
             Bundle bundle = new Bundle();
             bundle.putString(Constants.SCREEN, ToolListFragment.TAG);
-            bundle.putString(TOOL_ID, tools.get(getLayoutPosition()).getEnglishName());
+            bundle.putString(TOOL_ID, version.getAppName());
             FirebaseAnalytics.getInstance(context).logEvent(Constants.TOOL_SELECT, bundle);
 
             Intent intent = new Intent(context, ToolInfoActivity.class);
-            intent.putExtra(ToolInfoFragment.TOOL, tools.get(getLayoutPosition()).getToolId());
-            intent.putExtra(ToolInfoFragment.RATING, rating.getText());
-            intent.putExtra(ToolInfoFragment.DOWNLOAD_COUNT, downloadTextView.getText());
+            intent.putExtra(ToolInfoFragment.TOOL, versions.get(getLayoutPosition()).getToolId());
+            intent.putExtra(ToolInfoActivity.TOOL_NAME, versions.get(getLayoutPosition()).getAppName());
             context.startActivity(intent);
         }
     }

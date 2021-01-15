@@ -1,12 +1,12 @@
 package org.asl19.paskoocheh.installedtoollist;
 
 
-import org.asl19.paskoocheh.data.source.DownloadCountDataSource;
-import org.asl19.paskoocheh.data.source.RatingDataSource;
-import org.asl19.paskoocheh.data.source.ToolDataSource;
-import org.asl19.paskoocheh.pojo.AndroidTool;
-import org.asl19.paskoocheh.pojo.DownloadCountList;
-import org.asl19.paskoocheh.pojo.RatingList;
+import org.asl19.paskoocheh.data.source.ImagesDataSource;
+import org.asl19.paskoocheh.data.source.LocalizedInfoDataSource;
+import org.asl19.paskoocheh.data.source.VersionDataSource;
+import org.asl19.paskoocheh.pojo.Images;
+import org.asl19.paskoocheh.pojo.LocalizedInfo;
+import org.asl19.paskoocheh.pojo.Version;
 
 import java.util.List;
 
@@ -15,90 +15,71 @@ import lombok.NonNull;
 public class InstalledToolListPresenter implements InstalledToolListContract.Presenter {
 
     private final InstalledToolListContract.ListView toolListView;
-    private final ToolDataSource toolRepository;
-    private final DownloadCountDataSource downloadCountRepository;
-    private final RatingDataSource ratingRepository;
+    private final VersionDataSource versionRepository;
+    private final LocalizedInfoDataSource localedInfoRepository;
+    private final ImagesDataSource imagesRepository;
 
-    public InstalledToolListPresenter(@NonNull InstalledToolListContract.ListView toolListView, @NonNull ToolDataSource toolRepository, @NonNull DownloadCountDataSource downloadCountRepository, @NonNull RatingDataSource ratingRepoository) {
+    public InstalledToolListPresenter(@NonNull InstalledToolListContract.ListView toolListView, @NonNull VersionDataSource versionRepository, @NonNull LocalizedInfoDataSource localedInfoRepository, @NonNull ImagesDataSource imagesRepository) {
         this.toolListView = toolListView;
-        this.toolRepository = toolRepository;
-        this.downloadCountRepository = downloadCountRepository;
-        this.ratingRepository = ratingRepoository;
+        this.versionRepository = versionRepository;
+        this.localedInfoRepository = localedInfoRepository;
+        this.imagesRepository = imagesRepository;
 
         this.toolListView.setPresenter(this);
     }
 
     @Override
     public void getInstalledTools() {
-        toolRepository.getInstalledTools(new ToolDataSource.GetToolsCallback() {
+        versionRepository.getInstalledVersions(new VersionDataSource.GetVersionsCallback() {
             @Override
-            public void onGetToolsSuccessful(List<AndroidTool> tools) {
+            public void onGetVersionsSuccessful(List<Version> versions) {
                 if (toolListView.isActive()) {
-                    toolListView.onGetInstalledToolListSuccessful(tools);
+                    toolListView.onGetInstalledVersionListSuccessful(versions);
                 }
             }
 
             @Override
-            public void onGetToolsFailed() {
+            public void onGetVersionsFailed() {
                 if (toolListView.isActive()) {
-                    toolListView.onGetInstalledToolListFailed();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void getDownloadCountList() {
-        downloadCountRepository.getDownloadCountList(new DownloadCountDataSource.GetDownloadListCallback() {
-            @Override
-            public void onGetDownloadsSuccessful(DownloadCountList downloadCountList) {
-                if (toolListView.isActive()) {
-                    toolListView.getDownloadCountListSuccessful(downloadCountList);
-                }
-            }
-
-            @Override
-            public void onGetDownloadsFailed() {
-                if (toolListView.isActive()) {
-                    toolListView.getDownloadCountListFailed();
+                    toolListView.onGetInstalledVersionListFailed();
                 }
             }
         });
     }
 
     @Override
-    public void getRatingList() {
-        ratingRepository.getRatingList(new RatingDataSource.GetRatingListCallback() {
+    public void getLocalizedInfoList() {
+        localedInfoRepository.getLocalizedInfoList(new LocalizedInfoDataSource.GetLocalizedInfoListCallback() {
             @Override
-            public void onGetRatingSuccessful(RatingList ratingList) {
+            public void onGetLocalizedInfoListSuccessful(List<LocalizedInfo> toolList) {
                 if (toolListView.isActive()) {
-                    toolListView.getRatingListSuccessful(ratingList);
+                    toolListView.onGetLocalizedInfoListSuccessful(toolList);
                 }
             }
 
             @Override
-            public void onGetRatingsFailed() {
+            public void onGetLocalizedInfoListFailed() {
                 if (toolListView.isActive()) {
-                    toolListView.getRatingListFailed();
+                    toolListView.onGetLocalizedInfoListFailed();
                 }
             }
         });
     }
 
     @Override
-    public void registerInstall(String tool, String uuid) {
-        downloadCountRepository.registerInstall(tool, uuid, new DownloadCountDataSource.RegisterInstallCallback() {
+    public void getImages() {
+        imagesRepository.getImages(new ImagesDataSource.GetImageListCallback() {
             @Override
-            public void onRegisterInstallSuccessful() {
+            public void onGetImageListSuccessful(List<Images> images) {
                 if (toolListView.isActive()) {
-                    toolListView.onRegisterInstallSuccessful();
+                    toolListView.onGetImageListSuccessful(images);
                 }
             }
 
             @Override
-            public void onRegisterInstallFailed() {
+            public void onGetImageListFailed() {
                 if (toolListView.isActive()) {
-                    toolListView.onRegisterInstallFailed();
+                    toolListView.onGetImageListFailed();
                 }
             }
         });

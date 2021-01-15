@@ -3,46 +3,91 @@ package org.asl19.paskoocheh.toolinfo;
 
 import org.asl19.paskoocheh.baseactivities.BasePresenter;
 import org.asl19.paskoocheh.baseactivities.BaseView;
-import org.asl19.paskoocheh.data.GetReviewRequest;
-import org.asl19.paskoocheh.pojo.AndroidTool;
-import org.asl19.paskoocheh.pojo.ReviewList;
+import org.asl19.paskoocheh.pojo.DownloadAndRating;
+import org.asl19.paskoocheh.pojo.Faq;
+import org.asl19.paskoocheh.pojo.Guide;
+import org.asl19.paskoocheh.pojo.Images;
+import org.asl19.paskoocheh.pojo.LocalizedInfo;
+import org.asl19.paskoocheh.pojo.Name;
+import org.asl19.paskoocheh.pojo.Review;
+import org.asl19.paskoocheh.pojo.Tool;
+import org.asl19.paskoocheh.pojo.Tutorial;
+import org.asl19.paskoocheh.pojo.Version;
+
+import java.util.List;
 
 public interface ToolInfoContract {
 
     interface ToolInfoView extends BaseView<Presenter> {
 
-        void onGetToolSuccessful(AndroidTool tool);
+        void onGetVersionSuccessful(Version version);
 
-        void onGetToolFailed();
+        void onGetVersionFailed();
 
-        void onGetRatingSuccessful(String rating);
+        void onGetDownloadAndRatingSuccessfull(DownloadAndRating downloadAndRatingList);
 
-        void onGetRatingFailed();
+        void onGetDownloadAndRatingFailed();
 
-        void onGetDownloadCountSuccessful(String count);
-
-        void onGetDownlaodCountFailed();
-
-        void onGetReviewListSuccessful(ReviewList reviewList);
+        void onGetReviewListSuccessful(List<Review> reviewList);
 
         void onGetReviewListFailed();
 
-        void onRegisterInstallSuccessful();
+        void onGetFaqListSuccessful(List<Faq> faqList);
 
-        void onRegisterInstallFailed();
+        void onGetFaqListFailed();
+
+        void onGetLocalizedInfoSuccessful(LocalizedInfo localizedInfo);
+
+        void onGetLocalizedInfoFailed();
+
+        void onGetGuideListSuccessful(List<Guide> guides);
+
+        void onGetGuideListFailed();
+
+        void onGetToolSuccessful(Tool tool);
+
+        void onGetToolFailed();
+
+        void onGetCategoryNamesSuccessful(List<Name> names);
+
+        void onGetCategoryNamesFailed();
+
+        void onGetVersionImagesSuccessful(Images images);
+
+        void onGetVersionImagesFailed();
+
+        void onGetToolImagesSuccessful(Images images);
+
+        void onGetToolImagesFailed();
+
+        void onGetTutorialsSuccessful(List<Tutorial> tutorials);
+
+        void onGetTutorialsFailed();
     }
 
     interface Presenter extends BasePresenter {
 
-        void getTool(long toolId);
+        void getVersion(long versionId);
 
-        void getRating(String toolName);
+        void getDownloadAndRating(long toolId);
 
-        void getDownloadCount(String toolName);
+        void getToolReviews(int toolId);
 
-        void getToolReviews(GetReviewRequest getReviewRequest);
+        void getFaqList(int toolId);
 
-        void registerInstall(String uuid, String tool);
+        void getLocalizedInfo(int toolId);
+
+        void getGuideList(int toolId);
+
+        void getTool(int toolId);
+
+        void getCategoryNames();
+
+        void getVersionImages(int versionId);
+
+        void getToolImages(int toolId);
+
+        void getTutorials(int toolId);
     }
 }
 

@@ -7,118 +7,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/privacy"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="?font_large"
-            android:text="@string/privacy_terms_title"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="?font_medium" />
+
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/terms"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/privacy_terms_body"
-            android:textSize="?font_medium"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="?font_large"
-            android:text="@string/applications_pask_title"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/application_pask_body"
-            android:textSize="?font_medium"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="?font_large"
-            android:text="@string/requested_permissions"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/storage_permission"
-            android:textSize="?font_medium"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/storage_description"
-            android:textSize="?font_medium"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="?font_large"
-            android:text="@string/read_contents"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/access_apps"
-            android:textSize="?font_medium"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="?font_large"
-            android:text="@string/other_features"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/other_features_description"
-            android:textSize="?font_medium"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="?font_large"
-            android:text="@string/send_receive_data_title"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/send_receive_data_body"
-            android:textSize="?font_medium"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="?font_large"
-            android:text="@string/google_analytics_title"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/google_analytics_desc"
-            android:textSize="?font_medium"/>
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="?font_medium" />
     </LinearLayout>
 </ScrollView>
