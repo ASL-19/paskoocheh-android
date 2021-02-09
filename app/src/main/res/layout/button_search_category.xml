@@ -10,4 +10,5 @@
     android:text="@string/update"
     android:textColor="@drawable/button_text_grey_to_white"
     android:textSize="?font_medium"
+    android:layoutDirection="rtl"
     android:background="@drawable/button_grey_outline_to_blue"/>

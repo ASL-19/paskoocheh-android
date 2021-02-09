@@ -6,7 +6,6 @@
     android:layout_margin="4dp"
     android:background="@drawable/card_border"
     android:gravity="center_horizontal"
-    android:layoutDirection="rtl"
     android:orientation="vertical">
 
     <org.asl19.paskoocheh.utils.SquareImageView
@@ -22,8 +21,7 @@
         android:paddingRight="7dp"
         android:paddingBottom="7dp"
         android:paddingStart="7dp"
-        android:paddingEnd="7dp"
-        android:layoutDirection="rtl">
+        android:paddingEnd="7dp">
 
         <TextView
             android:id="@+id/title"
@@ -63,6 +61,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -70,9 +69,9 @@
 
                 <ImageView
                     android:id="@+id/star"
-                    android:layout_width="7dp"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_star_grey" />
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/ic_star_grey"/>
 
                 <TextView
                     android:id="@+id/rating"
@@ -86,6 +85,7 @@
             <RelativeLayout
                 android:layout_width="60dp"
                 android:layout_height="25dp"
+                android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_alignParentStart="true">
                 <TextView
@@ -113,9 +113,9 @@
 
                     <ImageView
                         android:id="@+id/up_to_date"
-                        android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_check" />
+                        android:layout_width="20dp"
+                        android:src="@drawable/ic_check"/>
                 </LinearLayout>
 
                 <TextView

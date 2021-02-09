@@ -19,7 +19,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.PaskoochehApplication;
@@ -70,9 +70,9 @@ public class ToolDownloadService extends IntentService {
         try {
             this.version = Parcels.unwrap(intent.getExtras().getParcelable("VERSION"));
 
-            Integer urlSplit = version.getS3Key().lastIndexOf("/");
-            String directory = version.getS3Key().substring(0, urlSplit);
-            String externalFile = version.getS3Key().substring(urlSplit + 1);
+            Integer urlSplit = version.s3Key.lastIndexOf("/");
+            String directory = version.s3Key.substring(0, urlSplit);
+            String externalFile = version.s3Key.substring(urlSplit + 1);
 
             final NotificationManager notificationManager
                     = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -81,21 +81,21 @@ public class ToolDownloadService extends IntentService {
 
             notificationBuilder.setSmallIcon(R.drawable.ic_notification);
             notificationBuilder.setOngoing(true);
-            if (version.getPackageName() != null &&
-                    version.getPackageName().equals(this.getPackageName())) {
+            if (version.packageName != null &&
+                    version.packageName.equals(this.getPackageName())) {
                 notificationBuilder.setContentTitle(getString(R.string.update));
             } else {
-                notificationBuilder.setContentTitle(version.getAppName())
+                notificationBuilder.setContentTitle(version.appName)
                         .setContentText(getString(R.string.download_in_progress))
                         .setProgress(100, 0, false);
-                notificationManager.notify(version.getToolId(), notificationBuilder.build());
+                notificationManager.notify(version.toolId, notificationBuilder.build());
             }
 
             final File internalFile = new File(getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk" + TEMP, version.getAppName(), version.getVersionNumber()));
-            final TransferObserver observer = transferUtility.download(version.getS3Bucket() + directory, externalFile, internalFile);
+            final TransferObserver observer = transferUtility.download(version.s3Bucket + directory, externalFile, internalFile);
             final long startTime = System.currentTimeMillis();
 
-            sharedPreferences.edit().putInt(version.getPackageName(), observer.getId()).commit();
+            sharedPreferences.edit().putInt(version.packageName, observer.getId()).commit();
 
             observer.setTransferListener(new TransferListener() {
                 @Override
@@ -104,11 +104,11 @@ public class ToolDownloadService extends IntentService {
                         long totalTime = System.currentTimeMillis() - startTime;
                         registerDownloadRequest(AmazonToolRequest.DOWNLOAD, totalTime);
 
-                        sharedPreferences.edit().remove(version.getPackageName()).commit();
+                        sharedPreferences.edit().remove(version.packageName).commit();
 
                         notificationBuilder.setProgress(0, 0, true);
                         notificationBuilder.setContentText(getString(R.string.verifying));
-                        notificationManager.notify(version.getToolId(), notificationBuilder.build());
+                        notificationManager.notify(version.toolId, notificationBuilder.build());
 
                         Intent configIntent = new Intent(ToolDownloadService.this, ToolDownloadSecurityService.class);
                         configIntent.putExtras(intent);
@@ -119,7 +119,7 @@ public class ToolDownloadService extends IntentService {
                 @Override
                 public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                     notificationBuilder.setProgress((int) bytesTotal, (int) bytesCurrent, false);
-                    notificationManager.notify(version.getToolId(), notificationBuilder.build());
+                    notificationManager.notify(version.toolId, notificationBuilder.build());
                 }
 
                 @Override
@@ -127,9 +127,9 @@ public class ToolDownloadService extends IntentService {
                     long totalTime = System.currentTimeMillis() - startTime;
                     registerDownloadRequest(AmazonToolRequest.FAILED, totalTime);
 
-                    sharedPreferences.edit().remove(version.getPackageName()).commit();
+                    sharedPreferences.edit().remove(version.packageName).commit();
                     for (File file: new File(getApplicationContext().getFilesDir() + "/").listFiles()) {
-                        if (file.getName().startsWith(version.getAppName())) {
+                        if (file.getName().startsWith(version.appName)) {
                             file.delete();
                         }
                     }
@@ -143,33 +143,32 @@ public class ToolDownloadService extends IntentService {
                     notificationBuilder.setOngoing(false);
                     notificationBuilder.setContentText(getString(R.string.download_failed_retry));
                     notificationBuilder.setProgress(0, 0, false);
-                    notificationManager.notify(version.getToolId(), notificationBuilder.build());
+                    notificationManager.notify(version.toolId, notificationBuilder.build());
 
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(
                                     getApplicationContext(),
-                                    String.format(getString(R.string.retry_tool_download), version.getAppName()),
+                                    String.format(getString(R.string.retry_tool_download), version.appName),
                                     Toast.LENGTH_SHORT
                             ).show();                }
                     });
 
-                    Crashlytics.logException(ex);
+                    FirebaseCrashlytics.getInstance().recordException(ex);
+
                     Log.e("ToolDownloadService", ex.toString());
                 }
             });
         } catch (Exception ex) {
-            Crashlytics.logException(ex);
-            Crashlytics.log(version.getAppName() + " " + version.getS3Bucket() + ""  + version.getS3Key());
-
-
+            FirebaseCrashlytics.getInstance().recordException(ex);
+            FirebaseCrashlytics.getInstance().log(version.appName + " " + version.s3Bucket + ""  + version.s3Key);
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(
                             getApplicationContext(),
-                            String.format(getString(R.string.retry_tool_download), version.getAppName()),
+                            String.format(getString(R.string.retry_tool_download), version.appName),
                             Toast.LENGTH_SHORT
                     ).show();                }
             });

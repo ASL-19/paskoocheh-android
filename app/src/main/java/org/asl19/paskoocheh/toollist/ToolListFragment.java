@@ -168,7 +168,7 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
         }
 
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
         ToolListAdapter adapterAllApps = new ToolListAdapter(this, versions, downloadAndRatings, images, localizedInfos, R.layout.card_tool_featured);
         adapterList.add(adapterAllApps);
         recyclerView.setAdapter(adapterAllApps);
@@ -231,7 +231,7 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
             }
 
             recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setHasFixedSize(true);
+            recyclerView.setHasFixedSize(false);
             ToolListAdapter adapterAllApps = new ToolListAdapter(this, versions, downloadAndRatings, images, localizedInfos, R.layout.card_tool_featured);
             adapterList.add(adapterAllApps);
             recyclerView.setAdapter(adapterAllApps);
@@ -293,7 +293,7 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
 
         categoryRecycler.setLayoutManager(linearLayoutManager);
-        categoryRecycler.setHasFixedSize(true);
+        categoryRecycler.setHasFixedSize(false);
         ToolListCategoryAdapter categoryAdapter = new ToolListCategoryAdapter(names, getContext(), R.layout.card_categories);
         categoryRecycler.setAdapter(categoryAdapter);
 

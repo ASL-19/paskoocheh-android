@@ -16,8 +16,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.crashlytics.android.Crashlytics;
-
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
@@ -57,17 +56,17 @@ public class ToolDownloadSecurityService extends IntentService {
         try {
             this.version = Parcels.unwrap(intent.getExtras().getParcelable("VERSION"));
 
-            Integer urlSplit = version.getS3Key().lastIndexOf("/");
-            String directory = version.getS3Key().substring(0, urlSplit);
-            String externalFile = version.getS3Key().substring(urlSplit + 1) + ASC;
+            Integer urlSplit = version.s3Key.lastIndexOf("/");
+            String directory = version.s3Key.substring(0, urlSplit);
+            String externalFile = version.s3Key.substring(urlSplit + 1) + ASC;
 
             final NotificationManager notificationManager
                     = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, Constants.PRIMARY_CHANNEL);
 
-            final File internalSecurityFile = new File(getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk" + ASC, version.getAppName(), version.getVersionNumber()));
+            final File internalSecurityFile = new File(getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk" + ASC, version.appName, version.getVersionNumber()));
 
-            final TransferObserver observer = transferUtility.download(version.getS3Bucket() + directory, externalFile, internalSecurityFile);
+            final TransferObserver observer = transferUtility.download(version.s3Bucket + directory, externalFile, internalSecurityFile);
             observer.setTransferListener(new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
@@ -85,7 +84,7 @@ public class ToolDownloadSecurityService extends IntentService {
                 @Override
                 public void onError(int id, Exception ex) {
                     for (File file : new File(getApplicationContext().getFilesDir() + "/").listFiles()) {
-                        if (file.getName().startsWith(version.getAppName())) {
+                        if (file.getName().startsWith(version.appName)) {
                             file.delete();
                         }
                     }
@@ -95,31 +94,32 @@ public class ToolDownloadSecurityService extends IntentService {
                     PendingIntent pendingIntent = PendingIntent.getService(
                             getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                    notificationBuilder.setContentTitle(version.getAppName());
+                    notificationBuilder.setContentTitle(version.appName);
                     notificationBuilder.setSmallIcon(R.drawable.ic_notification);
                     notificationBuilder.setContentIntent(pendingIntent);
                     notificationBuilder.setOngoing(false);
                     notificationBuilder.setContentText(getString(R.string.download_failed_retry));
                     notificationBuilder.setProgress(0, 0, false);
-                    notificationManager.notify(version.getToolId(), notificationBuilder.build());
+                    notificationManager.notify(version.toolId, notificationBuilder.build());
 
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(
                                     getApplicationContext(),
-                                    String.format(getString(R.string.retry_tool_download), version.getAppName()),
+                                    String.format(getString(R.string.retry_tool_download), version.appName),
                                     Toast.LENGTH_SHORT
                             ).show();                }
                     });
-
-                    Crashlytics.logException(ex);
+                    FirebaseCrashlytics.getInstance().recordException(ex);
                     Log.e(this.getClass().getSimpleName(), ex.toString());
                 }
             });
         } catch (Exception ex) {
-            Crashlytics.logException(ex);
-            Crashlytics.log(version.getAppName() + " " + version.getS3Bucket() + " " + version.getS3Key());
+            FirebaseCrashlytics.getInstance().recordException(ex);
+            FirebaseCrashlytics.getInstance().log(version.appName + " " + version.s3Bucket + " " + version.s3Key);
+
+
         }
     }
 }

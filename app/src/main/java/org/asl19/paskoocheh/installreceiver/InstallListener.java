@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.asl19.paskoocheh.data.AmazonToolRequest;
 import org.asl19.paskoocheh.data.source.AmazonDataSource;
@@ -37,16 +37,18 @@ public class InstallListener extends BroadcastReceiver {
                 public void onGetVersionsSuccessful(List<Version> versions) {
                     try {
                         for (Version version : versions) {
-                            if (version.getPackageName() != null &&
-                                    version.getPackageName().equals(packageName)) {
+                                //version.getPackageName()      to version.packageName
+                                //version.getAppName() to version .appName
+                            if (version.packageName != null &&
+                                    version.packageName.equals(packageName)) {
                                 for (File file : new File(context.getFilesDir() + "/").listFiles()) {
-                                    if (file.getName().startsWith(version.getAppName())) {
+                                    if (file.getName().startsWith(version.appName)) {
                                         file.delete();
                                     }
                                 }
 
                                 NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                mNotificationManager.cancel(version.getToolId().intValue());
+                                mNotificationManager.cancel(version.toolId.intValue());
 
                                 NetworkInfo networkInfo = Connectivity.getNetworkInfo(context.getApplicationContext());
                                 TelephonyManager telephonyManager = (TelephonyManager) context.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
@@ -56,9 +58,9 @@ public class InstallListener extends BroadcastReceiver {
                                 if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
                                     amazonToolRequest.setType(AmazonToolRequest.UPDATE);
                                 }
-                                amazonToolRequest.setTool(version.getAppName());
-                                amazonToolRequest.setToolVersion(version.getVersionNumber());
-                                amazonToolRequest.setFileSize(version.getSize().toString());
+                                amazonToolRequest.setTool(version.appName);
+                                amazonToolRequest.setToolVersion(version.versionNumber);
+                                amazonToolRequest.setFileSize(version.size.toString());
 
                                 amazonToolRequest.setNetworkName(telephonyManager.getNetworkOperatorName());
                                 amazonToolRequest.setNetworkCountry(telephonyManager.getNetworkCountryIso());
@@ -76,7 +78,7 @@ public class InstallListener extends BroadcastReceiver {
                             }
                         }
                     } catch (Exception ex) {
-                        Crashlytics.logException(ex);
+                        FirebaseCrashlytics.getInstance().recordException(ex);
                     }
                 }
 
@@ -85,7 +87,7 @@ public class InstallListener extends BroadcastReceiver {
                 }
             });
         } catch (Exception ex) {
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().recordException(ex);
         }
     }
 }
