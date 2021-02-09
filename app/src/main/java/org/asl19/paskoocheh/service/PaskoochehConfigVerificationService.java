@@ -10,7 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -100,11 +100,12 @@ public class PaskoochehConfigVerificationService extends IntentService {
             final File originalFile = new File(getApplicationContext().getFilesDir() + "/" + originalFilename);
 
             if (originalFile.exists() &&
-                    securityFile.exists() &&
-                    verifySignature(
-                    new BufferedInputStream(new FileInputStream(originalFile)),
-                    new BufferedInputStream(new FileInputStream(securityFile)),
-                    new BufferedInputStream(getApplicationContext().getAssets().open("EA6173BA.pub")))) {
+                    securityFile.exists() 
+                     && verifySignature(
+                     new BufferedInputStream(new FileInputStream(originalFile)),
+                     new BufferedInputStream(new FileInputStream(securityFile)),
+                     new BufferedInputStream(getApplicationContext().getAssets().open("EA6173BA.pub")))
+                    ) {
                 Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
                 switch (originalFilename) {
                     case APPS:
@@ -158,8 +159,7 @@ public class PaskoochehConfigVerificationService extends IntentService {
                     Toast.LENGTH_SHORT
             ).show();
 
-            Crashlytics.logException(ex);
-
+            FirebaseCrashlytics.getInstance().recordException(ex);
             Log.e("SecurityConfigService", ex.toString());
         }
     }
@@ -261,37 +261,37 @@ public class PaskoochehConfigVerificationService extends IntentService {
         localizedInfoLocalDataSource.clearTable();
         imagesLocalDataSource.clearTable();
 
-        versionLocalDataSource.saveVersion(config.getVersions().getAndroid());
+        versionLocalDataSource.saveVersion(config.versions.android);
 
-        for (Category category : config.getCategories()) {
-            category.getName().setCategoryId(category.getId());
-            if (category.getIcon() != null) {
-                category.getName().setIcon(category.getIcon().getUrl());
+        for (Category category : config.categories) {
+            category.name.setCategoryId(category.id);
+            if (category.icon != null) {
+                category.name.setIcon(category.icon.url);
             }
-            nameLocalDataSource.saveNames(category.getName());
+            nameLocalDataSource.saveNames(category.name);
         }
 
-        for (Version version : config.getVersions().getAndroid()) {
-            version.getImages().setToolId(version.getToolId());
-            version.getImages().setVersionId(version.getId());
-            imagesLocalDataSource.saveImages(version.getImages());
+        for (Version version : config.versions.android) {
+            version.images.setToolId(version.toolId);
+            version.images.setVersionId(version.id);
+            imagesLocalDataSource.saveImages(version.images);
         }
 
-        toolLocalDataSource.saveTool(config.getTools());
+        toolLocalDataSource.saveTool(config.tools);
 
-        for (Tool tool : config.getTools()) {
+        for (Tool tool : config.tools) {
             toolLocalDataSource.saveTool(tool);
 
-            tool.getImages().setToolId(tool.getId());
-            imagesLocalDataSource.saveImages(tool.getImages());
+            tool.images.setToolId(tool.id);
+            imagesLocalDataSource.saveImages(tool.images);
 
-            LocalizedInfo infoEn = tool.getInfo().getEn();
-            infoEn.setToolId(tool.getId());
+            LocalizedInfo infoEn = tool.info.getEn();
+            infoEn.setToolId(tool.id);
             infoEn.setLocale(EN);
             localizedInfoLocalDataSource.saveLocalizedInfo(infoEn);
 
-            LocalizedInfo infoFa = tool.getInfo().getFa();
-            infoFa.setToolId(tool.getId());
+            LocalizedInfo infoFa = tool.info.fa;
+            infoFa.setToolId(tool.id);
             infoFa.setLocale(FA);
             localizedInfoLocalDataSource.saveLocalizedInfo(infoFa);
         }

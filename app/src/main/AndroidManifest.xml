@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
@@ -97,7 +99,6 @@
         <activity android:name=".feedback.FeedbackActivity"/>
         <activity android:name=".search.SearchActivity"/>
         <activity android:name=".guide.GuideActivity"/>
-        <activity android:name=".about.GalleryActivity"/>
         <activity android:name=".gallery.GalleryActivity"/>
     </application>
 

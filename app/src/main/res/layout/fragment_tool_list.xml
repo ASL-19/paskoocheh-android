@@ -12,7 +12,8 @@
                 android:id="@+id/tool_list_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layoutDirection="rtl">
                 <LinearLayout
                     android:id="@+id/tools_layout"
                     android:layout_width="match_parent"
@@ -28,7 +29,9 @@
                     android:paddingTop="15dp"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
-                    android:paddingBottom="7dp">
+                    android:paddingBottom="7dp"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -37,7 +40,8 @@
                             android:layout_centerVertical="true"
                             android:textColor="@color/colorPrimary"
                             android:text="@string/categories"
-                            fontPath="fonts/IRANSans_Bold.ttf"/>
+                            fontPath="fonts/IRANSans_Bold.ttf"
+                            android:layout_alignParentEnd="true" />
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -47,7 +51,8 @@
                     android:paddingLeft="10dp"
                     android:clipToPadding="false"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp">
                 </androidx.recyclerview.widget.RecyclerView>
             </LinearLayout>
         </ScrollView>

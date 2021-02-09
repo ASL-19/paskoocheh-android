@@ -4,7 +4,10 @@ package org.asl19.paskoocheh.loading;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.asl19.paskoocheh.ActivityUtils;
@@ -19,7 +22,11 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.UUID;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+//import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import io.github.inflationx.calligraphy3.CalligraphyConfig;
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
+import io.github.inflationx.viewpump.ViewPump;
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 import static org.asl19.paskoocheh.Constants.APPS;
 import static org.asl19.paskoocheh.Constants.DOWNLOADS_AND_RATINGS;
@@ -37,6 +44,9 @@ public class LoadingActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        }
         EventBus.getDefault().register(this);
 
         LoadingFragment loadingFragment =
@@ -86,7 +96,7 @@ public class LoadingActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(PaskoochehContextWrapper.wrap(newBase)));
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(PaskoochehContextWrapper.wrap(newBase)));
     }
 
     private void generateUserId() {

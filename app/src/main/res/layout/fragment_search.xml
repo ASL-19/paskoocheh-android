@@ -8,7 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layoutDirection="rtl">
         <LinearLayout
             android:id="@+id/category_layout"
             android:gravity="center_horizontal"
@@ -36,12 +37,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:layoutDirection="rtl"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
                 android:id="@+id/list_header"
                 android:elevation="4dp"
-                android:gravity="right"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
@@ -49,7 +50,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimary"
-                    android:gravity="left|start"
                     android:padding="15dp"
                     fontPath="fonts/IRANSans_Bold.ttf"/>
             </LinearLayout>

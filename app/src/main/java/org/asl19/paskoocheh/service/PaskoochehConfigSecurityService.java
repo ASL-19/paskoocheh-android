@@ -12,7 +12,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
@@ -65,7 +65,7 @@ public class PaskoochehConfigSecurityService extends IntentService {
             securityFilename = originalFilename + ASC;
             downloadFile(intent);
         } catch (Exception ex) {
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().recordException(ex);
             Handler mainHandler = new Handler(Looper.getMainLooper());
 
             Runnable myRunnable = new Runnable() {
@@ -107,7 +107,7 @@ public class PaskoochehConfigSecurityService extends IntentService {
                         Toast.LENGTH_SHORT
                 ).show();
 
-                Crashlytics.logException(ex);
+                FirebaseCrashlytics.getInstance().recordException(ex);
 
                 Log.e("SecurityConfigService", ex.toString());
             }

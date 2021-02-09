@@ -7,7 +7,8 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:padding="15dp"
-    android:filterTouchesWhenObscured="true">
+    android:filterTouchesWhenObscured="true"
+    android:layoutDirection="rtl">
 
     <TextView
         android:id="@+id/create_tag"
@@ -44,7 +45,9 @@
             android:layout_marginRight="15dp"
             android:text="@string/no"
             android:textColor="@color/black"
-            android:textSize="?font_medium"/>
+            android:textSize="?font_medium"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp" />
 
         <TextView
             android:id="@+id/ok"
@@ -55,6 +58,8 @@
             android:text="@string/yes"
             android:textColor="@color/black"
             android:textSize="?font_medium"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
+            fontPath="fonts/IRANSans_Bold.ttf"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp" />
     </LinearLayout>
 </RelativeLayout>

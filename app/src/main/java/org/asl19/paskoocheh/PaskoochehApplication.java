@@ -1,6 +1,6 @@
 package org.asl19.paskoocheh;
 
-
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,8 +8,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 
-import com.crashlytics.android.Crashlytics;
 import com.evernote.android.job.JobManager;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.squareup.leakcanary.LeakCanary;
 
 import org.asl19.paskoocheh.amazon.AmazonComponenet;
@@ -18,10 +18,10 @@ import org.asl19.paskoocheh.service.ConfigJobCreator;
 
 import java.util.Locale;
 
-import io.fabric.sdk.android.Fabric;
 import lombok.Getter;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-
+import io.github.inflationx.calligraphy3.CalligraphyConfig;
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
+import io.github.inflationx.viewpump.ViewPump;
 import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW;
 import static org.asl19.paskoocheh.Constants.PRIMARY_CHANNEL;
 
@@ -42,24 +42,29 @@ public class PaskoochehApplication extends Application {
         }
         LeakCanary.install(this);
         // Normal app init code...
-
-        Fabric.with(this, new Crashlytics());
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
 
         amazonComponenet = DaggerAmazonComponenet.builder()
                 .paskoochehApplicationModule(new PaskoochehApplicationModule(getApplicationContext()))
                 .build();
-
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/IRANSans.ttf")
-                .setFontAttrId(R.attr.fontPath)
-                .build()
-        );
+        ViewPump.init(ViewPump.builder()
+                .addInterceptor(new CalligraphyInterceptor(
+                        new CalligraphyConfig.Builder()
+                                .setDefaultFontPath("fonts/IRANSans.ttf")
+                                .setFontAttrId(R.attr.fontPath)
+                                .build()))
+                .build());
+//        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+//                .setDefaultFontPath("fonts/IRANSans.ttf")
+//                .setFontAttrId(R.attr.fontPath)
+//                .build()
+//        );
 
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            NotificationChannel notificationChannel = new NotificationChannel(PRIMARY_CHANNEL, getString(R.string.app_name), IMPORTANCE_LOW);
+            @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(PRIMARY_CHANNEL, getString(R.string.app_name), IMPORTANCE_LOW);
             notificationChannel.enableVibration(false);
             notificationChannel.enableLights(false);
             notificationManager.createNotificationChannel(notificationChannel);

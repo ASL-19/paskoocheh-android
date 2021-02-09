@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
     android:focusable="true"
+    android:layoutDirection="rtl"
     android:filterTouchesWhenObscured="true">
     <LinearLayout
         android:id="@+id/success"
@@ -62,7 +63,6 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp"
                 android:background="@drawable/button_light_grey_outline"
-                android:gravity="right"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="?font_medium"
                 android:maxLength="255"
@@ -93,7 +93,6 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp"
                 android:background="@drawable/button_light_grey_outline"
-                android:gravity="right"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="?font_medium"
                 android:maxLength="64"
@@ -125,7 +124,6 @@
                 android:layout_height="match_parent"
                 android:padding="16dp"
                 android:background="@drawable/button_light_grey_outline"
-                android:gravity="right"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="?font_medium"
                 android:maxLength="512"

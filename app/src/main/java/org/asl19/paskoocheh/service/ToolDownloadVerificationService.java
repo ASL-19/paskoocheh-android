@@ -1,6 +1,7 @@
 package org.asl19.paskoocheh.service;
 
 
+import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -18,8 +19,7 @@ import androidx.core.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.pojo.Version;
@@ -72,11 +72,12 @@ public class ToolDownloadVerificationService extends IntentService {
             final File internalSecurityFile = new File(getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk" + ASC, version.getAppName(), version.getVersionNumber()));
 
             if ((version.getChecksum().isEmpty() || Checksum.checkChecksum(version.getChecksum(), internalTempFile))
-                    && verifySignature(
-                    new BufferedInputStream(new FileInputStream(internalTempFile)),
-                    new BufferedInputStream(new FileInputStream(internalSecurityFile)),
-                    new BufferedInputStream(getApplicationContext().getAssets().open("EA6173BA.pub"))
-            )) {
+                     && verifySignature(
+                     new BufferedInputStream(new FileInputStream(internalTempFile)),
+                     new BufferedInputStream(new FileInputStream(internalSecurityFile)),
+                     new BufferedInputStream(getApplicationContext().getAssets().open("EA6173BA.pub"))
+                     )
+            ) {
 
                 File internalFile = new File(getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));
                 internalTempFile.renameTo(internalFile);
@@ -109,13 +110,15 @@ public class ToolDownloadVerificationService extends IntentService {
             } else {
                 notificationManager.cancel(version.getToolId());
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @SuppressLint("StringFormatInvalid")
                     @Override
                     public void run() {
                         Toast.makeText(
                                 getApplicationContext(),
-                                String.format(getString(R.string.checksum_invalid), version.getAppName()),
+                                String.format(getString(R.string.checksum_invalid),
+                                        version.appName),
                                 Toast.LENGTH_SHORT
-                        ).show();                }
+                        ).show(); }
                 });
 
                 for (File file : new File(getApplicationContext().getFilesDir() + "/").listFiles()) {
@@ -151,7 +154,7 @@ public class ToolDownloadVerificationService extends IntentService {
                     ).show();                }
             });
 
-            Crashlytics.logException(exception);
+            FirebaseCrashlytics.getInstance().recordException(exception);
             Log.e(this.getClass().getSimpleName(), exception.toString());
         }
     }
