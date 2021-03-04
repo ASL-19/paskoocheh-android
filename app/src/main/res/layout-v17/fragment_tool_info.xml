@@ -1,0 +1,656 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollView"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:filterTouchesWhenObscured="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:layoutDirection="rtl">
+        <requestFocus/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/icon_view"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="10dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_large"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                <TextView
+                    android:id="@+id/vendor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="?font_small"/>
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/categories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:flexWrap="wrap"
+                    app:alignContent="flex_start"
+                    app:showDivider="middle"
+                    app:dividerDrawable="@drawable/divider" >
+                </com.google.android.flexbox.FlexboxLayout>
+
+                <TextView
+                    android:id="@+id/version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="?font_small"/>
+
+                <TextView
+                    android:id="@+id/size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textSize="?font_small"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/install_tools"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+
+            <Button
+                android:id="@+id/install_button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="@string/install"
+                style="@style/ButtonWrapContent"
+                android:background="@drawable/button_regular" />
+
+            <Button
+                android:id="@+id/update_button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="@string/update"
+                android:textColor="@color/blue"
+                android:background="@drawable/button_regular_blue"
+                style="@style/ButtonWrapContent"/>
+
+            <Button
+                android:id="@+id/email"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="@string/email"
+                style="@style/ButtonWrapContent"
+                android:background="@drawable/button_regular"/>
+
+            <Button
+                android:id="@+id/play_store_button"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="@string/play_store"
+                style="@style/ButtonWrapContent"
+                android:background="@drawable/button_regular"/>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/badge_divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="10dp"
+            android:background="#CCCCCC"/>
+
+        <LinearLayout
+            android:id="@+id/badges"
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="7dp"
+                android:gravity="center"
+                android:layout_weight="1">
+                <ImageView
+                    android:id="@+id/badge_rating"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_badge_rating"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_alignBottom="@id/badge_rating"
+                    android:layout_alignLeft="@id/badge_rating"
+                    android:layout_alignRight="@id/badge_rating"
+                    android:layout_alignTop="@id/badge_rating"
+                    android:layout_alignEnd="@id/badge_rating"
+                    android:layout_alignStart="@id/badge_rating">
+
+                    <TextView
+                        android:id="@+id/badge_rating_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="#FFFFFF"
+                        android:textSize="?font_xlarge"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/badge_rating_total"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:layout_alignLeft="@id/badge_rating"
+                    android:layout_alignRight="@id/badge_rating"
+                    android:layout_below="@id/badge_rating"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_small"
+                    android:text="@string/rating_empty"
+                    fontPath="fonts/IRANSans_Bold.ttf"
+                    android:layout_alignEnd="@id/badge_rating"
+                    android:layout_alignStart="@id/badge_rating" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_margin="7dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="1">
+                <ImageView
+                    android:id="@+id/badge_download"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_badge_download"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_alignBottom="@id/badge_download"
+                    android:layout_alignLeft="@id/badge_download"
+                    android:layout_alignRight="@id/badge_download"
+                    android:layout_alignTop="@id/badge_download"
+                    android:layout_alignStart="@id/badge_download"
+                    android:layout_alignEnd="@id/badge_download">
+
+                    <TextView
+                        android:id="@+id/badge_download_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#FFFFFF"
+                        android:textSize="?font_medium"/>
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:layout_alignLeft="@id/badge_download"
+                    android:layout_alignRight="@id/badge_download"
+                    android:layout_below="@id/badge_download"
+                    android:text="@string/number_downloads"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_small"
+                    fontPath="fonts/IRANSans_Bold.ttf"
+                    android:layout_alignEnd="@id/badge_download"
+                    android:layout_alignStart="@id/badge_download" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/toolBody"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layoutDirection="rtl">
+
+            <LinearLayout
+                android:id="@+id/screenshot_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#CCCCCC"/>
+
+                <HorizontalScrollView
+                    android:id="@+id/horizontal_scroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="5dp">
+                    <LinearLayout
+                        android:id="@+id/screenshot_inner_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"/>
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/description_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#CCCCCC"/>
+
+            <LinearLayout
+                android:id="@+id/description_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layoutDirection="rtl">
+
+                <TextView
+                    android:id="@+id/description_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/description"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_xlarge"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                <org.asl19.paskoocheh.utils.NonScrollTextView
+                    android:id="@+id/description_body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textColorLink="@color/blue"/>
+
+                <TextView
+                    android:id="@+id/read_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/read_more"
+                    android:textColor="@color/blue"/>
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/rate_title_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                android:background="#CCCCCC"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                >
+
+                <TextView
+                    android:id="@+id/rate_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rate_this_app"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_xlarge"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    >
+                    <TextView
+                        android:id="@+id/total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="?font_xsmall"/>
+
+                    <ImageView
+                        android:id="@+id/star"
+                        android:layout_width="23dp"
+                        android:layout_height="23dp"
+                        android:padding="3dp"
+                        android:src="@drawable/ic_star"/>
+
+                    <TextView
+                        android:id="@+id/rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="?font_small"
+                        android:layoutDirection="ltr"
+                        android:text="-"
+                        fontPath="fonts/IRANSans_Bold.ttf"/>
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+            <android.widget.RatingBar
+                android:id="@+id/rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp" />
+
+
+            <LinearLayout
+                android:id="@+id/review_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layoutDirection="rtl"
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/review_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#CCCCCC"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="vertical"
+                    android:layoutDirection="rtl">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reviews"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="?font_xlarge"
+                        fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/list_review"
+                        android:layout_marginTop="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layoutDirection="ltr"/>
+
+                    <TextView
+                        android:id="@+id/read_more_reviews"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="10dp"
+                        android:text="@string/read_more"
+                        android:textColor="@color/blue"
+                        android:textSize="?font_small"
+                        android:visibility="gone"
+                        android:background="@drawable/button_category"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/guide_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#CCCCCC"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/guide_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:id="@+id/guide_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="16dp"
+                    android:text="@string/guide"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_xlarge"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#CCCCCC"/>
+
+                <org.asl19.paskoocheh.utils.NonScrollListView
+                    android:id="@+id/expandable_list_guide"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:groupIndicator="@null"
+                    android:childDivider="@color/buttonGrey"
+                    android:theme="@style/EditTextHint"
+                    >
+                </org.asl19.paskoocheh.utils.NonScrollListView>
+
+                <org.asl19.paskoocheh.utils.NonScrollExpandableListView
+                    android:id="@+id/expandable_list_tutorial"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:groupIndicator="@null"
+                    android:childDivider="@color/buttonGrey"
+                    android:theme="@style/EditTextHint">
+                </org.asl19.paskoocheh.utils.NonScrollExpandableListView>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/faq_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#CCCCCC"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/faq_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    android:id="@+id/faq_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="16dp"
+                    android:text="@string/faq"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_xlarge"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#CCCCCC"/>
+
+                <org.asl19.paskoocheh.utils.NonScrollExpandableListView
+                    android:id="@+id/expandable_list"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indicatorRight="50dp"
+                    android:groupIndicator="@null"
+                    android:childDivider="@color/buttonGrey"
+                    android:theme="@style/EditTextHint">
+                </org.asl19.paskoocheh.utils.NonScrollExpandableListView>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#CCCCCC"/>
+
+            <LinearLayout
+                android:id="@+id/support_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/contact_support"
+                    android:textColor="@color/black"
+                    android:textSize="?font_medium"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layoutDirection="rtl"
+                    android:weightSum="2">
+                    <Button
+                        android:id="@+id/app_support"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_blue_to_blue_outline"
+                        android:text="@string/email"
+                        android:textColor="@drawable/button_text_white_to_light_blue"
+                        android:textSize="?font_medium"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"/>
+
+                    <Button
+                        android:id="@+id/telegram_support"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_blue_to_blue_outline"
+                        android:text="@string/telegram"
+                        android:textColor="@drawable/button_text_white_to_light_blue"
+                        android:textSize="?font_medium"
+                        android:layout_marginEnd="8dp" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#CCCCCC"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical"
+                android:layoutDirection="rtl">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/more_information"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_xlarge"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/builder"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_medium"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                <TextView
+                    android:id="@+id/builder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_small"
+                    android:autoLink="web"
+                    android:theme="@style/Link"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/last_updated"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="?font_medium"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+
+                <TextView
+                    android:id="@+id/last_modified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textGrey"
+                    android:textSize="?font_small"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#CCCCCC"/>
+
+            <TextView
+                android:id="@+id/to_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="@string/to_top"
+                android:textColor="@color/blue"
+                android:textSize="?font_medium"
+                fontPath="fonts/IRANSans_Bold.ttf"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

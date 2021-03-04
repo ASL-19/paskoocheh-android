@@ -17,16 +17,20 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.BuildConfig;
+import org.asl19.paskoocheh.OuinetService;
+import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.about.AboutActivity;
 import org.asl19.paskoocheh.data.source.Local.PaskoochehDatabase;
@@ -54,13 +58,23 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+//import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import ie.equalit.ouinet.Config;
+import ie.equalit.ouinet.Ouinet;
+import io.github.inflationx.calligraphy3.CalligraphyConfig;
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
+import io.github.inflationx.viewpump.ViewPump;
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
+import static org.asl19.paskoocheh.Constants.OUINET_PREF;
 import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
 import static org.asl19.paskoocheh.Constants.SCREEN;
 import static org.asl19.paskoocheh.Constants.SHARE;
 import static org.asl19.paskoocheh.Constants.UPDATE_NOTIFICATION;
+import static org.asl19.paskoocheh.PaskoochehApplication.USE_SERVICE;
+import static org.asl19.paskoocheh.PaskoochehApplication.ouinetConfig;
+import static org.asl19.paskoocheh.PaskoochehApplication.mOuinet;
 
 public class BaseNavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BaseNavigationContract.NavigationView{
 
@@ -84,8 +98,12 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
     TextView updatesAvailable;
 
     CheckBox wifiSwitch;
+    CheckBox ouinetSwitch;
 
     private ApkManager apkManager;
+
+    private static final String LOGTAG = "OuinetPaskBaseNavi";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +128,7 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(PaskoochehContextWrapper.wrap(newBase)));
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(PaskoochehContextWrapper.wrap(newBase)));
 
     }
 
@@ -143,6 +161,41 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                             DOWNLOAD_WIFI,
                             wifiSwitch.isChecked()
                     ).commit();
+
+                }
+            });
+
+            LinearLayout ouinetLayout
+                    = (LinearLayout) MenuItemCompat.getActionView(navigationView.getMenu().findItem(R.id.nav_ouinet));
+            ouinetSwitch = (CheckBox) ouinetLayout.findViewById(R.id.ouinet_checkbox);
+
+            ouinetSwitch.setChecked(getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE)
+                    .getBoolean(OUINET_PREF, false));
+            ouinetSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).edit().putBoolean(
+                            OUINET_PREF,
+                            ouinetSwitch.isChecked()
+                    ).commit();
+                    if(ouinetSwitch.isChecked()){
+                        if (USE_SERVICE) {
+                            Log.d(LOGTAG, " --------- Starting ouinet service");
+                            OuinetService.startOuinetService(getApplicationContext(), ouinetConfig);
+                        } else {
+                            Log.d(LOGTAG, " --------- Starting ouinet in activity");
+                            mOuinet = new Ouinet(getApplicationContext(), ouinetConfig);
+                            mOuinet.start();
+                        }
+                    }else{
+                        if (USE_SERVICE) {
+                            Log.d(LOGTAG, " --------- Stopping ouinet service");
+                            OuinetService.stopOuinetService(getApplicationContext());
+                        } else {
+                            Log.d(LOGTAG, " --------- Stopping ouinet in activity");
+                            mOuinet.stop();
+                        }
+                    }
                 }
             });
 
@@ -198,6 +251,17 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                     bundle.putString(SCREEN, BaseNavigationActivity.class.getName());
                     bundle.putBoolean(DOWNLOAD_WIFI, wifiSwitch.isChecked());
                     FirebaseAnalytics.getInstance(this).logEvent(DOWNLOAD_WIFI, bundle);
+                    return false;
+                case R.id.nav_ouinet:
+                    ouinetSwitch.setChecked(!ouinetSwitch.isChecked());
+                    getSharedPreferences(PASKOOCHEH_PREFS,
+                            Context.MODE_PRIVATE).edit().putBoolean(OUINET_PREF,
+                            ouinetSwitch.isChecked()
+                    ).commit();
+
+                    bundle.putString(SCREEN, BaseNavigationActivity.class.getName());
+                    bundle.putBoolean(OUINET_PREF, ouinetSwitch.isChecked());
+                    FirebaseAnalytics.getInstance(this).logEvent(OUINET_PREF, bundle);
                     return false;
                 case R.id.nav_telegram:
                     bundle.putString(SHARE, "telegram");

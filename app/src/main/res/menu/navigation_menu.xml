@@ -32,6 +32,11 @@
             app:showAsAction="always|withText"
             app:actionLayout="@layout/navigation_action_view_switch"
             android:title="@string/download_only_on_wifi" />
+        <item
+            android:id="@+id/nav_ouinet"
+            app:showAsAction="always|withText"
+            app:actionLayout="@layout/navigation_action_view_ouinetswitch"
+            android:title="@string/ouinet" />
 
         <item
             android:id="@+id/nav_telegram"

@@ -10,7 +10,7 @@
 ```
 
 ### Build Requirements
-- Crashlytics (fabric.properties)
+- Crashlytics 
 - Google Services (google-services.json)
 
 ### Download

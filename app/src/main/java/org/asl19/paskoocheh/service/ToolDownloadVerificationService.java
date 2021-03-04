@@ -1,6 +1,7 @@
 package org.asl19.paskoocheh.service;
 
 
+import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -18,8 +19,7 @@ import androidx.core.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.pojo.Version;
@@ -115,7 +115,7 @@ public class ToolDownloadVerificationService extends IntentService {
                                 getApplicationContext(),
                                 String.format(getString(R.string.checksum_invalid), version.getAppName()),
                                 Toast.LENGTH_SHORT
-                        ).show();                }
+                        ).show(); }
                 });
 
                 for (File file : new File(getApplicationContext().getFilesDir() + "/").listFiles()) {
@@ -151,7 +151,7 @@ public class ToolDownloadVerificationService extends IntentService {
                     ).show();                }
             });
 
-            Crashlytics.logException(exception);
+            FirebaseCrashlytics.getInstance().recordException(exception);
             Log.e(this.getClass().getSimpleName(), exception.toString());
         }
     }

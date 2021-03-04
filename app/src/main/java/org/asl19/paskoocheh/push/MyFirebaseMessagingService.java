@@ -23,15 +23,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import androidx.core.app.NotificationCompat;
 import android.util.Log;
-
+import com.google.firebase.crashlytics.internal.model.CrashlyticsReport;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class MyFirebaseMessagingService<TAG> extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
 

@@ -108,4 +108,5 @@
 
     <!-- UTILS -->
     <string name="image_load_fail_due_to_memory">بارگیری عکس به‌ دلیل کمبود حافظه ممکن نیست</string>
+    <string name="ouinet">Ouinet</string>
 </resources>

@@ -16,8 +16,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.crashlytics.android.Crashlytics;
-
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
@@ -112,14 +111,15 @@ public class ToolDownloadSecurityService extends IntentService {
                                     Toast.LENGTH_SHORT
                             ).show();                }
                     });
-
-                    Crashlytics.logException(ex);
+                    FirebaseCrashlytics.getInstance().recordException(ex);
                     Log.e(this.getClass().getSimpleName(), ex.toString());
                 }
             });
         } catch (Exception ex) {
-            Crashlytics.logException(ex);
-            Crashlytics.log(version.getAppName() + " " + version.getS3Bucket() + " " + version.getS3Key());
+            FirebaseCrashlytics.getInstance().recordException(ex);
+            FirebaseCrashlytics.getInstance().log(version.appName + " " + version.s3Bucket + " " + version.s3Key);
+
+
         }
     }
 }

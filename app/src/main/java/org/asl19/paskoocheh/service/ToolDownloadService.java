@@ -19,7 +19,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.PaskoochehApplication;
@@ -150,20 +150,19 @@ public class ToolDownloadService extends IntentService {
                         public void run() {
                             Toast.makeText(
                                     getApplicationContext(),
-                                    String.format(getString(R.string.retry_tool_download), version.getAppName()),
+                                    String.format(getString(R.string.retry_tool_download), version.appName),
                                     Toast.LENGTH_SHORT
                             ).show();                }
                     });
 
-                    Crashlytics.logException(ex);
+                    FirebaseCrashlytics.getInstance().recordException(ex);
+
                     Log.e("ToolDownloadService", ex.toString());
                 }
             });
         } catch (Exception ex) {
-            Crashlytics.logException(ex);
-            Crashlytics.log(version.getAppName() + " " + version.getS3Bucket() + ""  + version.getS3Key());
-
-
+            FirebaseCrashlytics.getInstance().recordException(ex);
+            FirebaseCrashlytics.getInstance().log(version.getAppName() + " " + version.getS3Bucket() + ""  + version.getS3Key());
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {

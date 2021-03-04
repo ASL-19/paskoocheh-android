@@ -17,8 +17,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
 import com.squareup.picasso.Picasso;
 
 import org.asl19.paskoocheh.Constants;
@@ -243,7 +244,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                 if(browserIntent.resolveActivity(context.getPackageManager()) != null) {
                     context.startActivity(browserIntent);
                 } else {
-                    Crashlytics.log(tool.appName + " has a bad URI (" + tool.getDownloadVia().getUrl() + ") ");
+                    FirebaseCrashlytics.getInstance().log(tool.appName + " has a bad URI (" + tool.getDownloadVia().getUrl() + ") ");
                     playStoreRedirect();
                 }
             } else {

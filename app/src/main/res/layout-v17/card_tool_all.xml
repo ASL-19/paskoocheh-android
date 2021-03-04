@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:background="@drawable/card_border"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <org.asl19.paskoocheh.utils.SquareImageView
+        android:id="@+id/img"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="7dp"
+        android:paddingRight="7dp"
+        android:paddingBottom="7dp"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/colorPrimary"
+            android:textSize="?font_medium"
+            fontPath="fonts/IRANSans_Bold.ttf"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/download_icon"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/ic_download" />
+
+            <TextView
+                android:id="@+id/download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B4B4B4"
+                android:textSize="?font_xsmall"
+                fontPath="fonts/IRANSans_Bold.ttf"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_alignParentEnd="true">
+
+                <ImageView
+                    android:id="@+id/star"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/ic_star_grey"/>
+
+                <TextView
+                    android:id="@+id/rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="?font_xsmall"
+                    android:textColor="#B4B4B4"
+                    fontPath="fonts/IRANSans_Bold.ttf"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="60dp"
+                android:layout_height="25dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true">
+                <TextView
+                    android:id="@+id/play_store"
+                    android:visibility="gone"
+                    android:background="@drawable/button_regular"
+                    style="@style/ButtonMatchParent"
+                    android:text="@string/play_store"
+                    android:textSize="?font_xsmall"/>
+
+                <TextView
+                    android:id="@+id/install"
+                    android:visibility="gone"
+                    android:background="@drawable/button_regular"
+                    style="@style/ButtonMatchParent"
+                    android:text="@string/install"
+                    android:textSize="?font_xsmall"/>
+
+                <LinearLayout
+                    android:id="@+id/installed"
+                    style="@style/ButtonMatchParent"
+                    android:background="@drawable/button_blue"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/up_to_date"
+                        android:layout_height="20dp"
+                        android:layout_width="20dp"
+                        android:src="@drawable/ic_check"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/update"
+                    android:visibility="gone"
+                    android:background="@drawable/button_regular_blue"
+                    style="@style/ButtonMatchParent"
+                    android:text="@string/update"
+                    android:textColor="@color/blue"
+                    android:textSize="?font_xsmall"/>
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,1 +1,2 @@
+include ':ouinet-arm64-v8a-release-2021-01-22_1301'
 include ':app'

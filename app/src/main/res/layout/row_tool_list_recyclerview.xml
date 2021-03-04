@@ -16,16 +16,18 @@
         android:paddingTop="15dp"
         android:paddingLeft="10dp"
         android:paddingRight="15dp"
-        android:paddingBottom="7dp">
+        android:paddingBottom="7dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="15dp">
 
         <LinearLayout
             android:id="@+id/all_apps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_alignParentEnd="true"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -46,11 +48,11 @@
             android:id="@+id/category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:textColor="@color/colorPrimary"
             android:textSize="?font_large"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
+            fontPath="fonts/IRANSans_Bold.ttf"
+            android:layout_alignParentStart="true" />
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -61,6 +63,7 @@
         android:clipToPadding="false"
         android:scrollbars="none"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp">
     </androidx.recyclerview.widget.RecyclerView>
 </RelativeLayout>

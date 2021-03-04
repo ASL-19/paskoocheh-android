@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.asl19.paskoocheh.BuildConfig;
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;

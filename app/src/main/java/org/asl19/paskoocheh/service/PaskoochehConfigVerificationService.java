@@ -10,7 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -158,8 +158,7 @@ public class PaskoochehConfigVerificationService extends IntentService {
                     Toast.LENGTH_SHORT
             ).show();
 
-            Crashlytics.logException(ex);
-
+            FirebaseCrashlytics.getInstance().recordException(ex);
             Log.e("SecurityConfigService", ex.toString());
         }
     }

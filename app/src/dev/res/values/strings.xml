@@ -1,0 +1,132 @@
+<resources>
+    <string name="app_name">Paskoocheh_dev</string>
+
+    <!--NAVIGATION ACTIVITY-->
+    <string name="navigation_drawer_open">Open Browser </string>
+    <string name="navigation_drawer_close">Close Browswer</string>
+    <string name="applications">applications</string>
+    <string name="my_applications">My applications</string>
+    <string name="tell_a_friend">Tell a Friend</string>
+    <string name="update">update</string>
+    <string name="download_only_on_wifi">Download on WIFI only</string>
+    <string name="about_paskoocheh">About Paskoocheh</string>
+    <string name="number_downloads">Number of downloads</string>
+    <string name="rate_this_app">rate this app</string>
+    <string name="description">description</string>
+    <string name="read_more"> More </string>
+    <string name="read_less">Less</string>
+    <string name="reviews">reviews</string>
+    <string name="version">نسخة </string>
+    <string name="updates">updates</string>
+    <string name="up_to_date">up to date</string>
+    <string name="update_dialog">there\'s a new version of Zanga ready to update? </string>
+    <string name="yes">yes</string>
+    <string name="no">No</string>
+    <string name="feedback">share your feedback</string>
+    <string name="telegram_menu">Telegram Menu</string>
+
+    <!--TOOL LIST FRAGMENT & TOOL INFO FRAGMENT & ADAPTERS-->
+    <string name="email">email</string>
+    <string name="install">install</string>
+    <string name="play_store">Play Store</string>
+    <string name="no_playstore_clients">no Play Store clients</string>
+    <string name="share_your_experience">share your experience</string>
+    <string name="topic">topic</string>
+    <string name="description_optional">description optional</string>
+    <string name="submit">submit</string>
+    <string name="review_submitted">review submitted</string>
+    <string name="unable_to_submit_review">unable to sumbit review</string>
+    <string name="download_in_progress">download in proress</string>
+    <string name="queued">queued</string>
+    <string name="connect_wifi">Please connect to WIFI</string>
+    <string name="via_email"> download via email </string>
+    <string name="via_email_subject">When you send this email, you\'ll get an automatic reply from Zanga with a download link or file </string>
+    <string name="send_email">send email</string>
+    <string name="no_email_clients">The email wasn\'t sent. Please try again.</string>
+    <string name="categories">categories</string>
+    <string name="tutorial">Educational materials</string>
+    <string name="video">Video guides</string>
+    <string name="to_top">to top of Menu</string>
+    <string name="continuation">continued …</string>
+    <string name="rating">Average rating(%s person)</string>
+    <string name="rating_empty">no ratings yet</string>
+    <string name="builder">developed by</string>
+    <string name="last_updated">last updated</string>
+    <string name="more_information">more info</string>
+    <string name="guide">guide</string>
+    <string name="faq">FAQ</string>
+    <string name="contact_support">Technical support? Contact us!  </string>
+    <string name="featured">Featured apps </string>
+    <string name="most_downloads">most downloaded apps</string>
+    <string name="updated">updated apps</string>
+    <string name="all">all apps</string>
+    <string name="telegram">Telegram</string>
+
+    <!-- INSTALLED TOOL LIST FRAGMENT -->
+    <string name="details_of_version"> Version details </string>
+    <string name="all_apps_updated"> all apps are up to date </string>
+    <string formatted="false" name="version_installed"> Version (%s)</string>
+
+    <!--ABOUT FRAGMENT-->
+    <string name="title_about"> About Zanga </string>
+
+    <!--PRIVACY FRAGMENT-->
+    <string name="privacy_terms_title"> Privacy Policy and Terms of Use </string>
+
+    <!-- APK MANAGER -->
+    <string name="checksum_invalid">Field invalid</string>
+
+    <!-- LOADING FRAGMENT -->
+    <string name="tap_to_retry">to rety </string>
+
+    <!-- NOTIFICATIONS -->
+    <string name="retry_tool_download"> tool download unsuccessful, please try again
+</string>
+    <string name="download_failed_retry">download failed, please try again</string>
+
+    <!-- FEEDBACK FRAGMENT -->
+    <string name="support">Technical support</string>
+    <string name="your_email">Your email address</string>
+    <string name="email_subject">Email subject</string>
+    <string name="explanation">explanation</string>
+    <string name="send_feedback_email">send email</string>
+    <string name="improper_email">email incorrect</string>
+    <string name="field_is_required">this field is required</string>
+    <string name="support_email_sent">support email sent</string>
+    <string name="wait_for_answer">wait for answer</string>
+    <string name="time_out_retry_check_connection">time out check connection</string>
+
+    <!-- SEARCH FRAGMENT -->
+    <string name="search_result"> search result</string>
+    <string name="search_title">search</string>
+    <string name="apps">apps</string>
+
+    <!-- DOWNLOAD SERVICE -->
+    <string name="verifying">verifying</string>
+    <string name="support_email">bepors@asl19.org</string>
+    <string name="support_telegram">https://t.me/paskadmin_bot</string>
+    <string name="search_result_found">search result for \"%s\"</string>
+
+    <!-- UTILS -->
+    <string name="image_load_fail_due_to_memory">image load failed due to image_load_fail_due_to_memory</string>
+    <string name="ouinet">Ouinet</string>
+
+    <!-- <CENO> -->
+    <!-- "No Wi-Fi" dialog -->
+    <string name="ceno_wifi_disconnected_dialog_title">CENO service</string>
+    <string name="ceno_wifi_disconnected_dialog_description">It is recommended to use CENO when you have a Wi-Fi connection, as it may use more data than you expect. You may want to stop CENO when using mobile data.</string>
+    <string name="ceno_wifi_disconnected_dialog_stop_now">Stop CENO now</string>
+    <string name="ceno_wifi_disconnected_dialog_continue">Continue</string>
+    <string name="ceno_wifi_disconnected_dialog_stop_showing">Do not show again</string>
+
+    <!-- Service notification and actions -->
+    <string name="ceno_notification_title">CENO Browser service</string>
+    <string name="ceno_notification_description">Tap to stop</string>
+    <string name="ceno_notification_home_description">Home</string>
+    <string name="ceno_notification_purge_description">Erase&#9888;</string>
+    <string name="ceno_notification_purge_do_description">Yes</string>
+    <string name="ceno_notification_channel_name">CENO service</string>
+    <!-- </CENO> -->
+
+
+</resources>

@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.asl19.paskoocheh.data.AmazonToolRequest;
 import org.asl19.paskoocheh.data.source.AmazonDataSource;
@@ -76,7 +76,7 @@ public class InstallListener extends BroadcastReceiver {
                             }
                         }
                     } catch (Exception ex) {
-                        Crashlytics.logException(ex);
+                        FirebaseCrashlytics.getInstance().recordException(ex);
                     }
                 }
 
@@ -85,7 +85,7 @@ public class InstallListener extends BroadcastReceiver {
                 }
             });
         } catch (Exception ex) {
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().recordException(ex);
         }
     }
 }
