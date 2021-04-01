@@ -1,12 +1,23 @@
 package org.asl19.paskoocheh.toollist;
 
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.navigation.NavigationView;
+
+import android.os.Environment;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.core.content.FileProvider;
+
 import org.asl19.paskoocheh.ActivityUtils;
+import org.asl19.paskoocheh.BuildConfig;
+import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.baseactivities.BaseNavigationActivity;
 import org.asl19.paskoocheh.data.source.ImagesDataSource;
@@ -22,8 +33,56 @@ import org.asl19.paskoocheh.data.source.NameDataSource;
 import org.asl19.paskoocheh.data.source.ToolDataSource;
 import org.asl19.paskoocheh.utils.AppExecutors;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.CertificatePinner;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
+
+import static org.asl19.paskoocheh.PaskoochehApplication.ouinetConfig;
+import static org.asl19.paskoocheh.PaskoochehApplication.sslSocketFactory;
+import static org.asl19.paskoocheh.PaskoochehApplication.trustManager;
 
 public class ToolListActivity extends BaseNavigationActivity {
 
@@ -40,8 +99,42 @@ public class ToolListActivity extends BaseNavigationActivity {
 
         ButterKnife.bind(this);
 
-        toolbarTitle.setText(getString(R.string.apps));
+        ///Using URL Connection to test download from alink
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
+                Request request = new Request.Builder()
+                        .url("https://raw.githubusercontent.com/amy-asl19/congenial-eureka/main/Data/filedetails.json")
+                        .header("User-Agent", "OkHttp Example")
+                        .build();
+
+                PaskoochehApplication.client.newCall(request).enqueue(new Callback() {
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (!response.isSuccessful()) {
+                            throw new IOException("Failed to download file: " + response);
+                        }
+
+                    }
+
+                });
+                DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                Uri uri = Uri.parse("https://raw.githubusercontent.com/amy-asl19/congenial-eureka/main/Data/filedetails.json");
+
+                DownloadManager.Request request1 = new DownloadManager.Request(uri);
+                request1.setTitle("My File");
+                request1.setDescription("Downloading");//request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request1.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "fileamy");
+                downloadmanager.enqueue(request1);
+            }
+        }).start();
+///////////////////////////End using URL Connection to test download from link
+
+        toolbarTitle.setText(getString(R.string.apps));
         ToolListFragment toolListFragment =
                 (ToolListFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if (toolListFragment == null) {

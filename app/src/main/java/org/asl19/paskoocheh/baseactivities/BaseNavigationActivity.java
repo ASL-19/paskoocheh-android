@@ -51,7 +51,10 @@ import org.parceler.Parcels;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
@@ -182,20 +185,14 @@ public class BaseNavigationActivity extends AppCompatActivity implements Navigat
                         if (USE_SERVICE) {
                             Log.d(LOGTAG, " --------- Starting ouinet service");
                             OuinetService.startOuinetService(getApplicationContext(), ouinetConfig);
-                        } else {
-                            Log.d(LOGTAG, " --------- Starting ouinet in activity");
-                            mOuinet = new Ouinet(getApplicationContext(), ouinetConfig);
-                            mOuinet.start();
                         }
-                    }else{
+                        }else{
                         if (USE_SERVICE) {
                             Log.d(LOGTAG, " --------- Stopping ouinet service");
                             OuinetService.stopOuinetService(getApplicationContext());
-                        } else {
-                            Log.d(LOGTAG, " --------- Stopping ouinet in activity");
-                            mOuinet.stop();
                         }
                     }
+
                 }
             });
 

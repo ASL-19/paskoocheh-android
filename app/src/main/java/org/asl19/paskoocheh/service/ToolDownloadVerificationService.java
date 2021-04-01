@@ -75,7 +75,7 @@ public class ToolDownloadVerificationService extends IntentService {
                     && verifySignature(
                     new BufferedInputStream(new FileInputStream(internalTempFile)),
                     new BufferedInputStream(new FileInputStream(internalSecurityFile)),
-                    new BufferedInputStream(getApplicationContext().getAssets().open("EA6173BA.pub"))
+                    new BufferedInputStream(getApplicationContext().getAssets().open("public_key.pub"))
             )) {
 
                 File internalFile = new File(getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));

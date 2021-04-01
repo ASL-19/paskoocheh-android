@@ -104,7 +104,7 @@ public class PaskoochehConfigVerificationService extends IntentService {
                     verifySignature(
                     new BufferedInputStream(new FileInputStream(originalFile)),
                     new BufferedInputStream(new FileInputStream(securityFile)),
-                    new BufferedInputStream(getApplicationContext().getAssets().open("EA6173BA.pub")))) {
+                    new BufferedInputStream(getApplicationContext().getAssets().open("public_key.pub")))) {
                 Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
                 switch (originalFilename) {
                     case APPS:

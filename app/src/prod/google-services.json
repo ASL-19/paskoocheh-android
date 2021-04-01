@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "262081861356",
+    "firebase_url": "https://paskoocheh-app-50371.firebaseio.com",
+    "project_id": "paskoocheh-app-50371",
+    "storage_bucket": "paskoocheh-app-50371.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262081861356:android:c831f9f46ccb0bf6a6f7c9",
+        "android_client_info": {
+          "package_name": "org.asl19.paskoocheh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262081861356-6l296318f1mhmjpp4uvva4b7j0evcid4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6STCbJWlJnSUY_YHQ0B6YOKzR2-ZzgCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262081861356-6l296318f1mhmjpp4uvva4b7j0evcid4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,8 +6,10 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.http.X509TrustManagerExtensions;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 
 import com.evernote.android.job.JobManager;
@@ -18,18 +20,22 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 
 import ie.equalit.ouinet.Config;
 import ie.equalit.ouinet.Ouinet;
 import org.asl19.paskoocheh.amazon.AmazonComponenet;
 import org.asl19.paskoocheh.amazon.DaggerAmazonComponenet;
 import org.asl19.paskoocheh.service.ConfigJobCreator;
+import org.asl19.paskoocheh.toollist.LoggingInterceptor;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -37,18 +43,24 @@ import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
@@ -57,6 +69,8 @@ import lombok.Getter;
 import io.github.inflationx.calligraphy3.CalligraphyConfig;
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
 import io.github.inflationx.viewpump.ViewPump;
+import okhttp3.OkHttpClient;
+
 import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW;
 
 import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
@@ -65,18 +79,15 @@ import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
 import static org.asl19.paskoocheh.Constants.PRIMARY_CHANNEL;
 
 public class PaskoochehApplication extends Application{
-    static {
-        System.setProperty("http.proxyHost", "127.0.0.1");
-        System.setProperty("http.proxyPort", "8080");
-        System.setProperty("https.proxyHost", "127.0.0.1");
-        System.setProperty("https.proxyPort", "8080");
-    }
 
     private static final String LOGTAG = "OuinetPaskoocheh";
     public static Ouinet mOuinet;
     public static boolean USE_SERVICE = true;
     public static Config ouinetConfig;
     public static String injectorCert;
+    public static SSLSocketFactory sslSocketFactory;
+    public static UnifiedTrustManager trustManager;
+    public static OkHttpClient client;
     @Getter
     private AmazonComponenet amazonComponenet;
 
@@ -86,7 +97,6 @@ public class PaskoochehApplication extends Application{
         FirebaseApp.initializeApp(this);
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
         JobManager.create(this).addJobCreator(new ConfigJobCreator(getApplicationContext()));
-
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -94,8 +104,6 @@ public class PaskoochehApplication extends Application{
         }
 
         //Ouniet
-        File path = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS);
 
         injectorCert = getResources().getString(R.string.ouinet_injector_tls_cert);
 
@@ -106,10 +114,11 @@ public class PaskoochehApplication extends Application{
                 .setTlsCaCertStorePath("file:///android_asset/cert/cacert.pem")
                 .setCacheType(getResources().getString(R.string.ouinet_cache_type))
                 .build();
-        Log.i(LOGTAG, "TLS Store Path's:"+ouinetConfig.getInjectorTlsCertPath());
+            Log.i(LOGTAG, "TLS Store Path's:"+ouinetConfig.getInjectorTlsCertPath());
         try {
             File initialFile = new File(ouinetConfig.getCaRootCertPath());
             InputStream ca = new FileInputStream(initialFile);
+            Log.i(LOGTAG, "Ca Root Store Path's:"+ouinetConfig.getCaRootCertPath());
             setCustomCertificateAuthority(ca);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -120,15 +129,11 @@ public class PaskoochehApplication extends Application{
                 Log.i(LOGTAG, "\"" + line + "\"");
             }
         }
-        //Log.d(LOGTAG,"ouinet"+String.valueOf(getApplicationContext().getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(OUINET_PREF, true)));
+
         if (getApplicationContext().getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(OUINET_PREF, false)) {
             if (USE_SERVICE) {
                 Log.d(LOGTAG, " --------- Starting ouinet service");
                 OuinetService.startOuinetService(this, ouinetConfig);
-            } else {
-                Log.d(LOGTAG, " --------- Starting ouinet in activity");
-                mOuinet = new Ouinet(this, ouinetConfig);
-                mOuinet.start();
             }
         }
 
@@ -159,6 +164,7 @@ public class PaskoochehApplication extends Application{
         setLocale();
     }
 
+
     public static void setCustomCertificateAuthority(InputStream inputStream) {
 
         try {
@@ -186,9 +192,15 @@ public class PaskoochehApplication extends Application{
                 // Create an SSLContext that uses our TrustManager
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[]{trustManager}, null);
+
             SSLContext.setDefault(context);
             // Tell the URLConnection to use a SocketFactory from our SSLContext
+            client = new OkHttpClient.Builder().sslSocketFactory(context.getSocketFactory(),trustManager)
+                 .addInterceptor(new LoggingInterceptor())
+                     .build();
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+
+
 
 
         } catch (CertificateException e) {
@@ -270,6 +282,7 @@ public class PaskoochehApplication extends Application{
             return result;
         }
     }
+
 
     private void setLocale() {
         Locale locale = new Locale("fa");
