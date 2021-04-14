@@ -48,10 +48,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
         }
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
-        }
+
         staging {
             initWith debug
             applicationIdSuffix ".staging"
@@ -60,11 +57,14 @@ android {
             //signingConfig signingConfigs.debug
         }
         dev {
-            initWith debug
             applicationIdSuffix ".dev"
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
             signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
         }
     }
     compileOptions {
@@ -75,11 +75,13 @@ android {
         dev {
             java {
                 srcDirs 'src/dev/java'
+                assets.srcDirs = ['src/dev/assets']
             }
         }
         staging {
             java {
                 srcDirs 'src/staging/java'
+                assets.srcDirs = ['src/staging/assets']
             }
         }
     }
@@ -107,10 +109,20 @@ dependencies {
 
     // Utility Library
     implementation 'com.fernandocejas:arrow:1.0.0'
+    //Ouinet Library
+    //22-01-2021
     //implementation files('ouinet-arm64-v8a-release-2021-01-22_1301')
     //implementation(name: "${System.env.OUINET_LIBRARY}", ext: 'aar')
-    implementation project(':ouinet-arm64-v8a-release-2021-01-22_1301')
+    //implementation project(':ouinet-armeabi-v7a-release-2021-01-22_1301')
+    //working on 22/01/2021
+    //implementation project(':ouinet-arm64-v8a-release-2021-01-22_1301')
     implementation "com.android.support:support-core-utils:28.0.0"
+    //13/04/2021
+    //implementation project(':ouinet-armeabi-v7a-debug-2021-04-13_1704')
+    //Working on 13/04/2021
+    implementation project(':ouinet-arm64-v8a-debug-2021-04-13_1704')
+    //implementation project(':ouinet-release')
+
 
     // Android Testing Support runner and rules
     androidTestImplementation 'androidx.test:runner:1.3.0'
@@ -200,7 +212,6 @@ dependencies {
     devImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     stagingImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
-
     implementation "com.atlassian.commonmark:commonmark:0.10.0"
 
     implementation "com.google.android.material:material:1.3.0-alpha03"

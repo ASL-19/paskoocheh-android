@@ -3,6 +3,7 @@ package org.asl19.paskoocheh.service;
 import androidx.annotation.NonNull;
 
 import org.asl19.paskoocheh.Constants;
+import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.data.AmazonFormDataRequest;
 
 import java.io.ByteArrayOutputStream;
@@ -38,7 +39,8 @@ public class AmazonServiceGenerator {
                     .baseUrl(AMAZON_URL);
 
     public static <S> S createService(Class<S> serviceClass) {
-        OkHttpClient client = getOkHttpClient();
+        OkHttpClient client = PaskoochehApplication.client;
+                //getOkHttpClient();
 
         Retrofit retrofit =
                 builder.client(client)
