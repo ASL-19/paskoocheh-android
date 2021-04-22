@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('ouinet-armeabi-v7a-debug-2021-04-16_0804.aar'))

@@ -1,6 +1,3 @@
-include ':ouinet-armeabi-v7a-debug-2021-04-13_1704'
-include ':ouinet-arm64-v8a-debug-2021-04-13_1704'
-include ':ouinet-release'
-include ':ouinet-armeabi-v7a-release-2021-01-22_1301'
-include ':ouinet-arm64-v8a-release-2021-01-22_1301'
+include ':ouinet-armeabi-v7a-debug-2021-04-16_0804'
+include ':ouinet-arm64-v8a-debug-2021-04-16_0804'
 include ':app'

@@ -6,7 +6,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 buildscript {
     repositories {
-            maven { url 'https://plugins.gradle.org/m2/' }
+        maven { url 'https://plugins.gradle.org/m2/' }
         google()
     }
     dependencies {
@@ -18,9 +18,13 @@ repositories {
 //    maven {
 //        url 'https://maven.fabric.io/public'
 //    }
+    flatDir {
+        dirs 'libs'
+    }
     // flatDir {
     //     dirs "${System.env.OUINET_BUILDDIR}"
     // }
+
 }
 
 android {
@@ -110,19 +114,23 @@ dependencies {
     // Utility Library
     implementation 'com.fernandocejas:arrow:1.0.0'
     //Ouinet Library
-    //22-01-2021
+    //Library added on 22-01-2021
     //implementation files('ouinet-arm64-v8a-release-2021-01-22_1301')
     //implementation(name: "${System.env.OUINET_LIBRARY}", ext: 'aar')
     //implementation project(':ouinet-armeabi-v7a-release-2021-01-22_1301')
-    //working on 22/01/2021
+    //Library worked on 22/01/2021
     //implementation project(':ouinet-arm64-v8a-release-2021-01-22_1301')
     implementation "com.android.support:support-core-utils:28.0.0"
-    //13/04/2021
+    //Library added on 13/04/2021
+    //implementation (name:'ouinet-arm64-v8a-debug-2021-04-13_1704', ext:'aar')
+    //implementation (name:'ouinet-armeabi-v7a-debug-2021-04-13_1704', ext:'aar')
+    //Library added on 13/04/2021
+    //implementation project(':ouinet-arm64-v8a-debug-2021-04-13_1704')
     //implementation project(':ouinet-armeabi-v7a-debug-2021-04-13_1704')
-    //Working on 13/04/2021
-    implementation project(':ouinet-arm64-v8a-debug-2021-04-13_1704')
     //implementation project(':ouinet-release')
-
+    //Library added on 16/04/2021 have cache support
+    implementation project(':ouinet-arm64-v8a-debug-2021-04-16_0804')
+    //implementation project(':ouinet-armeabi-v7a-debug-2021-04-16_0804')
 
     // Android Testing Support runner and rules
     androidTestImplementation 'androidx.test:runner:1.3.0'

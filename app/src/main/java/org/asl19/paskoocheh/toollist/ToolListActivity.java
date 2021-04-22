@@ -96,44 +96,7 @@ public class ToolListActivity extends BaseNavigationActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_content, (ViewGroup) findViewById(R.id.contentFrame));
-
         ButterKnife.bind(this);
-
-        ///Using URL Connection to test download from alink
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Request request = new Request.Builder()
-                        .url("https://raw.githubusercontent.com/amy-asl19/congenial-eureka/main/Data/filedetails.json")
-                        .header("User-Agent", "OkHttp Example")
-                        .build();
-
-                PaskoochehApplication.client.newCall(request).enqueue(new Callback() {
-                    public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if (!response.isSuccessful()) {
-                            throw new IOException("Failed to download file: " + response);
-                        }
-
-                    }
-
-                });
-                DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                Uri uri = Uri.parse("https://raw.githubusercontent.com/amy-asl19/congenial-eureka/main/Data/filedetails.json");
-
-                DownloadManager.Request request1 = new DownloadManager.Request(uri);
-                request1.setTitle("My File");
-                request1.setDescription("Downloading");//request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                request1.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "fileamy");
-                downloadmanager.enqueue(request1);
-            }
-        }).start();
-///////////////////////////End using URL Connection to test download from link
-
         toolbarTitle.setText(getString(R.string.apps));
         ToolListFragment toolListFragment =
                 (ToolListFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
@@ -141,8 +104,6 @@ public class ToolListActivity extends BaseNavigationActivity {
             toolListFragment = ToolListFragment.newInstance();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), toolListFragment, R.id.contentFrame);
         }
-
-
         PaskoochehDatabase database = PaskoochehDatabase.getInstance(getApplicationContext());
         AppExecutors appExecutors = new AppExecutors();
         VersionLocalDataSource versionLocalDataSource = VersionLocalDataSource.getInstance(appExecutors, database.versionDao(), getApplicationContext());
