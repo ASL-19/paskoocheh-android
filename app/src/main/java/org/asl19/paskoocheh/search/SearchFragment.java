@@ -4,7 +4,6 @@ package org.asl19.paskoocheh.search;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +26,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
+import org.asl19.paskoocheh.installreceiver.InstallFragment;
 import org.asl19.paskoocheh.pojo.DownloadAndRating;
 import org.asl19.paskoocheh.pojo.Images;
 import org.asl19.paskoocheh.pojo.LocalizedInfo;
@@ -43,7 +43,7 @@ import butterknife.Unbinder;
 
 import static android.view.View.inflate;
 
-public class SearchFragment extends Fragment implements SearchContract.SearchView, SearchContract.SearchAdapter {
+public class SearchFragment extends InstallFragment implements SearchContract.SearchView, SearchContract.SearchAdapter {
 
     public static final String TAG = SearchFragment.class.getCanonicalName();
     private static final String SEARCH = "SEARCH";
@@ -226,6 +226,31 @@ public class SearchFragment extends Fragment implements SearchContract.SearchVie
     @Override
     public void setPresenter(SearchContract.Presenter presenter) {
         this.presenter = presenter;
+    }
+
+    @Override
+    protected void onInstallSuccessUIUpdate() {
+        version.setInstalled(true);
+        adapterAllApps.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onInstallFailureUIUpdate() {
+    }
+
+    @Override
+    public void onInstallButtonClick(Version version, View installButton) {
+        installApplication(version);
+    }
+
+    @Override
+    public void onUpdateButtonClick(Version version, View updateButton) {
+        installApplication(version);
+    }
+
+    @Override
+    public void onPlayStoreRedirectButtonClick(Version version) {
+        playStoreRedirect(version);
     }
 
     @Override

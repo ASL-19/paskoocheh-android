@@ -1,0 +1,168 @@
+<resources>
+    <string name="app_name">Paskoocheh_dev</string>
+
+    <!--NAVIGATION ACTIVITY-->
+    <string name="navigation_drawer_open">Open Browser </string>
+    <string name="navigation_drawer_close">Close Browswer</string>
+    <string name="applications">applications</string>
+    <string name="my_applications">My applications</string>
+    <string name="tell_a_friend">Tell a Friend</string>
+    <string name="update">update</string>
+    <string name="download_only_on_wifi">Download on WIFI only</string>
+    <string name="about_paskoocheh">About Paskoocheh</string>
+    <string name="number_downloads">Number of downloads</string>
+    <string name="rate_this_app">rate this app</string>
+    <string name="description">description</string>
+    <string name="read_more"> More </string>
+    <string name="read_less">Less</string>
+    <string name="reviews">reviews</string>
+    <string name="version">نسخة </string>
+    <string name="updates">updates</string>
+    <string name="up_to_date">up to date</string>
+    <string name="update_dialog">there\'s a new version of Zanga ready to update? </string>
+    <string name="yes">yes</string>
+    <string name="no">No</string>
+    <string name="feedback">share your feedback</string>
+    <string name="telegram_menu">Telgram Menu</string>
+
+    <!--TOOL LIST FRAGMENT & TOOL INFO FRAGMENT & ADAPTERS-->
+    <string name="email">email</string>
+    <string name="install">install</string>
+    <string name="play_store">Play Store</string>
+    <string name="no_playstore_clients">no Play Store clients</string>
+    <string name="share_your_experience">share your experience</string>
+    <string name="topic">topic</string>
+    <string name="description_optional">description optional</string>
+    <string name="submit">submit</string>
+    <string name="review_submitted">review submitted</string>
+    <string name="unable_to_submit_review">unable to sumbit review</string>
+    <string name="download_in_progress">download in proress</string>
+    <string name="queued">queued</string>
+    <string name="connect_wifi">Please connect to WIFI</string>
+    <string name="via_email"> download via email </string>
+    <string name="via_email_subject">When you send this email, you\'ll get an automatic reply from Zanga with a download link or file </string>
+    <string name="send_email">send email</string>
+    <string name="no_email_clients">The email wasn\'t sent. Please try again.</string>
+    <string name="categories">categories</string>
+    <string name="tutorial">Educational materials</string>
+    <string name="video">Video guides</string>
+    <string name="to_top">to top of Menu</string>
+    <string name="continuation">continued …</string>
+    <string name="rating">Average rating(%s person)</string>
+    <string name="rating_empty">no ratings yet</string>
+    <string name="builder">developed by</string>
+    <string name="last_updated">last updated</string>
+    <string name="more_information">more info</string>
+    <string name="guide">guide</string>
+    <string name="faq">FAQ</string>
+    <string name="contact_support">Technical support? Contact us!  </string>
+    <string name="featured">Featured apps </string>
+    <string name="most_downloads">most downloaded apps</string>
+    <string name="updated">updated apps</string>
+    <string name="all">all apps</string>
+    <string name="telegram">Telegram</string>
+
+    <!-- INSTALLED TOOL LIST FRAGMENT -->
+    <string name="details_of_version"> Version details </string>
+    <string name="all_apps_updated"> all apps are up to date </string>
+    <string name="version_installed" formatted="false"> Version (%s)</string>
+
+    <!--ABOUT FRAGMENT-->
+    <string name="title_about"> About Zanga </string>
+
+    <!--PRIVACY FRAGMENT-->
+    <string name="privacy_terms_title"> Privacy Policy and Terms of Use </string>
+
+    <!-- APK MANAGER -->
+    <string name="checksum_invalid">Field invalid</string>
+
+    <!-- LOADING FRAGMENT -->
+    <string name="tap_to_retry">to rety </string>
+
+    <!-- NOTIFICATIONS -->
+    <string name="retry_tool_download"> tool download unsuccessful, please try again
+</string>
+    <string name="download_failed_retry">download failed, please try again</string>
+
+    <!-- FEEDBACK FRAGMENT -->
+    <string name="support">Technical support</string>
+    <string name="your_email">Your email address</string>
+    <string name="email_subject">Email subject</string>
+    <string name="explanation">explanation</string>
+    <string name="send_feedback_email">send email</string>
+    <string name="improper_email">email incorrect</string>
+    <string name="field_is_required">this field is required</string>
+    <string name="support_email_sent">support email sent</string>
+    <string name="wait_for_answer">wait for answer</string>
+    <string name="time_out_retry_check_connection">time out check connection</string>
+
+    <!-- SEARCH FRAGMENT -->
+    <string name="search_result"> search result</string>
+    <string name="search_title">search</string>
+    <string name="apps">apps</string>
+
+    <!-- DOWNLOAD SERVICE -->
+    <string name="verifying">verifying</string>
+    <string name="support_email">bepors@asl19.org</string>
+    <string name="support_telegram">https://t.me/paskadmin_bot</string>
+    <string name="search_result_found">search result for \"%s\"</string>
+
+    <!-- DIALOGS/ALERTS -->
+    <string name="p2p_connecting_alert_title">Connecting to P2P Network...</string>
+    <string name="p2p_connecting_alert_description">This might take 1-2 min. Please wait until we establish the connection.</string>
+
+    <string name="p2p_disconnecting_alert_title">Disconnecting from the P2P Network...</string>
+    <string name="p2p_disconnecting_alert_description">Please wait until we disconnect from P2P.</string>
+
+    <string name="p2p_connection_success_alert_title">Successfully Connected</string>
+    <string name="p2p_connection_success_alert_description">The P2P network is connected and ready to be used.</string>
+
+    <string name="p2p_connection_fail_alert_title">Connection failed</string>
+    <string name="p2p_connection_fail_alert_description">We cannot connect to the P2P network at the moment. Please try again later.</string>
+
+    <string name="one_button_alert_button_caption">Close</string>
+
+    <!-- UTILS -->
+    <string name="image_load_fail_due_to_memory">image load failed due to image_load_fail_due_to_memory</string>
+    <string name="p2pnetwork">P2P Network</string>
+    <string name="p2p_settings">P2P Settings</string>
+    <string name="toosheh_app">Toosheh App was not found</string>
+    <string name="you_need_to">You need to have Toosheh app in order to have access to this service.Please download and Install Toosheh and Try this page again.</string>
+    <string name="install_toosheh">Install Toosheh App</string>
+    <string name="toosheh_app_found">Toosheh App is detected</string>
+    <string name="in_case_of_">In case of internet shutdown,truning on P2P can help you to access paskoocheh apps and inject apps from Toosheh.</string>
+    <string name="peer_to_pee">Peer-to-Peer Status</string>
+    <string name="advanced_settings">Advanced Settings</string>
+    <string name="for_injecti">For Injection you can add a directory to add app in P2P network <a href='https://paskoocheh.com/tools/42/android/guide.html'>How to inject files?</a></string>
+    <string name="how_to_inje">How to inject files?</string>
+    <string name="browse">Add Directory</string>
+    <string name="home">Back To Home</string>
+    <string name="turn_off_p2">Turn Off P2P</string>
+    <string name="i_understan">I understand</string>
+    <string name="title_activity_inject">InjectActivity</string>
+    <string name="inject_directory">Inject Directory</string>
+    <string name="inject_btext">Inject</string>
+    <string name="change_dir">Change</string>
+    <string name="following_d">Following directory is selected</string>
+    <string name="random_dirpath">Download/Toosheh</string>
+    <string name="cancel">Cancel</string>
+    <string name="tap_to_stop">Tap to stop Ouinet Service</string>
+    <string name="erase">Stop</string>
+    <string name="injection_w">Injection was successfully done!</string>
+    <string name="in_order_to">In order to use P2P network, the  Paskoocheh app will run in the background</string>
+    <string name="the_directo">"the directory cannot be reject. Please change the dir"</string>
+
+
+    <string name="installer_app_installed">App installed</string>
+    <string name="installer_app_installation_failure">Sorry, failed to install the App</string>
+    <string name="ok">OK</string>
+    <string name="installer_open">Open</string>
+    <string name="settings">Settings</string>
+    <string name="install_unknown_apps_settings_dialog_description">For your security, your phone is not allowed to install unknown apps from this source.</string>
+    <string name="please_wait">Please wait</string>
+    <string name="app_installation_in_progress">Installing %s...</string>
+
+    <string name="p2p_app_not_available_in_cache_dialog_title">This app hasn\'t been cached yet</string>
+    <string name="p2p_app_not_available_in_cache_dialog_description">Try again later, and it might be available</string>
+    <string name="p2p_app_not_available_in_cache_dialog_button_caption">I understood</string>
+</resources>

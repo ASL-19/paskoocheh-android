@@ -27,6 +27,7 @@ public class AmazonContentBodyRequest {
     public static final String INSTALL = "install";
     public static final String UPDATE = "update";
     public static final String RATING = "rating";
+    public static final String REPORT_DEVICE_APP_NOT_INSTALLABLE = "report_device_app_not_installable";
 
     @SerializedName("type")
     private String type;

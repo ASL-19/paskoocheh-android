@@ -18,7 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
-import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.Constants;
@@ -29,8 +28,6 @@ import org.asl19.paskoocheh.data.source.AmazonRepository;
 import org.asl19.paskoocheh.data.source.AmazonReviewRequest;
 import org.asl19.paskoocheh.pojo.Version;
 import org.parceler.Parcels;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,9 +43,6 @@ public class RatingDialogFragment extends DialogFragment implements RatingDialog
     private static final String INACTIVE_STAR = "#CCCCCC";
     private static final String STAR_COLOUR = "#FFA131";
     private static final String REVIEW_TEXT_COLOUR = "#1C3C6D";
-
-    @Inject
-    CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider;
 
     @BindView(R.id.review_body)
     TextInputEditText reviewBody;

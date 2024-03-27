@@ -7,6 +7,7 @@
 *.ipr
 *.ids
 *.orig
+*.swp
 
 ######################
 # Gradle
@@ -23,7 +24,16 @@
 ######################
 /build/**
 /deploy/**
-
+/app/release/**
+.generated
+app/src/dev/java/org/asl19/paskoocheh/Constants.java
+app/src/staging/java/org/asl19/paskoocheh/Constants.java
+app/src/release/java/org/asl19/paskoocheh/Constants.java
+app/src/debug/java/org/asl19/paskoocheh/Constants.java
+app/src/dev/google-services.json
+app/src/debug/google-services.json
+app/src/staging/google-services.json
+app/src/release/google-services.json
 ######################
 # Others
 ######################
@@ -33,10 +43,32 @@
 *.hprof
 *.apk
 .merge_file*
-*.properties
+/local.properties
 /captures
-app/google-services.json
-app/src/main/java/org/asl19/paskoocheh/Constants.java
+
 app/src/main/assets/config.properties
 .externalNativeBuild≈
-app/src/main/assets/fonts/**
+app/release
+
+.project
+.classpath
+.settings/
+.vscode/
+
+ouinet-arm*/build/
+
+# Uncomment if public
+#app/google-services.json
+#app/src/dev/google-services.json
+#app/src/debug/google-services.json
+#app/src/staging/google-services.json
+#app/src/release/google-services.json
+#app/src/dev/java/org/asl19/paskoocheh/Constants.java
+#app/src/staging/java/org/asl19/paskoocheh/Constants.java
+#app/src/release/java/org/asl19/paskoocheh/Constants.java
+#app/src/debug/java/org/asl19/paskoocheh/Constants.java
+#app/src/main/assets/fonts/**
+#app/src/dev/assets/fonts/**
+#app/src/staging/assets/fonts/**
+#app/fabric.properties
+#*.pub

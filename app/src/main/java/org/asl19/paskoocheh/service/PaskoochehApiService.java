@@ -1,5 +1,6 @@
 package org.asl19.paskoocheh.service;
 
+import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.pojo.DownloadCountList;
 import org.asl19.paskoocheh.pojo.RatingList;
 
@@ -11,8 +12,9 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 
-import static org.asl19.paskoocheh.Constants.DOWNLOAD;
 import static org.asl19.paskoocheh.Constants.RATING;
+import static org.asl19.paskoocheh.Constants.DOWNLOAD;
+import static org.asl19.paskoocheh.Constants.AMAZON_API_ENDPOINT;
 
 /**
  * Retrofit Paskoocheh API Interface.
@@ -42,7 +44,7 @@ public interface PaskoochehApiService {
      * @return
      */
     @Multipart
-    @POST("/")
+    @POST(AMAZON_API_ENDPOINT)
     Call<ResponseBody> submitAmazonRequest(
             @Part("acl") RequestBody acl,
             @Part("key") RequestBody key,

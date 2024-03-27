@@ -3,7 +3,6 @@ package org.asl19.paskoocheh.categorylist;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +16,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
+import org.asl19.paskoocheh.installreceiver.InstallFragment;
 import org.asl19.paskoocheh.pojo.DownloadAndRating;
 import org.asl19.paskoocheh.pojo.Images;
 import org.asl19.paskoocheh.pojo.LocalizedInfo;
@@ -34,7 +34,7 @@ import butterknife.Unbinder;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CategoryListFragment extends Fragment implements CategoryListContract.CategoryListView, CategoryListContract.CategoryListAdapter {
+public class CategoryListFragment extends InstallFragment implements CategoryListContract.CategoryListView, CategoryListContract.CategoryListAdapter {
 
     public static final String TAG = CategoryListFragment.class.getCanonicalName();
     public static final String CATEGORY = "CATEGORY";
@@ -119,6 +119,31 @@ public class CategoryListFragment extends Fragment implements CategoryListContra
     @Override
     public void setPresenter(CategoryListContract.Presenter presenter) {
         this.presenter = presenter;
+    }
+
+    @Override
+    protected void onInstallSuccessUIUpdate() {
+        version.setInstalled(true);
+        adapterAllApps.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onInstallFailureUIUpdate() {
+    }
+
+    @Override
+    public void onInstallButtonClick(Version version, View installButton) {
+        installApplication(version);
+    }
+
+    @Override
+    public void onUpdateButtonClick(Version version, View updateButton) {
+        installApplication(version);
+    }
+
+    @Override
+    public void onPlayStoreRedirectButtonClick(Version version) {
+        playStoreRedirect(version);
     }
 
     @Override

@@ -1,0 +1,111 @@
+<resources>
+    <string name="app_name">Paskoocheh</string>
+
+    <!--NAVIGATION ACTIVITY-->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="applications">اپ‌ها</string>
+    <string name="my_applications">اپ‌های من</string>
+    <string name="tell_a_friend">به دوست و دشمن بگو</string>
+    <string name="update">به‌روزرسانی</string>
+    <string name="download_only_on_wifi">دانلود فقط از طریق وای‌فای</string>
+    <string name="about_paskoocheh">درباره‌ی پس‌کوچه</string>
+    <string name="number_downloads">تعداد دانلودها</string>
+    <string name="rate_this_app">امتیاز بدهید</string>
+    <string name="description">توضیح</string>
+    <string name="read_more">بیشتر</string>
+    <string name="read_less">کمتر</string>
+    <string name="reviews">نظرها</string>
+    <string name="version">نسخه </string>
+    <string name="updates">به‌روزرسانی</string>
+    <string name="up_to_date">به‌روز</string>
+    <string name="update_dialog">نسخه‌ی جدید پس‌کوچه آماده به‌روزرسانی است. به‌روزرسانی کنم؟</string>
+    <string name="yes">بله</string>
+    <string name="no">نه. بعدا</string>
+    <string name="feedback">تماس با پس‌کوچه</string>
+    <string name="telegram_menu">کانال تلگرام پس‌کوچه</string>
+
+    <!--TOOL LIST FRAGMENT & TOOL INFO FRAGMENT & ADAPTERS-->
+    <string name="email">ایمیل</string>
+    <string name="install">دانلود</string>
+    <string name="play_store">گوگل‌پلی</string>
+    <string name="no_playstore_clients">بارگذاری از طریق پلی‌استورممکن نیست</string>
+    <string name="share_your_experience">نظر بدهید</string>
+    <string name="topic">موضوع (اختیاری)</string>
+    <string name="description_optional">شرح (اختیاری)</string>
+    <string name="submit">ارسال</string>
+    <string name="review_submitted">نظر شما با موفقیت ثبت شد.</string>
+    <string name="unable_to_submit_review">نظر شما ثبت نشد. دوباره امتحان کنید.</string>
+    <string name="download_in_progress">در حال دانلود</string>
+    <string name="queued">منتظر باشید</string>
+    <string name="connect_wifi">لطفا به وای‌فای وصل شوید</string>
+    <string name="via_email">درخواست دانلود از طریق ایمیل</string>
+    <string name="via_email_subject">پس از ارسال این ایمیل، ایمیلی از طرف پس‌کوچه و به صورت خودکار همراه با لینک و یا فایل نصبِ اپلیکیشنِ درخواستی دریافت خواهید کرد.</string>
+    <string name="send_email">ارسال ایمیل از طریق</string>
+    <string name="no_email_clients">ارسال ایمیل ممکن نیست، آدرس ایمیل در کلیپ‌بورد کپی شد</string>
+    <string name="categories">دسته‌ها</string>
+    <string name="tutorial">مطلب‌های آموزشی</string>
+    <string name="video">ویدیوهای آموزشی</string>
+    <string name="to_top">بازگشت به بالا</string>
+    <string name="continuation">ادامه…</string>
+    <string name="rating">میانگین امتیازها (%s نفر)</string>
+    <string name="rating_empty">میانگین امتیازها (0 نفر)</string>
+    <string name="builder">سازندگان</string>
+    <string name="last_updated">آخرین به‌روزرسانی</string>
+    <string name="more_information">اطلاعات بیشتر</string>
+    <string name="guide">راهنما</string>
+    <string name="faq">سوال‌های متداول</string>
+    <string name="contact_support">اگر هنوز به کمک احتیاج دارید، با تیم پشتیبانی پس‌کوچه تماس بگیرید.</string>
+    <string name="featured">اپ‌های برگزیده</string>
+    <string name="most_downloads">اپ‌های محبوب</string>
+    <string name="updated">اپ‌های به‌روز شده</string>
+    <string name="all">بیشتر</string>
+    <string name="telegram">تلگرام</string>
+
+    <!-- INSTALLED TOOL LIST FRAGMENT -->
+    <string name="details_of_version">جزییات این نسخه</string>
+    <string name="all_apps_updated">همه‌ی اپ‌ها به‌روز هستند</string>
+    <string formatted="false" name="version_installed">نسخه %s</string>
+
+    <!--ABOUT FRAGMENT-->
+    <string name="title_about">درباره‌ی پس‌کوچه</string>
+
+    <!--PRIVACY FRAGMENT-->
+    <string name="privacy_terms_title">حریم خصوصی و شرایط استفاده</string>
+
+    <!-- APK MANAGER -->
+    <string name="checksum_invalid">چک‌سام نادرست است</string>
+
+    <!-- LOADING FRAGMENT -->
+    <string name="tap_to_retry">درخواستِ دوباره</string>
+
+    <!-- NOTIFICATIONS -->
+    <string name="retry_tool_download">%s تایم اوت شد. لطفا دوباره امتحان کنید</string>
+    <string name="download_failed_retry">دانلود ناموفق! دوباره امتحان کنید</string>
+
+    <!-- FEEDBACK FRAGMENT -->
+    <string name="support">پشتیبانی پس‌کوچه</string>
+    <string name="your_email">ایمیل شما</string>
+    <string name="email_subject">موضوع ایمیل</string>
+    <string name="explanation">توضیح</string>
+    <string name="send_feedback_email">ارسال ایمیل</string>
+    <string name="improper_email">ایمیل اشتباه است.</string>
+    <string name="field_is_required">پر کردن این قسمت الزامی است.</string>
+    <string name="support_email_sent">ایمیل شما به تیم پشتیبانی پس‌کوچه ارسال شد!</string>
+    <string name="wait_for_answer">منتظر جواب ما باشید.</string>
+    <string name="time_out_retry_check_connection">تایم اوت</string>
+
+    <!-- SEARCH FRAGMENT -->
+    <string name="search_result">نتیجه‌ی جستجو</string>
+    <string name="search_title">جستجو</string>
+    <string name="apps">اپ‌ها</string>
+
+    <!-- DOWNLOAD SERVICE -->
+    <string name="verifying">تایید</string>
+    <string name="support_email">bepors@paskoocheh.com</string>
+    <string name="support_telegram">https://t.me/paskadmin_bot</string>
+    <string name="search_result_found">نتیجه‌ی جستجو برای \"%s\"</string>
+
+    <!-- UTILS -->
+    <string name="image_load_fail_due_to_memory">بارگیری عکس به‌ دلیل کمبود حافظه ممکن نیست</string>
+</resources>

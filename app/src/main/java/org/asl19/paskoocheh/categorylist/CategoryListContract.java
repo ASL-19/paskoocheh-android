@@ -2,6 +2,7 @@ package org.asl19.paskoocheh.categorylist;
 
 
 import android.content.Context;
+import android.view.View;
 
 import org.asl19.paskoocheh.baseactivities.BasePresenter;
 import org.asl19.paskoocheh.baseactivities.BaseView;
@@ -34,6 +35,9 @@ public interface CategoryListContract {
 
     interface CategoryListAdapter {
         Context getContext();
+        void onInstallButtonClick(Version version, View installButton);
+        void onUpdateButtonClick(Version version, View updateButton);
+        void onPlayStoreRedirectButtonClick(Version version);
     }
 
     interface Presenter extends BasePresenter {

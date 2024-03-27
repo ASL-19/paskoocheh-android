@@ -25,6 +25,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="16dp"
+                android:visibility="gone"
                 android:background="@drawable/button_grey_outline"
                 android:text="@string/all_apps_updated"
                 android:textColor="#A0A0A0"/>

@@ -1,0 +1,43 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+#update_fastlane
+
+default_platform(:android)
+
+platform :android do
+    desc "Runs all the tests"
+        lane :test do
+        gradle(task: "test",build_type:"Dev")
+    end
+    desc "Submit a new Beta Build to Crashlytics Beta"
+        lane :buildDev do
+            sh("cd .. && touch changelog.txt")
+            File.write("./changelog.txt", changelog_from_git_commits(commits_count: 10, pretty: '• %s', merge_commit_filtering: 'exclude_merges'))
+            gradle(task: "clean assembleDev")
+            gradle(task: "test",build_type:"Dev")
+        end
+        lane :buildStaging do
+            sh("cd .. && touch changelog.txt")
+            File.write("./changelog.txt", changelog_from_git_commits(commits_count: 10, pretty: '• %s', merge_commit_filtering: 'exclude_merges'))
+            gradle(task: "clean assembleStaging")
+            gradle(task: "test",build_type:"Staging")
+        end
+        lane :buildRelease do
+            sh("cd .. && touch changelog.txt")
+            File.write("./changelog.txt", changelog_from_git_commits(commits_count: 10, pretty: '• %s', merge_commit_filtering: 'exclude_merges'))
+            gradle(task: "clean assembleRelease")
+            gradle(task: "test",build_type:"Release") 
+            firebase_app_distribution(
+                        app: "1:262081861356:android:c831f9f46ccb0bf6a6f7c9",
+            	    firebase_cli_token:ENV['FIREBASE_TOKEN'],
+                        groups: "group-two"
+            )
+        end
+end

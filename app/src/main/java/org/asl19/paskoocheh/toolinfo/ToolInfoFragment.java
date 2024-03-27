@@ -1,23 +1,21 @@
 package org.asl19.paskoocheh.toolinfo;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Html;
 import android.text.format.Formatter;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +27,12 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import androidx.annotation.NonNull;
+
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import org.asl19.paskoocheh.ActivityUtils;
@@ -46,6 +45,7 @@ import org.asl19.paskoocheh.data.source.AmazonRepository;
 import org.asl19.paskoocheh.gallery.GalleryActivity;
 import org.asl19.paskoocheh.guide.GuideActivity;
 import org.asl19.paskoocheh.guide.GuideFragment;
+import org.asl19.paskoocheh.installreceiver.InstallFragment;
 import org.asl19.paskoocheh.pojo.DownloadAndRating;
 import org.asl19.paskoocheh.pojo.Faq;
 import org.asl19.paskoocheh.pojo.Guide;
@@ -59,45 +59,46 @@ import org.asl19.paskoocheh.pojo.Tutorial;
 import org.asl19.paskoocheh.pojo.Version;
 import org.asl19.paskoocheh.rating.RatingDialogFragment;
 import org.asl19.paskoocheh.rating.RatingDialogPresenter;
-import org.asl19.paskoocheh.service.ToolDownloadService;
-import org.asl19.paskoocheh.utils.ApkManager;
+import org.asl19.paskoocheh.utils.FileViewer;
 import org.asl19.paskoocheh.utils.NonScrollExpandableListView;
 import org.asl19.paskoocheh.utils.NonScrollListView;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.parceler.Parcels;
 
-import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static android.view.View.inflate;
-import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
-import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
+import static org.asl19.paskoocheh.Constants.BUCKET_NAME;
 import static org.asl19.paskoocheh.Constants.TOOL_ID;
 import static org.asl19.paskoocheh.categorylist.CategoryListActivity.CATEGORY;
 import static org.asl19.paskoocheh.categorylist.CategoryListActivity.TYPE;
 import static org.asl19.paskoocheh.gallery.GalleryFragment.IMAGES;
 import static org.asl19.paskoocheh.gallery.GalleryFragment.POSITION;
+import static org.asl19.paskoocheh.gallery.GalleryFragment.OUINET_GROUP;
 
-public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolInfoView {
+public class ToolInfoFragment extends InstallFragment implements ToolInfoContract.ToolInfoView {
 
     public static final String TAG = ToolInfoFragment.class.getCanonicalName();
     private static final String INACTIVE_STAR = "#CCCCCC";
     private static final String STAR_COLOUR = "#FFB033";
-
 
     @BindView(R.id.scrollView)
     ScrollView scrollView;
@@ -178,34 +179,34 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
     @BindView(R.id.size)
     TextView fileSize;
 
-    @Inject
-    CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider;
-
     public static final String TOOL = "TOOL";
 
     private ToolInfoContract.Presenter presenter;
     private Unbinder unbinder;
-    private int versionId;
-    private Version version;
     private Integer currentReviews;
     private List<Review> listOfReviews = new ArrayList<>();
     private List<Review> reviewList;
     private Images images;
-    private ApkManager apkManager;
+    private Picasso toolPicasso;
+    private Picasso versionPicasso;
     private ToolInfoReviewAdapter reviewAdapter;
-    private boolean saveInstanceStateComplete;
 
     public static ToolInfoFragment newInstance() {
         return new ToolInfoFragment();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_tool_info, container, false);
         unbinder = ButterKnife.bind(this, view);
-
-        apkManager = new ApkManager(getContext().getApplicationContext());
 
         Bundle bundle = new Bundle();
         bundle.putString(Constants.SCREEN, TAG);
@@ -215,9 +216,14 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
 
         if (getArguments() != null) {
             versionId = getArguments().getInt(TOOL);
+            Log.d(TAG, "onCreateView versionId = " + versionId);
         }
 
-        presenter.getVersion(versionId);
+        if (version == null || versionId != version.versionCode) {
+            presenter.getVersion(versionId);
+        } else {
+            checkAndUpdateVersionObjectIfTheAppIsInstallableInThisDevice(version, getContext().getPackageName());
+        }
 
         return view;
     }
@@ -228,13 +234,11 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
         if (version != null) {
             updateButtons();
         }
-        saveInstanceStateComplete = false;
     }
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
-        saveInstanceStateComplete = true;
     }
 
     @Override
@@ -248,9 +252,54 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
     }
 
     @Override
+    protected void onInstallSuccessUIUpdate() {
+        if (updateButton.getVisibility() == VISIBLE) {
+            toggleUpdateButton(false);
+        } else {
+            toggleInstallButton(false);
+        }
+    }
+
+    @Override
+    protected void onInstallFailureUIUpdate() {
+        if (updateButton.getVisibility() == VISIBLE) {
+            toggleUpdateButton(true);
+        } else {
+            toggleInstallButton(true);
+        }
+    }
+
+    private void toggleInstallButton(boolean isEnable) {
+        if (isEnable) {
+            installButton.setEnabled(true);
+            installButton.setBackgroundResource(R.drawable.button_regular);
+            installButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        } else {
+            installButton.setBackgroundResource(R.drawable.button_regular_disabled);
+            installButton.setTextColor(ContextCompat.getColor(getContext(), R.color.buttonGrey));
+            installButton.setEnabled(false);
+        }
+    }
+
+    private void toggleUpdateButton(boolean isEnable) {
+        if (isEnable) {
+            updateButton.setEnabled(true);
+            updateButton.setBackgroundResource(R.drawable.button_regular_blue);
+            updateButton.setTextColor(ContextCompat.getColor(getContext(), R.color.blue));
+        } else {
+            updateButton.setBackgroundResource(R.drawable.button_regular_disabled);
+            updateButton.setTextColor(ContextCompat.getColor(getContext(), R.color.buttonGrey));
+            updateButton.setEnabled(false);
+        }
+    }
+
+    @Override
     public void onGetVersionSuccessful(Version version) {
         this.version = version;
 
+        checkAndUpdateVersionObjectIfTheAppIsInstallableInThisDevice(this.version, getContext().getPackageName());
+
+        Log.d(TAG, "onGetVersionSuccessful  version = " + version);
         reviewAdapter = new ToolInfoReviewAdapter(listOfReviews);
         listReview.setAdapter(reviewAdapter);
 
@@ -279,9 +328,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
 
     @Override
     public void onGetVersionFailed() {
-        installButton.setBackgroundResource(R.drawable.button_regular_disabled);
-        installButton.setTextColor(ContextCompat.getColor(getContext(), R.color.buttonGrey));
-        installButton.setEnabled(false);
+        toggleInstallButton(false);
 
         playstoreButton.setBackgroundResource(R.drawable.button_regular_disabled);
         playstoreButton.setTextColor(ContextCompat.getColor(getContext(), R.color.buttonGrey));
@@ -377,11 +424,25 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
         faqLayout.setVisibility(GONE);
     }
 
+    @OnClick({R.id.update_button, R.id.install_button})
+    void installApplication() {
+        /*
+        if (updateButton.getVisibility() == VISIBLE) {
+            toggleUpdateButton(false);
+        } else {
+            toggleInstallButton(false);
+        }*/
+
+        installApplication(version);
+    }
+
     @Override
     public void onGetLocalizedInfoSuccessful(LocalizedInfo localizedInfo) {
-        title.setText(localizedInfo.getName());
         if (localizedInfo.getName().isEmpty()) {
             title.setText(version.getAppName());
+        } else {
+            title.setText(localizedInfo.getName());
+            version.setAppName(localizedInfo.getName());
         }
 
         vendor.setText(localizedInfo.getCompany());
@@ -491,7 +552,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
 
         this.images = images;
 
-        Picasso.with(getContext())
+        getVersionPicasso()
                 .load(images.getLogo().isEmpty() ? null : images.getLogo().get(0).getUrl())
                 .resize(400, 400)
                 .centerInside()
@@ -512,7 +573,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
     @Override
     public void onGetToolImagesSuccessful(Images toolImages) {
         if (images.getLogo().isEmpty()) {
-            Picasso.with(getContext())
+            getToolPicasso()
                     .load(toolImages.getLogo().isEmpty() ? null : toolImages.getLogo().get(0).getUrl())
                     .resize(400, 400)
                     .centerInside()
@@ -555,7 +616,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
                     RatingDialogFragment ratingDialogFragment = new RatingDialogFragment();
                     Bundle bundle = new Bundle();
                     bundle.putFloat("RATING", rating);
-                    bundle.putParcelable("VERSION", Parcels.wrap(version));
+                    bundle.putParcelable(VERSION, Parcels.wrap(version));
                     ratingDialogFragment.setArguments(bundle);
                     ratingDialogFragment.show(getActivity().getFragmentManager(), ratingDialogFragment.getClass().getName());
 
@@ -568,15 +629,13 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
     }
 
     private void updateButtons() {
-        installButton.setBackgroundResource(R.drawable.button_regular_disabled);
-        installButton.setTextColor(ContextCompat.getColor(getContext(), R.color.buttonGrey));
-        installButton.setEnabled(false);
+        toggleInstallButton(false);
 
         playstoreButton.setBackgroundResource(R.drawable.button_regular_disabled);
         playstoreButton.setTextColor(ContextCompat.getColor(getContext(), R.color.buttonGrey));
         playstoreButton.setEnabled(false);
 
-        if (version.getDownloadVia().getUrl().contains("play.google")) {
+        if (isGooglePlayStoreUrl(version)) {
             playstoreButton.setEnabled(true);
             playstoreButton.setBackgroundResource(R.drawable.button_regular);
             playstoreButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
@@ -596,71 +655,24 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
         }
 
         if (!version.isInstalled()) {
-            if (!version.getDownloadVia().getS3().isEmpty() || !version.getDownloadVia().getUrl().isEmpty()) {
-                installButton.setEnabled(true);
-                installButton.setBackgroundResource(R.drawable.button_regular);
-                installButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+            String s3Url = version.getDownloadVia().getS3();
+            String s3FileExtension = s3Url != null && s3Url.startsWith("https://s3.amazonaws.com/" + Constants.BUCKET_NAME) ? FileViewer.getFileExtension(version) : null;
+
+            if ((s3FileExtension != null && !s3FileExtension.isEmpty()) || (!isGooglePlayStoreUrl(version))) {
+                toggleInstallButton(true);
             }
         } else {
             if (version.isUpdateAvailable()) {
                 installButton.setVisibility(GONE);
                 updateButton.setVisibility(VISIBLE);
-            }
-        }
-    }
-
-    @OnClick({R.id.update_button, R.id.install_button})
-    void installApplication() {
-        if (!version.getDownloadVia().getS3().equals("https://s3.amazonaws.com/paskoocheh-repo")) {
-            installS3();
-        } else if (!version.getDownloadVia().getUrl().isEmpty()) {
-            Intent browserIntent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(version.getDownloadVia().getUrl())
-            );
-
-            startActivity(browserIntent);
-        } else {
-            playStoreRedirect();
-        }
-    }
-
-    void installS3() {
-
-        File toolFile = new File(getContext().getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));
-        if (toolFile.exists()) {
-            apkManager.installPackage(version, toolFile);
-        } else {
-            ConnectivityManager connManager
-                    = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
-            if (!getActivity().getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                Intent intent = new Intent(getActivity(), ToolDownloadService.class);
-                intent.putExtra("VERSION", Parcels.wrap(version));
-                getActivity().startService(intent);
-                Toast.makeText(getContext(), getString(R.string.queued), Toast.LENGTH_SHORT).show();
-            } else if ((activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI)) {
-                Toast.makeText(getContext(), getString(R.string.connect_wifi), Toast.LENGTH_SHORT).show();
+                toggleUpdateButton(true);
             }
         }
     }
 
     @OnClick(R.id.play_store_button)
-    void playStoreRedirect() {
-        Intent browserIntent = new Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse(version.getDownloadVia().getUrl())
-        );
-        if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            getContext().startActivity(browserIntent);
-
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.SCREEN, ToolInfoFragment.TAG);
-            bundle.putString(TOOL_ID, version.getAppName());
-            FirebaseAnalytics.getInstance(getContext()).logEvent(Constants.PLAY_STORE, bundle);
-        } else {
-            Toast.makeText(getActivity(), getString(R.string.no_playstore_clients), Toast.LENGTH_SHORT).show();
-        }
+    public void playStoreRedirect() {
+        super.playStoreRedirect(version);
     }
 
     /**
@@ -705,6 +717,110 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
         scrollView.smoothScrollTo(0, 0);
     }
 
+    @NonNull
+    protected static OkHttpClient getToolPicassoClient() {
+        Interceptor addOuinetGroup = new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request oldRequest = chain.request();
+                // Encoded OkHttp paths always start with a slash.
+                String resourcePath = pathComponent(oldRequest.url().encodedPath().substring(1));
+                Request newRequest = oldRequest
+                        .newBuilder()
+                        .addHeader("X-Ouinet-Group", resourcePath)
+                        .build();
+                return chain.proceed(newRequest);
+            }
+        };
+
+        return PaskoochehApplication.getInstance()
+            .getOkHttpClientBuilder(addOuinetGroup)
+            .build();
+    }
+
+    @NonNull
+    protected static String pathComponent(String pathResource) {
+        /*
+        Check if pathResource starts with BUCKET_NAME(paskoocheh-repo or paskoocheh-dev|staging-storage),
+        if not concatenate with BUCKET_NAME
+        */
+        if (!pathResource.startsWith(BUCKET_NAME)) {
+            pathResource = BUCKET_NAME + "/" + pathResource;
+        }
+        /*Remove the filename from the path
+         */
+        int pos = pathResource.lastIndexOf('/');
+        if (pos > -1) {
+            pathResource = pathResource.substring(0, pos);
+        }
+
+        return pathResource;
+    }
+
+    @NonNull
+    protected Picasso getToolPicasso() {
+        // This just uses the generic image group for tool logos
+        // (the same ones used in the tool list).
+        synchronized (this) {
+            if (toolPicasso == null)
+                toolPicasso = new Picasso.Builder(getContext())
+                    .downloader(new OkHttp3Downloader(getToolPicassoClient()))
+                    .build();
+        }
+        return toolPicasso;
+    }
+
+    @NonNull
+    protected OkHttpClient getVersionPicassoClient() {
+        Interceptor addOuinetGroup = new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request newRequest = chain.request()
+                        .newBuilder()
+                        .addHeader("X-Ouinet-Group", getVersionOuinetGroup())
+                        .build();
+                return chain.proceed(newRequest);
+            }
+        };
+
+        return PaskoochehApplication.getInstance()
+            .getOkHttpClientBuilder(addOuinetGroup)
+            .build();
+    }
+
+    @NonNull
+    protected String getVersionOuinetGroup() {
+        if (version == null)
+            return new String();  // TODO: can this happen?
+
+        String s3KeyDir = version.getS3Key().toString();
+        /*Remove the filename from the path
+         */
+        int pos = s3KeyDir.lastIndexOf('/');
+        if (pos > -1) {
+            s3KeyDir = s3KeyDir.substring(0, pos);
+        }
+
+        return version.getS3Bucket().toString()
+            + s3KeyDir
+            // Not including this (in contrast with version APK URLs) allows
+            // sharing screenshots across versions with different version codes,
+            // but it doubles the number of groups to be announced.
+            + ";version_code=" + version.versionCode.toString()
+            ;
+    }
+
+    @NonNull
+    protected Picasso getVersionPicasso() {
+        synchronized (this) {
+            if (versionPicasso == null)
+                versionPicasso = new Picasso.Builder(getContext())
+                    .downloader(new OkHttp3Downloader(getVersionPicassoClient()))
+                    .build();
+        }
+        return versionPicasso;
+    }
+
     private void displayImages() {
         final ArrayList<Image> localImages = new ArrayList<>(images.getScreenshot());
         if (images.screenshot.toArray().length > 0) {
@@ -716,7 +832,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
 
                 int padding = (int) (5 * getResources().getDisplayMetrics().density);
                 imageView.setPadding(padding, padding, padding, padding);
-                Picasso.with(getContext())
+                getVersionPicasso()
                         .load(localImages.get(i).getUrl())
                         .resize(600, 600)
                         .centerInside()
@@ -734,6 +850,7 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
                         Intent intent = new Intent(getActivity(), GalleryActivity.class);
                         intent.putExtra(POSITION, position);
                         intent.putExtra(IMAGES, Parcels.wrap(localImages));
+                        intent.putExtra(OUINET_GROUP, getVersionOuinetGroup());
                         startActivity(intent);
                     }
                 });
@@ -753,5 +870,11 @@ public class ToolInfoFragment extends Fragment implements ToolInfoContract.ToolI
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
     }
 }

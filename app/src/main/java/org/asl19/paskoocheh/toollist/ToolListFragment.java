@@ -1,10 +1,10 @@
 package org.asl19.paskoocheh.toollist;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -26,6 +27,7 @@ import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.categorylist.CategoryListActivity;
 import org.asl19.paskoocheh.categorylist.CategoryListFragment;
+import org.asl19.paskoocheh.installreceiver.InstallFragment;
 import org.asl19.paskoocheh.pojo.DownloadAndRating;
 import org.asl19.paskoocheh.pojo.Images;
 import org.asl19.paskoocheh.pojo.LocalizedInfo;
@@ -48,7 +50,7 @@ import static org.asl19.paskoocheh.categorylist.CategoryListActivity.FEATURED;
 import static org.asl19.paskoocheh.categorylist.CategoryListActivity.TOP_DOWNLOADS;
 import static org.asl19.paskoocheh.categorylist.CategoryListActivity.TYPE;
 
-public class ToolListFragment extends Fragment implements ToolListContract.ToolListView, ToolListContract.ToolListAdapter {
+public class ToolListFragment extends InstallFragment implements ToolListContract.ToolListView, ToolListContract.ToolListAdapter {
 
     public static final String TAG = ToolListFragment.class.getCanonicalName();
 
@@ -60,6 +62,9 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
 
     @BindView(R.id.tool_list_layout)
     LinearLayout toolListLayout;
+
+    @BindView(R.id.p2p_info_overlay)
+    FrameLayout p2pInfoOverlay;
 
     @BindView(R.id.category_recycler)
     RecyclerView categoryRecycler;
@@ -102,6 +107,12 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
         presenter.getImages();
         presenter.getLocalizedInfo();
         presenter.getCategoryNames();
+
+        boolean isP2PInfoOverlaySeenByTheUser = getContext().getSharedPreferences(Constants.PASKOOCHEH_PREFS, Context.MODE_PRIVATE)
+                .getBoolean(ToolListActivity.P2P_INFO_SEEN_BY_THE_USER, false);
+
+        p2pInfoOverlay.setVisibility(isP2PInfoOverlaySeenByTheUser ? View.GONE : View.VISIBLE);
+
         return view;
     }
 
@@ -140,6 +151,18 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
     @Override
     public void setPresenter(ToolListContract.Presenter presenter) {
         this.presenter = presenter;
+    }
+
+    @Override
+    protected void onInstallSuccessUIUpdate() {
+        version.setInstalled(true);
+        for (ToolListAdapter adapter: adapterList) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    protected void onInstallFailureUIUpdate() {
     }
 
     @Override
@@ -253,6 +276,21 @@ public class ToolListFragment extends Fragment implements ToolListContract.ToolL
 
     @Override
     public void getDownloadAndRatingListFailed() {
+    }
+
+    @Override
+    public void onInstallButtonClick(Version version, View installButton) {
+        installApplication(version);
+    }
+
+    @Override
+    public void onUpdateButtonClick(Version version, View updateButton) {
+        installApplication(version);
+    }
+
+    @Override
+    public void onPlayStoreRedirectButtonClick(Version version) {
+        playStoreRedirect(version);
     }
 
     @Override

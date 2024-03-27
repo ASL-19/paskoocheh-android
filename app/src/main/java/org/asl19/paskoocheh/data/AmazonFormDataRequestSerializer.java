@@ -12,14 +12,14 @@ public class AmazonFormDataRequestSerializer implements JsonSerializer<AmazonFor
     @Override
     public JsonElement serialize(AmazonFormDataRequest src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject object = new JsonObject();
-        object.add("acl", context.serialize(src.getAcl()));
+        //object.add("acl", context.serialize(src.getAcl()));
         object.add("key", context.serialize(src.getKey()));
-        object.add("policy", context.serialize(src.getPolicy()));
-        object.add("x-amz-algorithm", context.serialize(src.getXAmzAlgorithm()));
-        object.add("x-amz-credential", context.serialize(src.getXAmzCredential()));
-        object.add("x-amz-date", context.serialize(src.getXAmzDate()));
-        object.add("x-amz-signature", context.serialize(src.getXAmzSignature()));
-        object.add("file", context.serialize(src.getFile()));
+        //object.add("policy", context.serialize(src.getPolicy()));
+        //object.add("x-amz-algorithm", context.serialize(src.getXAmzAlgorithm()));
+        //object.add("x-amz-credential", context.serialize(src.getXAmzCredential()));
+        //object.add("x-amz-date", context.serialize(src.getXAmzDate()));
+        //object.add("x-amz-signature", context.serialize(src.getXAmzSignature()));
+        //object.add("file", context.serialize(src.getFile()));
         return object;
     }
 }

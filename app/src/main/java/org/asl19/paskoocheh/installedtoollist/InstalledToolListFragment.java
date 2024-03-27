@@ -1,16 +1,10 @@
 package org.asl19.paskoocheh.installedtoollist;
 
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -19,20 +13,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.asl19.paskoocheh.Constants;
 import org.asl19.paskoocheh.R;
+import org.asl19.paskoocheh.installreceiver.InstallFragment;
 import org.asl19.paskoocheh.pojo.Images;
 import org.asl19.paskoocheh.pojo.LocalizedInfo;
 import org.asl19.paskoocheh.pojo.Version;
-import org.asl19.paskoocheh.service.ToolDownloadService;
-import org.asl19.paskoocheh.utils.ApkManager;
-import org.parceler.Parcels;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +35,7 @@ import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
 import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
 import static org.asl19.paskoocheh.Constants.TOOL_ID;
 
-public class InstalledToolListFragment extends Fragment implements InstalledToolListContract.ListView,
+public class InstalledToolListFragment extends InstallFragment implements InstalledToolListContract.ListView,
         InstalledToolListContract.ToolListAdapter {
 
     public static final String TAG = InstalledToolListFragment.class.getCanonicalName();
@@ -191,58 +181,24 @@ public class InstalledToolListFragment extends Fragment implements InstalledTool
     void updateAll() {
         for (Version version : versions) {
             if (version.isUpdateAvailable()) {
-                updateApplication(version);
+                installApplication(version);
             }
         }
     }
 
-    void updateApplication(Version version) {
-        if (!version.getDownloadVia().getS3().equals("https://s3.amazonaws.com/paskoocheh-repo")) {
-            installApplication(version);
-        } else if (!version.getDownloadVia().getUrl().isEmpty()) {
-            Intent browserIntent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(version.getDownloadVia().getUrl())
-            );
-
-            startActivity(browserIntent);
-        } else {
-            playStoreRedirect(version);
-        }
+    @Override
+    protected void onInstallSuccessUIUpdate() {
+        version.setInstalled(true);
+        adapter.notifyDataSetChanged();
     }
 
-    void playStoreRedirect(Version version) {
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.SCREEN, InstalledToolListFragment.TAG);
-        bundle.putString(TOOL_ID, version.getAppName());
-        FirebaseAnalytics.getInstance(getContext()).logEvent(Constants.PLAY_STORE, bundle);
-
-        Intent browserIntent = new Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=" + version.getPackageName())
-        );
-
-        getContext().startActivity(browserIntent);
+    @Override
+    protected void onInstallFailureUIUpdate() {
     }
 
-    void installApplication(Version version) {
-        File toolFile = new File(getContext().getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));
-
-        if (toolFile.exists()) {
-            new ApkManager(getContext()).installPackage(version, toolFile);
-        } else {
-            ConnectivityManager connManager
-                    = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
-            if (!getContext().getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                Intent intent = new Intent(getContext(), ToolDownloadService.class);
-                intent.putExtra("VERSION", Parcels.wrap(version));
-                getContext().startService(intent);
-                Toast.makeText(getContext(), getString(R.string.queued), Toast.LENGTH_SHORT).show();
-            } else if ((activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI)) {
-                Toast.makeText(getContext(), getString(R.string.connect_wifi), Toast.LENGTH_SHORT).show();
-            }
-        }
+    @Override
+    public void onUpdateButtonClick(Version version, View updateButton) {
+        installApplication(version);
     }
 
     @Override

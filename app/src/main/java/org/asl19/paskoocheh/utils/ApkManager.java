@@ -20,6 +20,7 @@ import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.pojo.Version;
 import org.asl19.paskoocheh.toollist.ToolListFragment;
+import org.asl19.paskoocheh.amazon.S3Clients;
 
 import java.io.File;
 
@@ -34,7 +35,7 @@ public class ApkManager {
     private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
     @Inject
-    TransferUtility transferUtility;
+    S3Clients s3Clients;
 
     private Context context;
 
@@ -104,6 +105,7 @@ public class ApkManager {
     }
 
     private boolean checkIsDownloading(String packageName) {
+        final TransferUtility transferUtility = s3Clients.chooseTransferUtility();
         int id = PreferenceManager.getDefaultSharedPreferences(context).getInt(packageName, 0);
         TransferObserver transferObserver = transferUtility.getTransferById(id);
         if (transferObserver != null) {

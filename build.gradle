@@ -6,14 +6,14 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         // Check that you have the Google Services Gradle plugin v4.3.2 or later
         // (if not, add it).
-        classpath 'com.google.gms:google-services:4.3.4'
+        classpath 'com.google.gms:google-services:4.3.10'
 
         // Add the Crashlytics Gradle plugin (be sure to add version
         // 2.0.0 or later if you built your app with Android Studio 4.1).
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -26,6 +26,10 @@ allprojects {
         maven {
             url "https://maven.google.com"
         }
+        maven {
+            url "https://jitpack.io"
+        }
+
     }
 }
 
@@ -35,7 +39,7 @@ task clean(type: Delete) {
 
 ext {
     // Sdk and tools
-    minSdkVersion = 17
+    minSdkVersion = 23
     targetSdkVersion = 29
     compileSdkVersion = 29
     buildToolsVersion = '29.0.2'
@@ -58,6 +62,7 @@ ext {
     mockitoVersion = '1.10.19'
     okHttp3Version = '3.9.1'
     parcelarVersion = '1.1.12'
+    picassoDownloaderVersion = '1.1.0'
     picassoVersion = '2.5.2'
     retrofitVersion = '2.3.0'
     roomVersion = '1.0.0'

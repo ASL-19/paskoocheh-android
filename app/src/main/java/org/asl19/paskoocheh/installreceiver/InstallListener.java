@@ -37,18 +37,16 @@ public class InstallListener extends BroadcastReceiver {
                 public void onGetVersionsSuccessful(List<Version> versions) {
                     try {
                         for (Version version : versions) {
-                                //version.getPackageName()      to version.packageName
-                                //version.getAppName() to version .appName
-                            if (version.packageName != null &&
-                                    version.packageName.equals(packageName)) {
+                            if (version.getPackageName() != null &&
+                                    version.getPackageName().equals(packageName)) {
                                 for (File file : new File(context.getFilesDir() + "/").listFiles()) {
-                                    if (file.getName().startsWith(version.appName)) {
+                                    if (file.getName().startsWith(version.getAppName())) {
                                         file.delete();
                                     }
                                 }
 
                                 NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                mNotificationManager.cancel(version.toolId.intValue());
+                                mNotificationManager.cancel(version.getToolId().intValue());
 
                                 NetworkInfo networkInfo = Connectivity.getNetworkInfo(context.getApplicationContext());
                                 TelephonyManager telephonyManager = (TelephonyManager) context.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
@@ -58,9 +56,9 @@ public class InstallListener extends BroadcastReceiver {
                                 if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
                                     amazonToolRequest.setType(AmazonToolRequest.UPDATE);
                                 }
-                                amazonToolRequest.setTool(version.appName);
-                                amazonToolRequest.setToolVersion(version.versionNumber);
-                                amazonToolRequest.setFileSize(version.size.toString());
+                                amazonToolRequest.setTool(version.getAppName());
+                                amazonToolRequest.setToolVersion(version.getVersionNumber());
+                                amazonToolRequest.setFileSize(version.getSize().toString());
 
                                 amazonToolRequest.setNetworkName(telephonyManager.getNetworkOperatorName());
                                 amazonToolRequest.setNetworkCountry(telephonyManager.getNetworkCountryIso());

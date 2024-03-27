@@ -4,9 +4,6 @@ package org.asl19.paskoocheh.search;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,26 +12,27 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import org.asl19.paskoocheh.Constants;
+import org.asl19.paskoocheh.PaskoochehApplication;
 import org.asl19.paskoocheh.R;
 import org.asl19.paskoocheh.pojo.DownloadAndRating;
 import org.asl19.paskoocheh.pojo.Image;
 import org.asl19.paskoocheh.pojo.Images;
 import org.asl19.paskoocheh.pojo.LocalizedInfo;
 import org.asl19.paskoocheh.pojo.Version;
-import org.asl19.paskoocheh.service.ToolDownloadService;
 import org.asl19.paskoocheh.toolinfo.ToolInfoActivity;
 import org.asl19.paskoocheh.toolinfo.ToolInfoFragment;
 import org.asl19.paskoocheh.toollist.ToolListFragment;
 import org.asl19.paskoocheh.utils.ApkManager;
-import org.parceler.Parcels;
 
-import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -44,8 +42,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static org.asl19.paskoocheh.Constants.BUCKET_NAME;
 import static org.asl19.paskoocheh.Constants.DOWNLOAD_WIFI;
 import static org.asl19.paskoocheh.Constants.FA;
 import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PACKAGE;
@@ -61,6 +65,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     private Integer cardId;
     private SearchContract.SearchAdapter fragment;
     private Context context;
+    private Picasso picasso;
     private ApkManager apkManager;
 
     public SearchAdapter(SearchContract.SearchAdapter fragment, List<Version> versions, List<DownloadAndRating> downloadAndRatings, List<Images> images, List<LocalizedInfo> localizedInfos, int cardId) {
@@ -104,9 +109,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
                 holder.imageView.setPadding(16,16,16,16);
             }
 
-            Picasso.with(context)
-                    .load(loadImage.getUrl())
-                    .into(holder.imageView);
+            getPicasso()
+                .load(loadImage.getUrl())
+                .into(holder.imageView);
         }
 
 
@@ -194,6 +199,57 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         }
     }
 
+    @NonNull
+    protected static OkHttpClient getPicassoClient() {
+        Interceptor addOuinetGroup = new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request oldRequest = chain.request();
+                // Encoded OkHttp paths always start with a slash.
+                String resourcePath = pathComponent(oldRequest.url().encodedPath().substring(1));
+                Request newRequest = oldRequest
+                        .newBuilder()
+                        .addHeader("X-Ouinet-Group", resourcePath)
+                        .build();
+                return chain.proceed(newRequest);
+            }
+        };
+
+        return PaskoochehApplication.getInstance()
+            .getOkHttpClientBuilder(addOuinetGroup)
+            .build();
+    }
+
+    @NonNull
+    protected static String pathComponent(String pathResource) {
+        /*
+        Check if pathResource starts with BUCKET_NAME(paskoocheh-repo or paskoocheh-dev|staging-storage),
+        if not concatenate with BUCKET_NAME
+        */
+        if (!pathResource.startsWith(BUCKET_NAME)) {
+            pathResource = BUCKET_NAME + "/" + pathResource;
+        }
+        /*Remove the filename from the path
+         */
+        int pos = pathResource.lastIndexOf('/');
+        if (pos > -1) {
+            pathResource = pathResource.substring(0, pos);
+        }
+
+        return pathResource;
+    }
+
+    @NonNull
+    protected Picasso getPicasso() {
+        synchronized (this) {
+            if (picasso == null)
+                picasso = new Picasso.Builder(context)
+                    .downloader(new OkHttp3Downloader(getPicassoClient()))
+                    .build();
+        }
+        return picasso;
+    }
+
     @Override
     public int getItemCount() {
         return (null != versions ? versions.size() : 0);
@@ -235,57 +291,22 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             view.setOnClickListener(this);
         }
 
-        @OnClick({R.id.update, R.id.install})
+        @OnClick(R.id.install)
         void installApplication() {
             Version tool = versions.get(getLayoutPosition());
-            if (!tool.getDownloadVia().getS3().equals("https://s3.amazonaws.com/paskoocheh-repo")) {
-                installS3();
-            } else if (!tool.getDownloadVia().getUrl().isEmpty()) {
-                Intent browserIntent = new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(tool.getDownloadVia().getUrl())
-                );
-                context.startActivity(browserIntent);
-            } else {
-                playStoreRedirect();
-            }
+            fragment.onInstallButtonClick(tool, installTextView);
         }
 
-        void installS3() {
-            Version version = versions.get(getLayoutPosition());
-            File toolFile = new File(context.getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));
-            if (toolFile.exists()) {
-                apkManager.installPackage(version, toolFile);
-            } else {
-                ConnectivityManager connManager
-                        = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
-                if (!context.getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                    Intent intent = new Intent(context, ToolDownloadService.class);
-                    intent.putExtra("VERSION", Parcels.wrap(version));
-                    context.startService(intent);
-                    Toast.makeText(context, context.getString(R.string.queued), Toast.LENGTH_SHORT).show();
-                } else if ((activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI)) {
-                    Toast.makeText(context, context.getString(R.string.connect_wifi), Toast.LENGTH_SHORT).show();
-                }
-            }
+        @OnClick(R.id.update)
+        void updateApplication() {
+            Version tool = versions.get(getLayoutPosition());
+            fragment.onUpdateButtonClick(tool, updateTextView);
         }
 
         @OnClick(R.id.play_store)
         void playStoreRedirect() {
-            Version tool = versions.get(getLayoutPosition());
-
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.SCREEN, ToolListFragment.TAG);
-            bundle.putString(TOOL_ID, tool.getAppName());
-            FirebaseAnalytics.getInstance(context).logEvent(Constants.PLAY_STORE, bundle);
-
-            Intent browserIntent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=" + tool.getPackageName())
-            );
-
-            context.startActivity(browserIntent);
+            Version version = versions.get(getLayoutPosition());
+            fragment.onPlayStoreRedirectButtonClick(version);
         }
 
         @Override

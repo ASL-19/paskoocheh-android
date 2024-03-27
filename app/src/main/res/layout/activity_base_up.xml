@@ -26,7 +26,7 @@
                 android:textColor="@color/white"
                 android:textSize="?font_large"
                 android:maxLines="1"
-                fontPath="fonts/IRANSans_Bold.ttf"/>
+                fontPath="fonts/IRANSans_Bold_No_Number_Translation.ttf"/>
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>

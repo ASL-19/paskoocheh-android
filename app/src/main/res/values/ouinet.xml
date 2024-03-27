@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ouinet_cache_http_pubkey">$OUINET_CACHE_HTTP_PUBKEY</string>
+    <string name="ouinet_injector_credentials">$OUINET_INJECTOR_CREDENTIALS</string>
+    <string name="ouinet_injector_tls_cert">$OUINET_INJECTOR_TLS_CERT</string>
+    <string name="ouinet_cache_type">$OUINET_CACHE_TYPE</string>
+</resources>

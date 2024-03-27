@@ -1,0 +1,10 @@
+• removed the unsigned part in upload job
+• added a statement in gitignore
+• updated line 48
+• fixed an error
+• Troubleshooting staging signing store from  build.gradle
+• Updated to test (invoked staging to CI/CD)
+• updated upload_to_s3 script
+• updated a script error
+• invoked build-staging to master to test the upload
+• Updated dependency

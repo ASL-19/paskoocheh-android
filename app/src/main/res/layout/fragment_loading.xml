@@ -1,55 +1,74 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:filterTouchesWhenObscured="true"
-             android:background="@color/colorPrimary">
-
-    <RelativeLayout
+ <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:filterTouchesWhenObscured="true"
+        android:background="@color/colorPrimary"
         android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+     <LinearLayout
+         android:id="@+id/logo_app_name_layout"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_centerInParent="true"
+         android:gravity="center_horizontal"
+         android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:src="@mipmap/paskoocheh" />
+         <ImageView
+             android:id="@+id/logo"
+             android:layout_width="150dp"
+             android:layout_height="150dp"
+             android:src="@mipmap/paskoocheh" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:textSize="30sp"
-                android:text="@string/app_name"
-                android:textColor="@color/white"
-                fontPath="fonts/IRANSans_Bold.ttf"/>
-        </LinearLayout>
+         <TextView
+             fontPath="fonts/IRANSans_Bold.ttf"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_margin="15dp"
+             android:text="@string/app_name"
+             android:textColor="@color/white"
+             android:textSize="30sp" />
 
-        <TextView
-            android:id="@+id/retry"
-            android:background="@drawable/button_white_outline_to_white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:padding="16dp"
-            android:text="@string/tap_to_retry"
-            android:textColor="@drawable/button_text_white_to_blue"
-            android:visibility="gone"
-            fontPath="fonts/IRANSans_Bold.ttf"/>
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"/>
-    </RelativeLayout>
+         <TextView
+             android:id="@+id/banner_message"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_centerHorizontal="true"
+             android:layout_gravity="center"
+             android:layout_marginTop="50dp"
+             android:text="@string/please_wain"
+             android:textAlignment="center"
+             android:textAppearance="@style/text_view_active"
+             android:visibility="visible" />
+         <TextView
+             android:id="@+id/banner_sub_message"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_centerHorizontal="true"
+             android:layout_gravity="center"
+             android:layout_marginTop="25dp"
+             android:text="@string/wait_for_few_minutes"
+             android:textAlignment="center"
+             android:textColor="@color/white"
+             android:visibility="visible" />
+     </LinearLayout>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/retry"
+        android:background="@drawable/button_white_outline_to_white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:padding="16dp"
+        android:text="@string/tap_to_retry"
+        android:textColor="@drawable/button_text_white_to_blue"
+        android:visibility="gone"
+        fontPath="fonts/IRANSans_Bold.ttf"/>
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

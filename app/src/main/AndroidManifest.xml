@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="org.asl19.paskoocheh">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.asl19.paskoocheh">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <!-- Start - SAI AAB installer related uses-sdk -->
+    <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
+    <!-- Start - SAI AAB installer related uses-sdk -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Start - SAI AAB installer related permissions -->
+    <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <!-- End - SAI AAB installer related permissions -->
+
 
     <application
         android:name=".PaskoochehApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:configChanges="orientation|screenSize"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
+        android:taskAffinity=""
+        android:usesCleartextTraffic="false"
         android:theme="@style/AppTheme">
 
         <receiver android:name=".installreceiver.InstallListener">
             <intent-filter android:priority="100">
-                <action android:name="android.intent.action.PACKAGE_ADDED"/>
-                <data android:scheme="package"/>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
 
@@ -32,74 +46,116 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
+
+        <!-- Start - SAI AAB related Providers -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+        <!-- End - SAI AAB related Providers -->
 
         <activity android:name=".loading.LoadingActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Start - SAI AAB related Activities -->
+        <activity android:name="com.aefyr.sai.installer2.impl.rootless.ConfirmationIntentWrapperActivity2" />
+        <!-- End - SAI AAB related Activities -->
 
         <service
             android:name=".push.MyFirebaseMessagingService"
             android:stopWithTask="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
+        <service
+            android:name=".service.InstallAABService"
+            android:exported="false"/>
         <service
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
             android:enabled="true" />
-
         <service
             android:name=".service.PaskoochehConfigService"
             android:enabled="true" />
-
         <service
             android:name=".service.PaskoochehConfigSecurityService"
             android:enabled="true" />
-
         <service
             android:name=".service.PaskoochehConfigVerificationService"
             android:enabled="true" />
-
         <service
             android:name=".service.ToolDownloadService"
             android:enabled="true" />
-
         <service
             android:name=".service.ToolDownloadSecurityService"
             android:enabled="true" />
-
         <service
             android:name=".service.ToolDownloadVerificationService"
             android:enabled="true" />
+        <service
+            android:name=".OuinetService"
+            android:exported="false"
+            android:isolatedProcess="false"
+            android:process=":ouinetService" />
+        <service android:name=".PaskoochehApplication" />
 
-        <activity android:name=".toollist.ToolListActivity"/>
-        <activity android:name=".installedtoollist.InstalledToolListActivity"/>
-        <activity android:name=".toolinfo.ToolInfoActivity">
+        <receiver
+            android:name=".OuinetBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.asl19.paskoocheh.OuinetBroadcastReceiver.STOP" />
+            </intent-filter>
+        </receiver>
+        <activity android:name=".p2ploading.LoadingP2PActivity"
+            android:launchMode="singleInstance"
+            android:configChanges="orientation|screenSize"
+            >
+        </activity>
+        <activity android:name=".toollist.ToolListActivity" android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize"
+            />
+        <activity android:name=".installedtoollist.InstalledToolListActivity" android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".toolinfo.ToolInfoActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"/>
-                <data android:scheme="http"/>
+
+                <data android:scheme="https" />
+                <data android:scheme="http" />
                 <data android:host="paskoocheh.com" />
                 <data android:host="www.paskoocheh.com" />
-                <data android:pathPrefix="/versions/"/>
+                <data android:pathPrefix="/versions/" />
             </intent-filter>
         </activity>
-        <activity android:name=".about.AboutActivity"/>
-        <activity android:name=".categorylist.CategoryListActivity"/>
-        <activity android:name=".terms.TermsActivity"/>
-        <activity android:name=".feedback.FeedbackActivity"/>
-        <activity android:name=".search.SearchActivity"/>
-        <activity android:name=".guide.GuideActivity"/>
-        <activity android:name=".gallery.GalleryActivity"/>
+        <activity
+            android:name=".p2pnetwork.P2PActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name=".injectdirectory.InjectActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".about.AboutActivity" />
+        <activity android:name=".categorylist.CategoryListActivity" />
+        <activity android:name=".terms.TermsActivity" />
+        <activity android:name=".feedback.FeedbackActivity" />
+        <activity android:name=".search.SearchActivity" />
+        <activity android:name=".guide.GuideActivity" />
+        <activity android:name=".gallery.GalleryActivity" />
     </application>
 
 </manifest>
