@@ -4,9 +4,6 @@ package org.asl19.paskoocheh.installedtoollist;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.Html;
@@ -18,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.picasso.Picasso;
@@ -29,16 +25,13 @@ import org.asl19.paskoocheh.pojo.Image;
 import org.asl19.paskoocheh.pojo.Images;
 import org.asl19.paskoocheh.pojo.LocalizedInfo;
 import org.asl19.paskoocheh.pojo.Version;
-import org.asl19.paskoocheh.service.ToolDownloadService;
 import org.asl19.paskoocheh.toolinfo.ToolInfoActivity;
 import org.asl19.paskoocheh.toolinfo.ToolInfoFragment;
 import org.asl19.paskoocheh.toollist.ToolListFragment;
 import org.asl19.paskoocheh.utils.ApkManager;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-import org.parceler.Parcels;
 
-import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
@@ -216,17 +209,7 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
         @OnClick(R.id.update)
         void updateApplication() {
             Version tool = versions.get(getLayoutPosition());
-            if (!tool.getDownloadVia().getS3().equals("https://s3.amazonaws.com/paskoocheh-repo")) {
-                installApplication();
-            } else if (!tool.getDownloadVia().getUrl().isEmpty()) {
-                Intent browserIntent = new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(tool.getDownloadVia().getUrl())
-                );
-                context.startActivity(browserIntent);
-            } else {
-                playStoreRedirect();
-            }
+            fragment.onUpdateButtonClick(tool, updateTextView);
         }
 
         @OnClick(R.id.more_details)
@@ -239,43 +222,6 @@ public class InstalledToolListAdapter extends RecyclerView.Adapter<InstalledTool
                 detailLayout.setVisibility(VISIBLE);
                 detailArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_blue);
             }
-        }
-
-        void installApplication() {
-            Version version = versions.get(getLayoutPosition());
-            File toolFile = new File(context.getApplicationContext().getFilesDir() + "/" + String.format("%s_%s.apk", version.getAppName(), version.getVersionNumber()));
-
-            if (toolFile.exists()) {
-                apkManager.installPackage(version, toolFile);
-            } else {
-                ConnectivityManager connManager
-                        = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo activeNetwork = connManager.getActiveNetworkInfo();
-                if (!context.getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).getBoolean(DOWNLOAD_WIFI, true) || (activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)) {
-                    Intent intent = new Intent(context, ToolDownloadService.class);
-                    intent.putExtra("VERSION", Parcels.wrap(version));
-                    context.startService(intent);
-                    Toast.makeText(context, context.getString(R.string.queued), Toast.LENGTH_SHORT).show();
-                } else if ((activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI)) {
-                    Toast.makeText(context, context.getString(R.string.connect_wifi), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-
-        void playStoreRedirect() {
-            Version version = versions.get(getLayoutPosition());
-
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.SCREEN, InstalledToolListFragment.TAG);
-            bundle.putString(TOOL_ID, version.getAppName());
-            FirebaseAnalytics.getInstance(context).logEvent(Constants.PLAY_STORE, bundle);
-
-            Intent browserIntent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=" + version.getPackageName())
-            );
-
-            context.startActivity(browserIntent);
         }
 
         @Override

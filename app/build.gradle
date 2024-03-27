@@ -3,6 +3,13 @@ apply from: '../config/quality/quality.gradle'
 apply plugin: 'com.github.spotbugs'
 apply plugin: 'com.google.firebase.crashlytics'
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
 
 buildscript {
     repositories {
@@ -15,35 +22,120 @@ buildscript {
 }
 
 repositories {
-//    maven {
-//        url 'https://maven.fabric.io/public'
-//    }
+
 }
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
         applicationId "org.asl19.paskoocheh"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 308
-        versionName "3.0.8"
+        versionCode 4101
+        versionName "4.1.1"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk{
+            if (localProperties.containsKey('ndk.abiFilters')) {
+                abiFilters = []
+                abiFilters.addAll(
+                        localProperties
+                                .getProperty('ndk.abiFilters')
+                                .split(',')
+                                .collect{it as String}
+                )
+            }
+        }
+    }
+    signingConfigs {
+        debug {
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile rootProject.file('debug.keystore')
+        }
+        staging {
+            def secretsPropertiesFile = rootProject.file("signing.properties")
+            def secretProperties = new Properties()
+
+            if (secretsPropertiesFile.exists()) {
+                secretProperties.load(new FileInputStream(secretsPropertiesFile))
+            }
+            storeFile rootProject.file("signing.keystore")
+            storePassword "${secretProperties['keystorePassword']}"
+            keyAlias "${secretProperties['keyAlias']}"
+            keyPassword "${secretProperties['keyPassword']}"
+        }
+        release {
+            def secretsPropertiesFile = rootProject.file("signingrelease.properties")
+            def secretProperties = new Properties()
+
+            if (secretsPropertiesFile.exists()) {
+                secretProperties.load(new FileInputStream(secretsPropertiesFile))
+            }
+            storeFile rootProject.file("signingrelease.keystore")
+            storePassword "${secretProperties['keystorePassword']}"
+            keyAlias "${secretProperties['keyAlias']}"
+            keyPassword "${secretProperties['keyPassword']}"
+        }
     }
     buildTypes {
         debug {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
         }
+         dev {
+            //initWith debug
+             debuggable true
+            applicationIdSuffix ".dev"
+            signingConfig signingConfigs.debug
+        }
+        staging {
+            applicationIdSuffix ".staging"
+            //minifyEnabled true
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
+            signingConfig signingConfigs.staging
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dataBinding {
+        enabled = true
+    }
+    sourceSets {
+//        debug {
+//            java {
+//                srcDir 'src/debug/java'
+//            }
+//            resources {
+//                srcDir 'src/debug/res'
+//            }
+//        }
+        dev {
+            java {
+                srcDir 'src/dev/java'
+            }
+            resources {
+                srcDir 'src/dev/res'
+            }
+        }
+        staging {
+            java {
+                srcDir 'src/staging/java'
+            }
+            resources {
+                srcDir 'src/staging/res'
+            }
+        }
     }
 }
 
@@ -58,7 +150,15 @@ configurations.all {
         force "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     }
 }
+android {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
 
+dependencies {
+    implementation 'com.github.mveroukis:storage-chooser:2.0.4.4a'
+}
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //App's dependencies
@@ -67,9 +167,19 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0-rc01'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.2.0'
+    implementation 'androidx.preference:preference:1.1.1'
+
     // Utility Library
     implementation 'com.fernandocejas:arrow:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.navigation:navigation-fragment:2.3.5'
+    implementation 'androidx.navigation:navigation-ui:2.3.5'
 
+    implementation 'com.getkeepsafe.relinker:relinker:1.4.4'
+
+    implementation("ie.equalit.ouinet:ouinet-omni:0.21.8") // This Ouinet version supports both 64 and 32 bit devices.
 
     // Android Testing Support runner and rules
     androidTestImplementation 'androidx.test:runner:1.3.0'
@@ -87,6 +197,13 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha02'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0-alpha02'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0-alpha02'
+
+    // SAI AAB Installer
+    implementation 'com.github.aefyr:pseudoapksigner:1.6'
+    def shizuku_version = '11.0.1'
+    implementation "rikka.shizuku:api:$shizuku_version"
+    implementation "rikka.shizuku:provider:$shizuku_version"
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
 
     //Annotations
     compileOnly "javax.annotation:jsr250-api:$rootProject.javaxAnnotationVersion"
@@ -137,9 +254,9 @@ dependencies {
 
     //Image Cache
     implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    implementation "com.jakewharton.picasso:picasso2-okhttp3-downloader:$rootProject.picassoDownloaderVersion"
 
     //Crashlytics
-    // Add the Firebase Crashlytics SDK.
     // Recommended: Add the Firebase SDK for Google Analytics.
     implementation 'com.google.firebase:firebase-analytics:17.6.0'
 
@@ -156,11 +273,18 @@ dependencies {
     implementation "com.evernote:android-job:$rootProject.androidJobVersion"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    devImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    stagingImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
     implementation "com.atlassian.commonmark:commonmark:0.10.0"
 
     implementation "com.google.android.material:material:1.3.0-alpha03"
+
+    //Storage Chooser
+    implementation 'com.github.mveroukis:storage-chooser:2.0.4.4a'
+    implementation 'androidx.multidex:multidex:2.0.1'
+
 
 }
 

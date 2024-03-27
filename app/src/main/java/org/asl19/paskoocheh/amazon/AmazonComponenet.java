@@ -10,6 +10,7 @@ import org.asl19.paskoocheh.service.ToolDownloadSecurityService;
 import org.asl19.paskoocheh.service.ToolDownloadService;
 import org.asl19.paskoocheh.toolinfo.ToolInfoFragment;
 import org.asl19.paskoocheh.utils.ApkManager;
+import org.asl19.paskoocheh.data.source.AmazonRepository;
 
 import javax.inject.Singleton;
 
@@ -34,4 +35,6 @@ public interface AmazonComponenet {
     void inject(ToolDownloadSecurityService toolDownloadSecurityService);
 
     void inject(ApkManager apkManager);
+
+    void inject(AmazonRepository amazonRepository);
 }

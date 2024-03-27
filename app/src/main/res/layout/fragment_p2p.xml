@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:layoutDirection="rtl"
+        android:padding="15dp"
+        android:filterTouchesWhenObscured="true">
+        <LinearLayout
+            android:id="@+id/successToosheh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:gravity="center"
+            android:textDirection="rtl"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/in_case_of_"
+                android:textColor="@color/textColor"
+                style="@style/text_view_style" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginTop="14dp"
+                android:layout_marginBottom="28dp"
+                android:paddingLeft="5dip"
+                android:paddingTop="8dip"
+                android:paddingRight="5dip"
+                android:paddingBottom="8dip">
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/p2pEnableButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:textOff="@string/label_OFF"
+                    android:textOn="@string/label_ON"
+                    android:thumb="@drawable/thumb"
+                    app:switchPadding="5dp"
+                    app:track="@drawable/track" />
+
+                <TextView
+                    android:id="@+id/p2pStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/peer_to_pee"
+                    android:layout_alignParentStart="true"
+                    style="@style/text_view_peerstyle"
+                    />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/backToHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center"
+                android:background="@color/blue"
+                android:text="@string/home"
+                style="@style/ButtonPeerAddContent"
+                />
+
+            <LinearLayout
+                android:id="@+id/injectToosheh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="24dip"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <View
+                    android:id="@+id/toosheh_2divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#CCCCCC" />
+                <TextView
+                    android:id="@+id/p2p_advanced_settings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dip"
+                    android:text="@string/advanced_settings"
+                    android:layout_alignParentStart="true"
+                    android:layout_gravity="start"
+                    style="@style/text_view_peerstyle"
+                    />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tv_how_to_inject"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="24dp"
+                    android:linksClickable="true"
+                    android:clickable="true"
+                    android:textColorLink="@color/blue"
+                    android:text="@string/for_injecti"
+                    style="@style/text_view_style" />
+                </RelativeLayout>
+                <Button
+                    android:id="@+id/browse_directory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/button_outline"
+                    style="@style/ButtonPeerBackContent"
+                    android:text="@string/browse"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <include
+            android:id="@+id/banner_toosheh"
+            layout="@layout/banner_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/successToosheh"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="485dp"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+</ScrollView>

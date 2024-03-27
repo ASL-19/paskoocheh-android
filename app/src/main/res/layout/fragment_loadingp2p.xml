@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="0dp"
+    android:fillViewport="true">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layoutDirection="rtl"
+        tools:context=".p2ploading.LoadingP2PFragment">
+
+
+        <ImageView
+            android:id="@+id/p2p_status_image_loading_screen"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/p2p_off_loading_screen_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/text_view_16style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/p2p_off_loading_screen_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/p2p_status_image_loading_screen" />
+
+        <TextView
+            android:id="@+id/description"
+            style="@style/text_view_14colorstyle"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="100dp"
+            android:text="@string/p2p_off_loading_screen_description"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
+        <TextView
+            android:id="@+id/p2pStatus"
+            style="@style/text_view_peerstyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/peer_to_pee"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/p2pEnableButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:textOff="@string/label_OFF"
+            android:textOn="@string/label_ON"
+            android:thumb="@drawable/thumb"
+            app:layout_constraintBaseline_toBaselineOf="@+id/p2pStatus"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:switchPadding="5dp"
+            app:track="@drawable/track" />
+
+        <TextView
+            android:id="@+id/refresh_text"
+            style="@style/text_view_14clickstyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:clickable="true"
+            android:text="@string/refresh_the"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/p2pStatus" />
+        <Button
+            android:id="@+id/refresh_button"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/ic_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@+id/refresh_text"
+            app:layout_constraintEnd_toStartOf="@+id/refresh_text" />
+
+        <View
+            android:id="@+id/toosheh_2divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="32dp"
+            android:background="#CCCCCC"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/refresh_text" />
+
+        <TextView
+            android:id="@+id/p2p_advanced_settings"
+            style="@style/text_view_peerstyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="start"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:paddingTop="8dip"
+            android:text="@string/advanced_settings"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/toosheh_2divider" />
+
+        <TextView
+            android:id="@+id/tv_how_to_inject"
+            style="@style/text_view_style"
+            android:layout_width="380dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:clickable="true"
+            android:linksClickable="true"
+            android:text="@string/for_injecti"
+            android:textColorLink="@color/blue"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/p2p_advanced_settings" />
+
+        <Button
+            android:id="@+id/browse_directory"
+            style="@style/ButtonPeerBackContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/button_outline"
+            android:text="@string/browse"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_how_to_inject" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_p2p"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="p2p_status_image_loading_screen, title, description, refresh_button, refresh_text, p2pStatus, p2pEnableButton" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_inject_folder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="toosheh_2divider, p2p_advanced_settings, tv_how_to_inject, browse_directory" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/spinner"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/progress_bar_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:lines="2"
+            android:text="@string/please_wain"
+            android:textAlignment="center"
+            android:textAppearance="@style/text_view_clickstyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress_bar" />
+
+        <TextView
+            android:id="@+id/progress_bar_sub_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:lines="2"
+            android:text="@string/wait_for_few_minutes"
+            android:textAlignment="center"
+            android:textAppearance="@style/text_view_14style"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress_bar_message" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_progress_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="progress_bar, progress_bar_message, progress_bar_sub_message" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

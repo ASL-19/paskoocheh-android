@@ -10,8 +10,6 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.asl19.paskoocheh.PaskoochehApplication;
@@ -26,6 +24,7 @@ import javax.inject.Inject;
 import static org.asl19.paskoocheh.Constants.ASC;
 import static org.asl19.paskoocheh.Constants.BUCKET_NAME;
 import static org.asl19.paskoocheh.Constants.CONFIG_DIRECTORY;
+import org.asl19.paskoocheh.amazon.S3Clients;
 
 /**
  * Service for retrieving tool configuration file from
@@ -36,10 +35,7 @@ public class PaskoochehConfigSecurityService extends IntentService {
     public static final String CONFIG = "CONFIG";
 
     @Inject
-    TransferUtility transferUtility;
-
-    @Inject
-    AmazonS3Client amazonS3Client;
+    S3Clients s3Clients;
 
     private String originalFilename;
 
@@ -67,21 +63,13 @@ public class PaskoochehConfigSecurityService extends IntentService {
         } catch (Exception ex) {
             FirebaseCrashlytics.getInstance().recordException(ex);
             Handler mainHandler = new Handler(Looper.getMainLooper());
-
-            Runnable myRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    EventBus.getDefault().post(new Event.Timeout());
-                }
-            };
-            mainHandler.post(myRunnable);
+            EventBus.getDefault().post(new Event.Timeout());
         }
-
     }
 
     private void downloadFile(final Intent intent) {
         final File securityFile = new File(getApplicationContext().getFilesDir() + "/" + securityFilename);
-        final TransferObserver observer = transferUtility.download(BUCKET_NAME + CONFIG_DIRECTORY, securityFilename, securityFile);
+        final TransferObserver observer = s3Clients.chooseTransferUtility().download(BUCKET_NAME + CONFIG_DIRECTORY, securityFilename, securityFile);
 
         observer.setTransferListener(new TransferListener() {
             @Override

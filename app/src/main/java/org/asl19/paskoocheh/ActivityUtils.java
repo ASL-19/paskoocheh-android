@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import static org.asl19.paskoocheh.Constants.TOOL_ID;
 
+
 /**
  * This provides methods to help Activities load their UI.
  */

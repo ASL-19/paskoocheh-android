@@ -1,0 +1,489 @@
+image: registry.notofilter.com/infra/dockerfiles/android-30.0.3-java11:latest
+# https://github.com/docker-android-sdk/android-30
+
+variables:
+    AWS_S3_UPLOAD_KEY: $AWS_S3_UPLOAD_KEY
+    AWS_S3_UPLOAD_SECRET: $AWS_S3_UPLOAD_SECRET
+    AWS_S3_UPLOAD: $AWS_S3_UPLOAD
+    OUINET_DIR: "OUINET_DIR"
+    OUINET_PREF: "OUINET"
+    P2P_INJECT_SUCCESS: "p2p_inject_success"
+    P2P_INJECT_FAIL: "p2p_inject_fail"
+    P2P_CONNECT_SUCCESS: "p2p_connect_success"
+    P2P_CONNECT_FAIL: "p2p_connect_fail"
+    P2P_DISCONNECT: "p2p_disconnect"
+before_script:
+  # move gradle-cache and android-build-cache to folders inside the build-folder so it can be used by the GitLab CI cache
+  # http://stackoverflow.com/a/36050711/2170109
+  # https://developer.android.com/studio/build/build-cache.html
+  - export GRADLE_USER_HOME=.gradle
+  - export ANDROID_SDK_HOME=$CI_PROJECT_DIR
+  # make gradle executable
+  - chmod +x ./gradlew
+
+cache:
+  paths:
+      - .gradle/wrapper
+      - .gradle/caches
+      - .android/build-cache/
+      
+stages:
+  - prebuild
+  - build
+  - upload
+  - prod-ready
+
+# ==============
+# === Mixins ===
+# ==============
+# These are used with the `extends` keyword
+
+.prerequisites:
+#this installs gettext-base (envsubst) and geminstall bundler
+    image: registry.notofilter.com/infra/dockerfiles/android-30.0.3-java11:latest
+    before_script:
+        - apt-get update
+        - apt-get install gettext-base
+        - gem install bundler -v 1.17.2
+        - bundle install
+        - bundle exec fastlane update_plugins
+        #- mkdir app/src/main/res/values/.generated
+        #- for f in app/src/main/res/values/ouinet.xml; do
+        #     envsubst "$(env | cut -d= -f1 | sed -e 's/^/$/')" < $f > "app/src/main/res/values/.generated/$(basename $f)"; done
+        #- cp app/src/main/res/values/.generated/ouinet.xml app/src/main/res/values/ouinet.xml
+        #- cat app/src/main/res/values/ouinet.xml
+
+.populate_ouinet_xml:
+    image: registry.notofilter.com/infra/dockerfiles/android-30.0.3-java11:latest
+    before_script:
+        - apt-get update
+        - apt-get install gettext-base
+        - mkdir app/src/main/res/values/.generated
+        - for f in app/src/main/res/values/ouinet.xml; do
+             envsubst "$(env | cut -d= -f1 | sed -e 's/^/$/')" < $f > "app/src/main/res/values/.generated/$(basename $f)"; done
+        - cp app/src/main/res/values/.generated/ouinet.xml app/src/main/res/values/ouinet.xml
+        - cat app/src/main/res/values/ouinet.xml
+
+.upload_to_s3:
+    image: registry.notofilter.com/infra/dockerfiles/kubectl-awscli:latest
+    before_script:
+       - aws configure set aws_access_key_id "${AWS_S3_UPLOAD_KEY}" && \
+       - aws configure set aws_secret_access_key "${AWS_S3_UPLOAD_SECRET}" && \
+       - aws configure set region us-east-1 && \    
+
+# ------------
+# --- Rules --
+# ------------
+
+.if-develop-branch:
+    rules:
+        - if: $CI_COMMIT_BRANCH == "develop"
+
+.if-version-tag:
+    rules:
+        - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+.*/
+
+.if-version-tag-manual:
+    rules:
+        - if: $CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+.*/
+          when: manual
+
+.if-release-tag:
+    rules:
+        - if: $CI_COMMIT_TAG =~ /^ouinet-release\/\d+\.\d+\.\d+.*/
+
+.if-release-tag-manual:
+    rules:
+        - if: $CI_COMMIT_TAG =~ /^release\/\d+\.\d+\.\d+.*/
+          when: manual
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# ============
+# === Jobs ===
+# ============
+# ----------------------
+# --- Prebuild-stage ---
+# ----------------------
+
+prebuild-dev:
+  stage: prebuild
+  extends:
+      - .if-develop-branch
+      - .populate_ouinet_xml
+  variables:
+      PUBLIC_KEY: $PUBLIC_KEY_DEV
+      GOOGLE_SERVICES_JSON_FILE_CONTENTS: $GOOGLE_SERVICES_JSON_FILE_CONTENTS_DEV
+      OUINET_CACHE_HTTP_PUBKEY: "$OUINET_CACHE_HTTP_PUBKEY_DEV"
+      OUINET_INJECTOR_CREDENTIALS: "$OUINET_INJECTOR_CREDENTIALS_DEV"
+      OUINET_INJECTOR_TLS_CERT: "$OUINET_INJECTOR_TLS_CERT_DEV"
+      OUINET_CACHE_TYPE: "$OUINET_CACHE_TYPE_DEV"
+  script:
+        - echo "$PUBLIC_KEY" > app/src/dev/assets/public_key.pub
+        - echo $GOOGLE_SERVICES_JSON_FILE_CONTENTS > app/src/dev/google-services.json
+  artifacts:
+    paths:
+      - app/src/dev/assets/public_key.pub
+      - app/src/dev/google-services.json
+      - app/src/main/res/values/ouinet.xml 
+    expire_in: 60 mins
+
+
+prebuild-staging:
+  stage: prebuild
+  extends: 
+      - .if-version-tag
+      - .populate_ouinet_xml
+  variables:
+      KEYSTORE_ALIASL: $KEYSTORE_ALIAS_STAGING
+      KEYSTORE_KEY_PASSWORD: $KEYSTORE_KEY_PASSWORD_STAGING
+      KEYSTORE_PASSWORD: $KEYSTORE_PASSWORD_STAGING
+      KEYSTORE: $KEYSTORE_STAGING
+      PUBLIC_KEY: $PUBLIC_KEY_STAGING
+      GOOGLE_SERVICES_JSON_FILE_CONTENTS: $GOOGLE_SERVICES_JSON_FILE_CONTENTS_STAGING
+      OUINET_CACHE_HTTP_PUBKEY: "$OUINET_CACHE_HTTP_PUBKEY_STAGING"
+      OUINET_INJECTOR_CREDENTIALS: "$OUINET_INJECTOR_CREDENTIALS_STAGING"
+      OUINET_INJECTOR_TLS_CERT: "$OUINET_INJECTOR_TLS_CERT_STAGING"
+      OUINET_CACHE_TYPE: "$OUINET_CACHE_TYPE_STAGING"
+  script:
+        - echo $KEYSTORE | base64 -d > signing.keystore
+        - echo "keystorePath=signing.keystore" > signing.properties
+        - echo "keystorePassword=$KEYSTORE_PASSWORD" >> signing.properties
+        - echo "keyAlias=$KEYSTORE_ALIASL" >> signing.properties
+        - echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> signing.properties
+        - echo "$PUBLIC_KEY" > app/src/staging/assets/public_key.pub
+        - echo $GOOGLE_SERVICES_JSON_FILE_CONTENTS > app/src/staging/google-services.json
+  artifacts:
+    paths:
+      - signing.keystore
+      - signing.properties
+      - app/src/staging/assets/public_key.pub
+      - app/src/staging/google-services.json
+      - app/src/main/res/values/ouinet.xml
+    expire_in: 60 mins
+
+
+prebuild-release:
+  stage: prebuild
+  extends:
+      - .if-version-tag
+      - .populate_ouinet_xml
+  variables:
+      KEYSTORE_ALIASL: $KEYSTORE_ALIAS_PROD
+      KEYSTORE_KEY_PASSWORD: $KEYSTORE_KEY_PASSWORD_PROD
+      KEYSTORE_PASSWORD: $KEYSTORE_PASSWORD_PROD
+      KEYSTORE: $KEYSTORE_PROD
+      PUBLIC_KEY: $PUBLIC_KEY_PROD
+      GOOGLE_SERVICES_JSON_FILE_CONTENTS: $GOOGLE_SERVICES_JSON_FILE_CONTENTS_PROD
+      OUINET_CACHE_HTTP_PUBKEY: "$OUINET_CACHE_HTTP_PUBKEY_PROD"
+      OUINET_INJECTOR_CREDENTIALS: "$OUINET_INJECTOR_CREDENTIALS_PROD"
+      OUINET_INJECTOR_TLS_CERT: "$OUINET_INJECTOR_TLS_CERT_PROD"
+      OUINET_CACHE_TYPE: "$OUINET_CACHE_TYPE_PROD"
+  script:
+        - echo $KEYSTORE | base64 -d > signingrelease.keystore
+        - echo "keystorePath=signingrelease.keystore" > signingrelease.properties
+        - echo "keystorePassword=$KEYSTORE_PASSWORD" >> signingrelease.properties
+        - echo "keyAlias=$KEYSTORE_ALIASL" >> signingrelease.properties
+        - echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> signingrelease.properties
+        - echo "$PUBLIC_KEY" > app/src/release/assets/public_key.pub
+        - echo $GOOGLE_SERVICES_JSON_FILE_CONTENTS > app/src/release/google-services.json
+  artifacts:
+    paths:
+      - signingrelease.keystore
+      - signingrelease.properties
+      - app/src/release/assets/public_key.pub
+      - app/src/release/google-services.json
+      - app/src/main/res/values/ouinet.xml
+    expire_in: 60 mins
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# -------------------
+# --- build stage ---
+# -------------------
+
+build-dev:
+  stage: build
+  extends:
+      - .prerequisites
+      - .if-develop-branch
+  variables:
+      COGNITO_POOL_ID: $COGNITO_POOL_ID_DEV
+      BUCKET_NAME: $BUCKET_NAME_DEV
+      API: $API_DEV
+      URL: $URL_DEV
+      AMAZON_API_BASE_URL: $AMAZON_API_BASE_URL_DEV
+      AMAZON_API_ENDPOINT: $AMAZON_API_ENDPOINT_DEV
+      RATING: $RATING_DEV
+      DOWNLOAD: $DOWNLOAD_DEV
+      X_AMZ_CREDENTIAL: $X_AMZ_CREDENTIAL_DEV
+      X_AMZ_DATE: $X_AMZ_DATE_DEV
+      X_AMZ_SIGNATURE: $X_AMZ_SIGNATURE_DEV
+      POLICY: $POLICY_DEV
+      KEY: $KEY_DEV
+      FILENAME_PREFIX: $FILENAME_PREFIX_DEV
+      ANDROID: "android"
+      PASKOOCHEH_PREFS: "PASKOOCHEH_KEY"
+      DOWNLOAD_WIFI: "DOWNLOAD_ONLY_WIFI"
+      UPDATE_NOTIFICATION: "UPDATE_NOTIFIATION"
+      PASKOOCHEH_UUID: "PASKOOCHEH_UUID"
+      CONFIG_DIRECTORY: "/config"
+      GUIDES_AND_TUTORIALS: "gnt.json"
+      FAQS: "faqs.json"
+      DOWNLOADS_AND_RATINGS: "dnr.json"
+      REVIEWS: "reviews.json"
+      TEXTS: "texts.json"
+      ANDROID_APP: "Android App"
+      PASKOOCHEH_PACKAGE: "org.asl19.paskoocheh.dev"
+      SCREEN: "screen_name"
+      OPEN_PAGE: "open_page"
+      SHARE: "share"
+      TOOL_ID: "tool_id"
+      INSTALL: "install_tool"
+      UNINSTALL: "uninstall"
+      PLAY_STORE: "play_store"
+      REVIEW: "review"
+      EMAIL: "email"
+      GALLERY: "gallery"
+      FEEDBACK: "feedback"
+      TOOL_SELECT: "tool_selected"
+      SUPPORT: "support"
+      ACL: "authenticated-read"
+      X_AMZ_ALGORITHM: "AWS4-HMAC-SHA256"
+      AES_MODE: "AES/CBC/PKCS7Padding"
+      IV_LENGTH: 16
+      EN: "en"
+      FA: "fa"
+      AUTHORITY: BuildConfig.APPLICATION_ID + ".provider"
+      ASC: ".asc"
+      TEMP: ".temp"
+      PRIMARY_CHANNEL: "pask"
+      APPS: "apps.json"
+      #OUINET_CACHE_HTTP_PUBKEY: "$OUINET_CACHE_HTTP_PUBKEY_DEV"
+      #OUINET_INJECTOR_CREDENTIALS: "$OUINET_INJECTOR_CREDENTIALS_DEV"
+      #OUINET_INJECTOR_TLS_CERT: "$OUINET_INJECTOR_TLS_CERT_DEV"
+      #OUINET_CACHE_TYPE: "$OUINET_CACHE_TYPE_DEV"
+
+  script:
+
+   - mkdir app/src/.generated
+   - for f in app/src/Constants.java; do
+        envsubst "$(env | cut -d= -f1 | sed -e 's/^/$/')" < $f > "app/src/.generated/$(basename $f)"; done
+   - cp app/src/.generated/Constants.java app/src/dev/java/org/asl19/paskoocheh/Constants.java
+
+   - bundle exec fastlane buildDev
+   - ls -l app/build/outputs/apk/dev
+   - cat app/src/main/res/values/ouinet.xml
+
+  dependencies: ["prebuild-dev"]
+  artifacts:
+      paths:
+          - app/build/outputs/apk/dev
+          - app/src/dev/java/org/asl19/paskoocheh/Constants.java
+      expire_in: 1 hour
+   
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+build-staging:
+  stage: build
+  extends:
+      - .prerequisites
+      - .if-version-tag
+  variables:
+      COGNITO_POOL_ID: $COGNITO_POOL_ID_STAGING
+      BUCKET_NAME: $BUCKET_NAME_STAGING
+      API: $API_STAGING
+      URL: $URL_STAGING
+      AMAZON_API_BASE_URL: $AMAZON_API_BASE_URL_STAGING
+      AMAZON_API_ENDPOINT: $AMAZON_API_ENDPOINT_STAGING
+      RATING: $RATING_STAGING
+      DOWNLOAD: $DOWNLOAD_STAGING
+      X_AMZ_CREDENTIAL: $X_AMZ_CREDENTIAL_STAGING
+      X_AMZ_DATE: $X_AMZ_DATE_STAGING
+      X_AMZ_SIGNATURE: $X_AMZ_SIGNATURE_STAGING
+      POLICY: $POLICY_STAGING
+      KEY: $KEY_STAGING
+      FILENAME_PREFIX: $FILENAME_PREFIX_STAGING
+      ANDROID: "android"
+      PASKOOCHEH_PREFS: "PASKOOCHEH_KEY"
+      DOWNLOAD_WIFI: "DOWNLOAD_ONLY_WIFI"
+      UPDATE_NOTIFICATION: "UPDATE_NOTIFIATION"
+      PASKOOCHEH_UUID: "PASKOOCHEH_UUID"
+      CONFIG_DIRECTORY: "/config"
+      GUIDES_AND_TUTORIALS: "gnt.json"
+      FAQS: "faqs.json"
+      DOWNLOADS_AND_RATINGS: "dnr.json"
+      REVIEWS: "reviews.json"
+      TEXTS: "texts.json"
+      ANDROID_APP: "Android App"
+      PASKOOCHEH_PACKAGE: "org.asl19.paskoocheh.staging"
+      SCREEN: "screen_name"
+      OPEN_PAGE: "open_page"
+      SHARE: "share"
+      TOOL_ID: "tool_id"
+      INSTALL: "install_tool"
+      UNINSTALL: "uninstall"
+      PLAY_STORE: "play_store"
+      REVIEW: "review"
+      EMAIL: "email"
+      GALLERY: "gallery"
+      FEEDBACK: "feedback"
+      TOOL_SELECT: "tool_selected"
+      SUPPORT: "support"
+      ACL: "authenticated-read"
+      X_AMZ_ALGORITHM: "AWS4-HMAC-SHA256"
+      AES_MODE: "AES/CBC/PKCS7Padding"
+      IV_LENGTH: 16
+      EN: "en"
+      FA: "fa"
+      AUTHORITY: BuildConfig.APPLICATION_ID + ".provider"
+      ASC: ".asc"
+      TEMP: ".temp"
+      PRIMARY_CHANNEL: "pask"
+      APPS: "apps.json"
+      #OUINET_CACHE_HTTP_PUBKEY: "$OUINET_CACHE_HTTP_PUBKEY_STAGING"
+      #OUINET_INJECTOR_CREDENTIALS: "$OUINET_INJECTOR_CREDENTIALS_STAGING"
+      #OUINET_INJECTOR_TLS_CERT: "$OUINET_INJECTOR_TLS_CERT_STAGING"
+      #OUINET_CACHE_TYPE: "$OUINET_CACHE_TYPE_STAGING"
+
+
+  script:
+
+   - mkdir app/src/.generated
+   - for f in app/src/Constants.java; do
+        envsubst "$(env | cut -d= -f1 | sed -e 's/^/$/')" < $f > "app/src/.generated/$(basename $f)"; done
+   - cp app/src/.generated/Constants.java app/src/staging/java/org/asl19/paskoocheh/Constants.java
+
+   - bundle exec fastlane buildStaging
+   - ls -l app/build/outputs/apk/staging
+   - cat app/src/main/res/values/ouinet.xml
+  
+  dependencies: ["prebuild-staging"]
+  artifacts:
+      paths:
+          - app/build/outputs/apk/staging
+      expire_in: 1 hour
+ 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+build-release-candidate:
+  stage: build
+  extends:
+      - .prerequisites
+      - .if-version-tag
+  variables:
+      COGNITO_POOL_ID: $COGNITO_POOL_ID_PROD
+      BUCKET_NAME: $BUCKET_NAME_PROD
+      API: $API_PROD
+      URL: $URL_PROD
+      AMAZON_API_BASE_URL: $AMAZON_API_BASE_URL_PROD
+      AMAZON_API_ENDPOINT: $AMAZON_API_ENDPOINT_PROD
+      RATING: $RATING_PROD
+      DOWNLOAD: $DOWNLOAD_PROD
+      X_AMZ_CREDENTIAL: $X_AMZ_CREDENTIAL_PROD
+      X_AMZ_DATE: $X_AMZ_DATE_PROD
+      X_AMZ_SIGNATURE: $X_AMZ_SIGNATURE_PROD
+      POLICY: $POLICY_PROD
+      KEY: $KEY_PROD
+      FILENAME_PREFIX: $FILENAME_PREFIX_PROD
+      ANDROID: "android"
+      PASKOOCHEH_PREFS: "PASKOOCHEH_KEY"
+      DOWNLOAD_WIFI: "DOWNLOAD_ONLY_WIFI"
+      UPDATE_NOTIFICATION: "UPDATE_NOTIFIATION"
+      PASKOOCHEH_UUID: "PASKOOCHEH_UUID"
+      CONFIG_DIRECTORY: "/config"
+      GUIDES_AND_TUTORIALS: "gnt.json"
+      FAQS: "faqs.json"
+      DOWNLOADS_AND_RATINGS: "dnr.json"
+      REVIEWS: "reviews.json"
+      TEXTS: "texts.json"
+      ANDROID_APP: "Android App"
+      PASKOOCHEH_PACKAGE: "org.asl19.paskoocheh"
+      SCREEN: "screen_name"
+      OPEN_PAGE: "open_page"
+      SHARE: "share"
+      TOOL_ID: "tool_id"
+      INSTALL: "install_tool"
+      UNINSTALL: "uninstall"
+      PLAY_STORE: "play_store"
+      REVIEW: "review"
+      EMAIL: "email"
+      GALLERY: "gallery"
+      FEEDBACK: "feedback"
+      TOOL_SELECT: "tool_selected"
+      SUPPORT: "support"
+      ACL: "authenticated-read"
+      X_AMZ_ALGORITHM: "AWS4-HMAC-SHA256"
+      AES_MODE: "AES/CBC/PKCS7Padding"
+      IV_LENGTH: 16
+      EN: "en"
+      FA: "fa"
+      AUTHORITY: BuildConfig.APPLICATION_ID + ".provider"
+      ASC: ".asc"
+      TEMP: ".temp"
+      PRIMARY_CHANNEL: "pask"
+      APPS: "apps.json"
+      #OUINET_CACHE_HTTP_PUBKEY: "$OUINET_CACHE_HTTP_PUBKEY_PROD"
+      #OUINET_INJECTOR_CREDENTIALS: "$OUINET_INJECTOR_CREDENTIALS_PROD"
+      #OUINET_INJECTOR_TLS_CERT: "$OUINET_INJECTOR_TLS_CERT_PROD"
+      #OUINET_CACHE_TYPE: "$OUINET_CACHE_TYPE_PROD"
+
+  script:
+
+   - mkdir app/src/.generated
+   - for f in app/src/Constants.java; do
+        envsubst "$(env | cut -d= -f1 | sed -e 's/^/$/')" < $f > "app/src/.generated/$(basename $f)"; done
+   - cp app/src/.generated/Constants.java app/src/release/java/org/asl19/paskoocheh/Constants.java
+   - bundle exec fastlane buildRelease
+   - ls -l app/build/outputs/apk/release
+   - cat app/src/main/res/values/ouinet.xml
+ 
+  dependencies: ["prebuild-release"]
+  artifacts:
+      paths:
+          - app/build/outputs/apk/release
+      expire_in: 1 hour
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------
+#functionalTests:
+#  stage: test
+#  script:
+#    - ./gradlew build check test --stacktrace -Dorg.gradle.parallel=false
+#    # create and launch emulator, wait for boot
+#    - echo "Available AVDs:"
+#    - avdmanager list target -c
+#    - echo no | avdmanager create avd -n first_avd -k "system-images;android-26;google_apis;x86_64"
+#    - emulator @MyTestAVDApi${EMULATOR_VERSION} -no-window -no-audio &
+#    - ./scripts/waitForAVD.sh
+#    # wake device
+#    - /usr/local/android-sdk-linux/platform-tools/adb shell input keyevent 82 & sleep 150
+#    # run integration tests
+#    - adb install app/build/outputs/apk/app-debug.apk
+#    - ./gradlew connectedAndroidTest -PdisablePreDex --stacktrace -Dorg.gradle.parallel=false
+
+# --------------------
+# --- upload stage ---
+# --------------------
+
+upload-to-s3-release-candidate:
+  stage: upload
+  extends:
+      - .upload_to_s3
+      - .if-version-tag
+  dependencies: ["build-release-candidate"]
+  script:
+   - aws s3 cp app/build/outputs/apk/release/app-release.apk s3://${AWS_S3_UPLOAD}/ouinet/release_candidates/app-release-candidate_`(echo $CI_COMMIT_TAG)`.apk
+   - aws s3 cp app/build/outputs/apk/release/app-release.apk s3://${AWS_S3_UPLOAD}/ouinet/release_candidates/app-release-candidate.apk
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+rename-prod-apk:
+   stage: prod-ready
+   extends:
+      - .upload_to_s3
+      - .if-release-tag-manual
+   script:
+    - aws s3 mv s3://${AWS_S3_UPLOAD}/ouinet/release_candidates/app-release-candidate.apk s3://${AWS_S3_UPLOAD}/ouinet/app-`(echo $CI_COMMIT_TAG | sed 's/\//_/')`.apk
+    - aws s3 cp s3://${AWS_S3_UPLOAD}/ouinet/app-`(echo $CI_COMMIT_TAG | sed 's/\//_/')`.apk s3://${AWS_S3_UPLOAD}/ouinet/app-ouinet.apk
+

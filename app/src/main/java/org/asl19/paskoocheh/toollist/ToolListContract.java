@@ -2,6 +2,8 @@ package org.asl19.paskoocheh.toollist;
 
 
 import android.content.Context;
+import android.view.View;
+import android.widget.Button;
 
 import org.asl19.paskoocheh.baseactivities.BasePresenter;
 import org.asl19.paskoocheh.baseactivities.BaseView;
@@ -43,6 +45,9 @@ public interface ToolListContract {
 
     interface ToolListAdapter {
         Context getContext();
+        void onInstallButtonClick(Version version, View installButton);
+        void onUpdateButtonClick(Version version, View updateButton);
+        void onPlayStoreRedirectButtonClick(Version version);
     }
 
     interface Presenter extends BasePresenter {

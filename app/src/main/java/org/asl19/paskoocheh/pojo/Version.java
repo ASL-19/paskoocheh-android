@@ -104,6 +104,18 @@ public class Version {
     @Expose
     public String appName;
 
+    @SerializedName("version_codes")
+    @Expose
+    public List<AppDownloadInfoForVersionCode> appDownloadInfoForVersionCodes = new ArrayList<>();
+
+    @SerializedName("devices")
+    @Expose
+    public List<DeviceInfo> devices = new ArrayList<>();
+
+    @SerializedName("is_installable")
+    @Expose
+    public boolean isInstallable = true;
+
     @Ignore
     public boolean installed;
 
@@ -111,4 +123,13 @@ public class Version {
     public boolean updateAvailable;
 
     public Version() {}
+
+    public void setCurrentAppDownloadInfo(AppDownloadInfoForVersionCode appDownloadInfoForVersionCode) {
+        this.versionCode = appDownloadInfoForVersionCode.versionCode;
+        this.downloadVia = appDownloadInfoForVersionCode.downloadVia;
+        this.s3Bucket = appDownloadInfoForVersionCode.s3Bucket;
+        this.s3Key = appDownloadInfoForVersionCode.s3Key;
+        this.checksum = appDownloadInfoForVersionCode.checksum;
+        this.size = appDownloadInfoForVersionCode.size;
+    }
 }

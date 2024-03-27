@@ -4,6 +4,9 @@
     android:id="@+id/swipe_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,4 +59,28 @@
                 </androidx.recyclerview.widget.RecyclerView>
             </LinearLayout>
         </ScrollView>
+
+        <FrameLayout
+            android:id="@+id/p2p_info_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/info_overlay_background" />
+            <TextView
+                android:layout_width="210dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:textSize="12sp"
+                android:layout_gravity="center"
+                fontPath="fonts/IRANSans_Bold_No_Number_Translation.ttf"
+                android:textColor="@color/white"
+                android:text="@string/p2p_info_overlay_text"/>
+        </FrameLayout>
+    </FrameLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

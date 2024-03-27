@@ -1,0 +1,173 @@
+<resources>
+    <string name="app_name">پس‌کوچه</string>
+
+    <!--NAVIGATION ACTIVITY-->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="applications">اپ‌ها</string>
+    <string name="my_applications">اپ‌های من</string>
+    <string name="tell_a_friend">به دوست و دشمن بگو</string>
+    <string name="update">به‌روزرسانی</string>
+    <string name="download_only_on_wifi">دانلود فقط از طریق وای‌فای</string>
+    <string name="about_paskoocheh">درباره‌ی پس‌کوچه</string>
+    <string name="number_downloads">تعداد دانلودها</string>
+    <string name="rate_this_app">امتیاز بدهید</string>
+    <string name="description">توضیح</string>
+    <string name="read_more">بیشتر</string>
+    <string name="read_less">کمتر</string>
+    <string name="reviews">نظرها</string>
+    <string name="version">نسخه </string>
+    <string name="updates">به‌روزرسانی</string>
+    <string name="up_to_date">به‌روز</string>
+    <string name="update_dialog">نسخه‌ی جدید پس‌کوچه آماده به‌روزرسانی است. به‌روزرسانی کنم؟</string>
+    <string name="yes">بله</string>
+    <string name="no">نه. بعدا</string>
+    <string name="feedback">تماس با پس‌کوچه</string>
+    <string name="telegram_menu">کانال تلگرام پس‌کوچه</string>
+
+    <!--TOOL LIST FRAGMENT & TOOL INFO FRAGMENT & ADAPTERS-->
+    <string name="email">ایمیل</string>
+    <string name="install">دانلود</string>
+    <string name="play_store">گوگل‌پلی</string>
+    <string name="no_playstore_clients">بارگذاری از طریق پلی‌استورممکن نیست</string>
+    <string name="share_your_experience">نظر بدهید</string>
+    <string name="topic">موضوع (اختیاری)</string>
+    <string name="description_optional">شرح (اختیاری)</string>
+    <string name="submit">ارسال</string>
+    <string name="review_submitted">نظر شما با موفقیت ثبت شد.</string>
+    <string name="unable_to_submit_review">نظر شما ثبت نشد. دوباره امتحان کنید.</string>
+    <string name="download_in_progress">در حال دانلود</string>
+    <string name="queued">منتظر باشید</string>
+    <string name="connect_wifi">لطفا به وای‌فای وصل شوید</string>
+    <string name="via_email">درخواست دانلود از طریق ایمیل</string>
+    <string name="via_email_subject">پس از ارسال این ایمیل، ایمیلی از طرف پس‌کوچه و به صورت خودکار همراه با لینک و یا فایل نصبِ اپلیکیشنِ درخواستی دریافت خواهید کرد.</string>
+    <string name="send_email">ارسال ایمیل از طریق</string>
+    <string name="no_email_clients">ارسال ایمیل ممکن نیست، آدرس ایمیل در کلیپ‌بورد کپی شد</string>
+    <string name="categories">دسته‌ها</string>
+    <string name="tutorial">مطلب‌های آموزشی</string>
+    <string name="video">ویدیوهای آموزشی</string>
+    <string name="to_top">بازگشت به بالا</string>
+    <string name="continuation">ادامه…</string>
+    <string name="rating">میانگین امتیازها (%s نفر)</string>
+    <string name="rating_empty">میانگین امتیازها (0 نفر)</string>
+    <string name="builder">سازندگان</string>
+    <string name="last_updated">آخرین به‌روزرسانی</string>
+    <string name="more_information">اطلاعات بیشتر</string>
+    <string name="guide">راهنما</string>
+    <string name="faq">سوال‌های متداول</string>
+    <string name="contact_support">اگر هنوز به کمک احتیاج دارید، با تیم پشتیبانی پس‌کوچه تماس بگیرید.</string>
+    <string name="featured">اپ‌های برگزیده</string>
+    <string name="most_downloads">اپ‌های محبوب</string>
+    <string name="updated">اپ‌های به‌روز شده</string>
+    <string name="all">بیشتر</string>
+    <string name="telegram">تلگرام</string>
+
+    <!-- INSTALLED TOOL LIST FRAGMENT -->
+    <string name="details_of_version">جزییات این نسخه</string>
+    <string name="all_apps_updated">همه‌ی اپ‌ها به‌روز هستند</string>
+    <string name="version_installed" formatted="false">نسخه %s</string>
+
+    <!--ABOUT FRAGMENT-->
+    <string name="title_about">درباره‌ی پس‌کوچه</string>
+
+    <!--PRIVACY FRAGMENT-->
+    <string name="privacy_terms_title">حریم خصوصی و شرایط استفاده</string>
+
+    <!-- APK MANAGER -->
+    <string name="checksum_invalid">چک‌سام نادرست است</string>
+
+    <!-- LOADING FRAGMENT -->
+    <string name="tap_to_retry">درخواستِ دوباره</string>
+
+    <!-- NOTIFICATIONS -->
+    <string name="retry_tool_download">%s تایم اوت شد. لطفا دوباره امتحان کنید</string>
+    <string name="download_failed_retry">دانلود ناموفق! دوباره امتحان کنید</string>
+
+
+    <!-- FEEDBACK FRAGMENT -->
+    <string name="support">پشتیبانی پس‌کوچه</string>
+    <string name="your_email">ایمیل شما</string>
+    <string name="email_subject">موضوع ایمیل</string>
+    <string name="explanation">توضیح</string>
+    <string name="send_feedback_email">ارسال ایمیل</string>
+    <string name="improper_email">ایمیل اشتباه است.</string>
+    <string name="field_is_required">پر کردن این قسمت الزامی است.</string>
+    <string name="support_email_sent">ایمیل شما به تیم پشتیبانی پس‌کوچه ارسال شد!</string>
+    <string name="wait_for_answer">منتظر جواب ما باشید.</string>
+    <string name="time_out_retry_check_connection">تایم اوت</string>
+
+    <!-- SEARCH FRAGMENT -->
+    <string name="search_result">نتیجه‌ی جستجو</string>
+    <string name="search_title">جستجو</string>
+    <string name="apps">اپ‌ها</string>
+
+    <!-- DOWNLOAD SERVICE -->
+    <string name="verifying">تایید</string>
+    <string name="support_email">bepors@paskoocheh.com</string>
+    <string name="support_telegram">https://t.me/paskadmin_bot</string>
+    <string name="search_result_found">نتیجه‌ی جستجو برای \"%s\"</string>
+
+    <!-- DIALOGS/ALERTS -->
+    <string name="p2p_connecting_alert_title">اتصال به دست‌به‌دست (p2p)...</string>
+    <string name="p2p_connecting_alert_description">لطفا یک یا دو دقیقه صبر کنید تا ما اتصال را برقرار کنیم.</string>
+
+    <string name="p2p_disconnecting_alert_title">در حال قطع کردن اتصال از دست‌به‌دست (p2p)...</string>
+    <string name="p2p_disconnecting_alert_description">لطفا تا زمان قطع ارتباط صبر کنید.</string>
+
+    <string name="p2p_connection_success_alert_title">اتصال با موفقیت انجام شد</string>
+    <string name="p2p_connection_success_alert_description">دست‌به‌دست (p2p) متصل و آماده استفاده است.</string>
+
+    <string name="p2p_connection_fail_alert_title">اتصال ناموفق بود.</string>
+    <string name="p2p_connection_fail_alert_description">ما در حال حاضر نمی‌توانیم به دست‌به‌دست (p2p) متصل شویم. لطفا دوباره امتحان کنید.</string>
+
+    <string name="one_button_alert_button_caption">بستن</string>
+    <string name="verification_failed_dialog_error_message">Verification of the downloaded App failed</string>
+    <string name="install_notification_state_installing">Installing..</string>
+    <string name="wait_for_download_install_complete_toast_message">Please wait until we complete download and install of %s</string>
+    <!-- UTILS -->
+    <string name="image_load_fail_due_to_memory">بارگذاری تصویر به‌ دلیل کمبود حافظه ممکن نیست</string>
+    <string name="p2pnetwork">دست‌به‌دست (p2p)</string>
+    <string name="p2p_settings">تنظیمات دست‌به‌دست (p2p)</string>
+    <string name="toosheh_app">اپلیکیشن توشه پیدا نشد</string>
+    <string name="you_need_to">برای دسترسی به این سرویس باید اپلیکیشن «توشه» را داشته باشید. لطفا «توشه» را دانلود و نصب کنید و دوباره امتحان کنید.</string>
+    <string name="install_toosheh">نصب اپلیکیشن «توشه»</string>
+    <string name="toosheh_app_found">اپلیکیشن توشه پیدا شد.</string>
+    <string name="in_case_of_">ابزار «دست‌به‌دست» پس‌کوچه با فعال کردن شبکه p2p (ارتباط مستقیم کاربر با کاربر) می‌تواند در زمان قطع اینترنت بین المللی، در دسترسی به اپلیکیشن های پس‌کوچه از طریق اینترنت داخلی کمک کند.</string>
+    <string name="peer_to_pee">وضعیت دست‌به‌دست (p2p) </string>
+    <string name="advanced_settings">تنظیمات پیشرفته</string>
+    <string name="for_injecti" >شما می‌توانید برای بارگذاری اپلیکیشن‌ها در دست‌به‌دست (p2p)، پوشه خود را اضافه کنید. <a href="https://paskoocheh.com/tools/42/android/guide.html">چگونه فایل‌ها را بارگذاری کنم؟</a></string>
+    <string name="how_to_inje">چگونه فایل‌ها را بارگذاری کنم؟</string>
+    <string name="browse">اضافه کردن پوشه</string>
+    <string name="home">بازگشت به اپ‌ها</string>
+    <string name="turn_off_p2">غیرفعال کن</string>
+    <string name="i_understan">متوجه هستم</string>
+    <string name="title_activity_inject">فعالیت بارگذاری</string>
+    <string name="inject_directory">بارگذاری پوشه</string>
+    <string name="inject_btext">بارگذاری</string>
+    <string name="change_dir">تغییر پوشه</string>
+    <string name="following_d">پوشه زیر انتخاب شد.</string>
+    <string name="random_dirpath">دانلود توشه</string>
+    <string name="cancel">لغو</string>
+    <string name="tap_to_stop">برای توقف سرویس دست‌به‌دست (p2p) ضربه بزنید.</string>
+    <string name="erase">توقف</string>
+    <string name="injection_w">بارگذاری با موفقیت انجام شد!</string>
+    <string name="in_order_to">به منظور استفاده از دست‌به‌دست (p2p)، اپلیکیشن «پس‌کوچه» در پس‌زمینه اجرا می‌شود.</string>
+    <string name="the_directo">"پذیرفتن این پوشه امکان‌پذیر نیست. لطفا پوشه را تغییر دهید."</string>
+    <string name="p2p_off_loading_screen_title">متاسفیم. ارتباط وجود ندارد.</string>
+    <string name="p2p_off_loading_screen_description">با فعال کردن دست‌به‌دست (p2p)، می‌توانید اپلیکیشن‌های موجود در شبکه را ببینید. حتما امتحان کنید!</string>
+    <string name="refresh_the">صفحه را تازه (ریفرش) کنید.</string>
+    <string name="p2p_on_loading_screen_description">بعدا این صفحه را امتحان کنید، و شاید خوش شانس باشید تا بتوانید اپلیکیشن‌ها را از طریق دست‌به‌دست (p2p) دانلود کنید.</string>
+    <string name="p2p_on_loading_screen_title">اپلیکیشنی در دست‌به‌دست (p2p) وجود ندارد.</string>
+    <string name="turn_on">فعال کردن دست‌به‌دست (p2p)</string>
+    <string name="label_ON">روشن</string>
+    <string name="label_OFF">خاموش</string>
+    <string name="install_too">نصب توشه</string>
+    <string name="you_can_als">اگر فایلی برای بارگذاری ندارید، می‌توانید از اپلیکیشن «توشه» استفاده کنید.</string>
+    <string name="please_wain">لطفا تا زمان پردازش فایل‌ها صبر کنید...</string>
+    <string name="wait_for_few_minutes"> ممکن است چند دقیقه طول بکشد</string>
+    <string name="injecting_">در حال بارگذاری فایل‌ها...</string>
+    <string name="title_activity_p2p_loading">دست‌به‌دست (p2p) در حال بارگذاری</string>
+    <string name="active">فعال</string>
+    <string name="p2p_directory_select_error">این دایرکتوری قابل بارگذاری نیست. لطفا یک دایرکتوری دیگر را امتحان کنید.</string>
+    <string name="p2p_info_overlay_text">قابلیت دست‌به‌دست (p2p) برای مقابله با قطعی اینترنت اضافه شده است</string>
+</resources>

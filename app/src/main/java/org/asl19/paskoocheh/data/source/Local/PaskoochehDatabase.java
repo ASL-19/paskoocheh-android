@@ -7,6 +7,8 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import android.content.Context;
 
+import org.asl19.paskoocheh.pojo.AppDownloadInfoForVersionCodesTypeConverter;
+import org.asl19.paskoocheh.pojo.DevicesTypeConverter;
 import org.asl19.paskoocheh.pojo.DownloadAndRating;
 import org.asl19.paskoocheh.pojo.Faq;
 import org.asl19.paskoocheh.pojo.Guide;
@@ -23,7 +25,7 @@ import org.asl19.paskoocheh.utils.ImageArrayTypeConverter;
 import org.asl19.paskoocheh.utils.StringArrayTypeConverter;
 
 @Database(entities = {Version.class, Faq.class, Tool.class, LocalizedInfo.class, DownloadAndRating.class, Guide.class, Tutorial.class, Review.class, Images.class, Name.class, LastModified.class, Text.class}, version = 42, exportSchema = false)
-@TypeConverters({StringArrayTypeConverter.class, ImageArrayTypeConverter.class})
+@TypeConverters({StringArrayTypeConverter.class, ImageArrayTypeConverter.class, DevicesTypeConverter.class, AppDownloadInfoForVersionCodesTypeConverter.class})
 public abstract class PaskoochehDatabase extends RoomDatabase {
 
     private static PaskoochehDatabase INSTANCE;

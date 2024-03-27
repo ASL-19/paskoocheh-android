@@ -1,0 +1,12 @@
+{
+    "expiration": "2025-01-02T00:00:00Z",
+    "conditions": [
+        {"bucket": "paskoocheh-staging-api"},
+        ["starts-with", "$key", "Zwc9/MfekkVYWBBPZPi6IapMM/bIT6eTzuk4W0gdBr38YwngRtPRKAeRGxtG6jB+Xu5+rXKhNsTzdUeVqI7AGpjXszCQ51O3tt8YLIvMPL4="],
+        {"acl": "authenticated-read"},
+        {"x-amz-credential": "%s/20250101/us-east-1/s3/aws4_request"},
+        {"x-amz-algorithm": "AWS4-HMAC-SHA256"},
+        {"x-amz-date": "20250101T000000Z"},
+        ["content-length-range", 0, 2048]
+    ]
+}

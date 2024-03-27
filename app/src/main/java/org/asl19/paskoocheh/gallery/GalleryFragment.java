@@ -30,9 +30,11 @@ public class GalleryFragment extends Fragment {
 
     public static final String POSITION = "POSITION";
     public static final String IMAGES = "IMAGES";
+    public static final String OUINET_GROUP = "OUINET_GROUP";
 
     private int position;
     private List<Image> toolImages;
+    private String ouinetGroup;
 
 
     /**
@@ -50,8 +52,10 @@ public class GalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         position = 0;
+        ouinetGroup = "";
         if (getArguments() != null) {
             position = getArguments().getInt(POSITION, 0);
+            ouinetGroup = getArguments().getString(OUINET_GROUP, "");
         }
 
         toolImages = Parcels.unwrap(getArguments().getParcelable(IMAGES));
@@ -68,7 +72,7 @@ public class GalleryFragment extends Fragment {
 
         View galleryView = inflater.inflate(R.layout.fragment_gallery, container, false);
         ViewPager pager = galleryView.findViewById(R.id.pager);
-        pager.setAdapter(new GalleryAdapter(getChildFragmentManager(), toolImages));
+        pager.setAdapter(new GalleryAdapter(getChildFragmentManager(), toolImages, ouinetGroup));
         pager.setCurrentItem(position);
 
         TabLayout tabLayout = galleryView.findViewById(R.id.tab_layout);

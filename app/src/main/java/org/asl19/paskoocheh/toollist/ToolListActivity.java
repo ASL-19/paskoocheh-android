@@ -1,8 +1,11 @@
 package org.asl19.paskoocheh.toollist;
 
-
 import android.os.Bundle;
+import android.content.Intent;
+import android.content.Context;
 import com.google.android.material.navigation.NavigationView;
+
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -25,13 +28,23 @@ import org.asl19.paskoocheh.utils.AppExecutors;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static org.asl19.paskoocheh.Constants.PASKOOCHEH_PREFS;
+
 public class ToolListActivity extends BaseNavigationActivity {
+
+    public static final String P2P_INFO_SEEN_BY_THE_USER = "P2P_INFO_SEEN_BY_THE_USER";
 
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
+
+    static public void start(Context ctx) {
+        Intent intent = new Intent(ctx, ToolListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        ctx.startActivity(intent);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,11 +57,11 @@ public class ToolListActivity extends BaseNavigationActivity {
 
         ToolListFragment toolListFragment =
                 (ToolListFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+
         if (toolListFragment == null) {
             toolListFragment = ToolListFragment.newInstance();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), toolListFragment, R.id.contentFrame);
         }
-
 
         PaskoochehDatabase database = PaskoochehDatabase.getInstance(getApplicationContext());
         AppExecutors appExecutors = new AppExecutors();
@@ -59,6 +72,24 @@ public class ToolListActivity extends BaseNavigationActivity {
         NameDataSource nameDataSource = NameLocalDataSource.getInstance(appExecutors, database.nameDao());
         ToolDataSource toolDataSource = ToolLocalDataSource.getInstance(appExecutors, database.toolDao());
         new ToolListPresenter(toolListFragment, versionLocalDataSource, downloadAndRatingLocalDataSource, imagesDataSource, localizedInfoDataSource, nameDataSource, toolDataSource);
+    }
+
+    @Override
+    protected void onNavigationDrawerOpenListener() {
+        ToolListFragment toolListFragment =
+                (ToolListFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+
+        // If user clicks navigation drawer after entering the App for the 1st time, the user should never be shown the P2P info overlay.
+        boolean isP2PInfoOverlaySeenByTheUser = getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE)
+                .getBoolean(P2P_INFO_SEEN_BY_THE_USER, false);
+        if (!isP2PInfoOverlaySeenByTheUser) {
+            this.getSharedPreferences(PASKOOCHEH_PREFS, Context.MODE_PRIVATE).edit().putBoolean(
+                    P2P_INFO_SEEN_BY_THE_USER,
+                    true
+            ).commit();
+            View p2pInfoOverlay = toolListFragment.getView().findViewById(R.id.p2p_info_overlay);
+            p2pInfoOverlay.setVisibility(View.GONE);
+        }
     }
 
     @Override
