@@ -48,7 +48,7 @@ public class ToolDownloadVerificationService extends IntentService {
     private ApkManager apkManager;
     private InstallerXDialogViewModel mViewModel;
     private String EXTRA_VERIFICATION_SUCCESSFUL = "extra_verification_successful";
-    public static String EXTRA_APP_VERIFICATION_FAILED = "extra_verification_successful";
+    public static String EXTRA_APP_VERIFICATION_FAILED = "extra_app_verification_failed";
     public static final String EXTRA_DOWNLOAD_AND_VERIFICATION_SUCCESSFUL = "extra_download_and_verification_successful";
 
     public ToolDownloadVerificationService() {
@@ -103,16 +103,19 @@ public class ToolDownloadVerificationService extends IntentService {
 
             startForeground(version.getToolId(), notificationBuilder.build());
 
-            if (isVerificationSuccessful || (version.getChecksum().isEmpty() || Checksum.checkChecksum(version.getChecksum(), internalTempFile))
+            final String expectedChecksum = version.getChecksum();
+            final boolean checksumOk = expectedChecksum == null
+                    || expectedChecksum.isEmpty()
+                    || Checksum.checkChecksum(expectedChecksum, internalTempFile);
+            if (isVerificationSuccessful || (checksumOk
                     && verifySignature(
                     new BufferedInputStream(new FileInputStream(internalTempFile)),
                     new BufferedInputStream(new FileInputStream(internalSecurityFile)),
                     new BufferedInputStream(getApplicationContext().getAssets().open("public_key.pub"))
-            )) {
+            ))) {
                 Log.d(TAG, "file verification success");
                 File internalFile = new File(getApplicationContext().getFilesDir() + "/" + String.format("%s_%s." + fileExtension, version.getAppName(), version.getVersionNumber()));
                 internalTempFile.renameTo(internalFile);
-                internalTempFile.setReadable(true, false);
 
                 Uri internalUri = Uri.fromFile(internalFile);
                 if (Build.VERSION.SDK_INT >= 24) {
@@ -130,11 +133,11 @@ public class ToolDownloadVerificationService extends IntentService {
                 PendingIntent pendingIntent = null;
                 if (fileExtension.equals("zip")) {
                     intent.putExtra(EXTRA_VERIFICATION_SUCCESSFUL, true);
-                    pendingIntent = PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    pendingIntent = PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                 } else {
                     installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     pendingIntent = PendingIntent.getActivity(
-                            getApplicationContext(), 0, installIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            getApplicationContext(), 0, installIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                 }
 
                 notificationManager.cancel(version.getToolId());
@@ -162,27 +165,19 @@ public class ToolDownloadVerificationService extends IntentService {
                 Log.d(TAG, "file verification FAIL");
                 ToolDownloadService.toast(getApplicationContext(), getString(R.string.checksum_invalid), version.getAppName());
 
-                for (File file : new File(getApplicationContext().getFilesDir() + "/").listFiles()) {
-                    if (file.getName().startsWith(version.getAppName())) {
-                        file.delete();
-                    }
-                }
+                deleteVersionFiles(version);
                 FirebaseCrashlytics.getInstance().log(String.format(getString(R.string.checksum_invalid), version.getAppName()));
                 sendVerificationErrorIntent(null);
                 stopForeground(true); // Also hide the system tray notification.
             }
         } catch (Exception exception) {
             Log.d(TAG, "file verification EXCEPTION = " + exception.getStackTrace().toString());
-            for (File file: new File(getApplicationContext().getFilesDir() + "/").listFiles()) {
-                if (file.getName().startsWith(version.getAppName())) {
-                    file.delete();
-                }
-            }
+            deleteVersionFiles(version);
 
             Intent notificationIntent = new Intent(getApplicationContext(), ToolDownloadService.class);
             notificationIntent.putExtra("VERSION", Parcels.wrap(version));
             PendingIntent pendingIntent = PendingIntent.getService(
-                    getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             Log.e(this.getClass().getSimpleName(), exception.toString());
 
@@ -193,6 +188,22 @@ public class ToolDownloadVerificationService extends IntentService {
             notificationBuilder.setContentText(getString(R.string.download_failed_retry));
             notificationBuilder.setProgress(0, 0, false);
             notificationManager.notify(version.getToolId(), notificationBuilder.build());
+        }
+    }
+
+
+    private void deleteVersionFiles(Version version) {
+        File dir = getApplicationContext().getFilesDir();
+        File[] files = dir.listFiles();
+        if (files == null || version == null || version.getAppName() == null) {
+            return;
+        }
+        final String prefix = version.getAppName() + "_";
+        for (File file : files) {
+            if (file.getName().startsWith(prefix)) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
         }
     }
 

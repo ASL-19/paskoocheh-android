@@ -45,6 +45,12 @@ public class PGPUtil {
 
         PGPSignature pgpSignature = pgpSignatureList.get(0);
         PGPPublicKey publicKey = pgpPubRingCollection.getPublicKey(pgpSignature.getKeyID());
+        if (publicKey == null) {
+            signatureFile.close();
+            publicKeyFile.close();
+            inputFile.close();
+            return false;
+        }
 
         pgpSignature.init(new JcaPGPContentVerifierBuilderProvider().setProvider(new BouncyCastleProvider()), publicKey);
 

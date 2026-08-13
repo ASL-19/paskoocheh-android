@@ -91,7 +91,7 @@ public class OuinetService extends Service {
             // Show notification without purge action after some time.
             PendingIntent hidePurgePIntent = PendingIntent.getService(OuinetService.this, 0,
                     createHidePurgeIntent(OuinetService.this),
-                    PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -313,13 +313,13 @@ public class OuinetService extends Service {
         int requestCode = 0;
         PendingIntent p2pIntent = PendingIntent.getActivity(this, requestCode++,
                 new Intent(this, P2PActivity.class),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         PendingIntent homePIntent = PendingIntent.getActivity(this, requestCode++,
                 createHomeIntent(this),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         PendingIntent showPurgePIntent = PendingIntent.getService(this, requestCode++,
                 createShowPurgeIntent(this),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder notifb = new NotificationCompat.Builder(this, channel_id)
                 .setSmallIcon(R.drawable.notification_paskoocheh)
@@ -339,7 +339,7 @@ public class OuinetService extends Service {
         if (showRealPurgeAction) {
             PendingIntent purgePIntent = PendingIntent.getBroadcast(this, requestCode++,
                     OuinetBroadcastReceiver.createPurgeIntent(this),
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             notifb.addAction(R.drawable.ic_check,
                     getString(R.string.yes),
                     purgePIntent);

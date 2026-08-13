@@ -176,9 +176,13 @@ public class ToolDownloadService extends IntentService {
                     registerDownloadRequest(AmazonToolRequest.FAILED, totalTime);
                     Log.d(TAG, "download file error " + ex.getStackTrace().toString());
                     sharedPreferences.edit().remove(version.getPackageName()).commit();
-                    for (File file: new File(getApplicationContext().getFilesDir() + "/").listFiles()) {
-                        if (file.getName().startsWith(version.getAppName())) {
-                            file.delete();
+                    File[] cachedFiles = new File(getApplicationContext().getFilesDir() + "/").listFiles();
+                    if (cachedFiles != null) {
+                        final String namePrefix = version.getAppName() + "_";
+                        for (File file : cachedFiles) {
+                            if (file.getName().startsWith(namePrefix)) {
+                                file.delete();
+                            }
                         }
                     }
 
@@ -205,7 +209,7 @@ public class ToolDownloadService extends IntentService {
         Intent notificationIntent = new Intent(getApplicationContext(), ToolDownloadService.class);
         notificationIntent.putExtras(intent);
         PendingIntent pendingIntent = PendingIntent.getService(
-                getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         notificationBuilder.setContentIntent(pendingIntent);
         notificationBuilder.setOngoing(false);
